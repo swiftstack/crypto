@@ -57,15 +57,17 @@ public struct SHA1 {
                 start: reminder,
                 count: reminder.count))
 
-            bytes = bytes.suffix(from: blockSize)
+            bytes = UnsafeRawBufferPointer(
+                rebasing: bytes.suffix(from: blockSize))
             reminder.removeAll(keepingCapacity: true)
         }
 
         let blocksCount = bytes.count / blockSize
         if blocksCount > 0 {
-            let blocksSize = blocksCount * blockSize
-            transform(bytes.prefix(upTo: blocksSize))
-            bytes = bytes.suffix(from: blocksSize)
+            let blocksBuffer = UnsafeRawBufferPointer(
+                rebasing: bytes.suffix(from: blocksCount * blockSize))
+            transform(blocksBuffer)
+            bytes = blocksBuffer
         }
 
         if bytes.count > 0 {
