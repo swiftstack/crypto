@@ -3,30 +3,7 @@ import Stream
 extension ASN1 {
     public init(from stream: StreamReader) throws {
         let reader = Reader(from: stream)
-        let identifier = try reader.readIdentifier()
-
-        self.identifier = identifier
-        switch identifier.isConstructed {
-        case true:
-            let length = try reader.readLength()
-            self.content = try stream.withSubStream(limitedBy: length)
-            { stream in
-                var children = [ASN1]()
-                while !stream.isEmpty {
-                    children.append(try ASN1(from: stream))
-                }
-                return .sequence(children)
-            }
-        case false:
-            switch identifier.tag {
-            case .enumerated:
-                self.content = .integer(try reader.read(Int.self))
-            case .printableString, .utf8String:
-                self.content = .string(try reader.read(String.self))
-            default:
-                self.content = .data(try reader.read([UInt8].self))
-            }
-        }
+        self = try reader.read(ASN1.self)
     }
 }
 
@@ -62,14 +39,44 @@ extension ASN1 {
             case invalidIdentifier
         }
 
-        func readIdentifier() throws -> Identifier {
-            guard let identifier = Identifier(rawValue: try readRawTag()) else {
+        func read(_ asn1: ASN1.Type) throws -> ASN1 {
+            let identifier = try read(Identifier.self)
+
+            let content: ASN1.Content
+
+            switch identifier.isConstructed {
+            case true:
+                content = try stream.withSubStream(sizedBy: Length.self)
+                { stream in
+                    var children = [ASN1]()
+                    while !stream.isEmpty {
+                        children.append(try ASN1(from: stream))
+                    }
+                    return .sequence(children)
+                }
+            case false:
+                switch identifier.tag {
+                case .enumerated:
+                    content = .integer(try read(Int.self))
+                case .printableString, .utf8String:
+                    content = .string(try read(String.self))
+                default:
+                    content = .data(try read([UInt8].self))
+                }
+            }
+
+            return ASN1(identifier: identifier, content: content)
+        }
+
+        func read(_ identifier: Identifier.Type) throws -> Identifier {
+            let mask = try readIdentifierMask()
+            guard let identifier = Identifier(rawValue: mask) else {
                 throw Error.invalidIdentifier
             }
             return identifier
         }
 
-        func readRawTag() throws -> Int {
+        func readIdentifierMask() throws -> Int {
             let tag = Int(try stream.read(UInt8.self))
             guard tag & 0x1F == 0x1F else {
                 return tag
@@ -84,23 +91,9 @@ extension ASN1 {
             }
         }
 
-        func readLength() throws -> Int {
-            let length = try stream.read(UInt8.self)
-            switch length & 0x80 {
-            case 0: return Int(length)
-            default:
-                switch length & ~0x80 {
-                case 1: return Int(try stream.read(UInt8.self))
-                case 2: return Int(try stream.read(UInt16.self))
-                case 4: return Int(try stream.read(UInt32.self))
-                default: throw Error.invalidLength
-                }
-            }
-        }
-
         func read(_ type: Int.Type) throws -> Int {
             var value = 0
-            switch try readLength() {
+            switch try Length(from: stream).value {
             case 1: value = Int(try stream.read(UInt8.self))
             case 2: value = Int(try stream.read(UInt16.self))
             case 4: value = Int(try stream.read(UInt32.self))
@@ -110,11 +103,13 @@ extension ASN1 {
         }
 
         func read(_ type: [UInt8].Type) throws ->  [UInt8] {
-            return try stream.read(count: try readLength())
+            let length = try Length(from: stream)
+            return try stream.read(count: length.value)
         }
 
         func read(_ type: String.Type) throws -> String {
-            return try stream.read(count: try readLength(), as: String.self)
+            let length = try Length(from: stream)
+            return try stream.read(count: length.value, as: String.self)
         }
     }
 }
