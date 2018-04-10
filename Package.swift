@@ -8,13 +8,15 @@ let package = Package(
     ],
     dependencies: [
         .package(
+            url: "https://github.com/swift-stack/stream.git",
+            .branch("master")),
+        .package(
             url: "https://github.com/swift-stack/test.git",
             .branch("master"))
     ],
     targets: [
-        .target(name: "Crypto"),
-        .testTarget(
-            name: "CryptoTests",
-            dependencies: ["Crypto", "Test"])
+        .target(name: "Crypto", dependencies: ["Stream"]),
+        .testTarget(name: "CryptoTests", dependencies: ["Crypto", "Test"]),
+        .testTarget(name: "ASN1Tests", dependencies: ["Crypto", "Test"])
     ]
 )
