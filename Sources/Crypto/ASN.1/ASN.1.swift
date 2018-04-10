@@ -21,6 +21,12 @@ public struct ASN1: Equatable {
         public var `class`: Class
         public var tag: Tag
 
+        public init(isConstructed: Bool, class: Class, tag: Tag) {
+            self.isConstructed = isConstructed
+            self.class = `class`
+            self.tag = tag
+        }
+
         public enum Class: UInt8 {
             case universal = 0b00
             case application = 0b01
