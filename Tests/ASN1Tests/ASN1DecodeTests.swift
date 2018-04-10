@@ -2,49 +2,24 @@ import Test
 import Stream
 @testable import Crypto
 
-class ASN1ReaderTests: TestCase {
-    func testReadUniversalSequence() {
+class ASN1DecodeTests: TestCase {
+    func testUniversalSequence() {
         scope {
             let reader = ASN1.Reader(from: InputByteStream([0x30]))
-            let identifier = try reader.readIdentifier()
+            let identifier = try reader.read(ASN1.Identifier.self)
             assertEqual(identifier.isConstructed, true)
             assertEqual(identifier.class, .universal)
             assertEqual(identifier.tag, .sequence)
         }
     }
 
-    func testReadContextSpecificBer() {
+    func testContextSpecificBer() {
         scope {
             let reader = ASN1.Reader(from: InputByteStream([0xa0]))
-            let identifier = try reader.readIdentifier()
+            let identifier = try reader.read(ASN1.Identifier.self)
             assertEqual(identifier.isConstructed, true)
             assertEqual(identifier.class, .contextSpecific)
             assertEqual(identifier.tag, .ber)
-        }
-    }
-
-    func testReadLength1Octet() {
-        scope {
-            let reader = ASN1.Reader(from: InputByteStream([0x81, 0x01]))
-            let length = try reader.readLength()
-            assertEqual(length, 1)
-        }
-    }
-
-    func testReadLength2Octets() {
-        scope {
-            let reader = ASN1.Reader(from: InputByteStream([0x82, 0x00, 0x01]))
-            let length = try reader.readLength()
-            assertEqual(length, 1)
-        }
-    }
-
-    func testReadLength4Octets() {
-        scope {
-            let reader = ASN1.Reader(
-                from: InputByteStream([0x84, 0x00, 0x00, 0x00, 0x01]))
-            let length = try reader.readLength()
-            assertEqual(length, 1)
         }
     }
 
