@@ -7,22 +7,10 @@ extension ASN1 {
     }
 }
 
-extension ASN1.Identifier: RawRepresentable {
-    public var rawValue: Int {
-        let rawTag = tag.rawValue & (`class`.rawValue << 6)
-        return isConstructed ? Int(rawTag & 0x20) : Int(rawTag)
-    }
-
-    public init?(rawValue raw: Int) {
-        guard let `class` = Class(rawValue: UInt8((raw & 0xc0) >> 6)) else {
-            return nil
-        }
-        guard let tag = Tag(rawValue: UInt8(raw & 0x1f)) else {
-            return nil
-        }
-        self.isConstructed = raw & 0x20 == 0x20
-        self.class = `class`
-        self.tag = tag
+extension ASN1.Identifier {
+    public init(from stream: StreamReader) throws {
+        let reader = ASN1.Reader(from: stream)
+        self = try reader.read(ASN1.Identifier.self)
     }
 }
 
@@ -70,10 +58,19 @@ extension ASN1 {
 
         func read(_ identifier: Identifier.Type) throws -> Identifier {
             let mask = try readIdentifierMask()
-            guard let identifier = Identifier(rawValue: mask) else {
+
+            let rawClass = UInt8((mask & 0xc0) >> 6)
+            guard let `class` = Identifier.Class(rawValue: rawClass) else {
                 throw Error.invalidIdentifier
             }
-            return identifier
+            let rawTag = UInt8(mask & 0x1f)
+            guard let tag = Identifier.Tag(rawValue: rawTag) else {
+                throw Error.invalidIdentifier
+            }
+            return Identifier(
+                isConstructed: mask & 0x20 == 0x20,
+                class: `class`,
+                tag: tag)
         }
 
         func readIdentifierMask() throws -> Int {

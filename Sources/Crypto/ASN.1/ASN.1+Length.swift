@@ -25,6 +25,24 @@ extension ASN1 {
                 }
             }
         }
+
+        func encode(to stream: StreamWriter) throws {
+            switch value {
+            case 0...0x7F:
+                try stream.write(UInt8(value))
+            case 0x80...0xFF:
+                try stream.write(UInt8(0x81))
+                try stream.write(UInt8(value))
+            case 0x01_00...0xFF_FF:
+                try stream.write(UInt8(0x82))
+                try stream.write(UInt16(value))
+            case 0x0001_0000...0xFFFF_FFFF:
+                try stream.write(UInt8(0x84))
+                try stream.write(UInt32(value))
+            default:
+                throw Error.invalidLength
+            }
+        }
     }
 }
 
@@ -35,5 +53,18 @@ extension StreamReader {
     {
         let length = try ASN1.Length(from: self)
         return try withSubStream(limitedBy: length.value, body: body)
+    }
+}
+
+extension StreamWriter {
+    func withSubStream(
+        sizedBy type: ASN1.Length.Type,
+        body: (SubStreamWriter) throws -> Void) throws
+    {
+        let output = OutputByteStream()
+        try body(output)
+        let length = ASN1.Length(output.bytes.count)
+        try length.encode(to: self)
+        try write(output.bytes)
     }
 }

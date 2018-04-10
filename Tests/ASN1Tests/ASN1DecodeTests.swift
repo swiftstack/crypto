@@ -5,8 +5,7 @@ import Stream
 class ASN1DecodeTests: TestCase {
     func testUniversalSequence() {
         scope {
-            let reader = ASN1.Reader(from: InputByteStream([0x30]))
-            let identifier = try reader.read(ASN1.Identifier.self)
+            let identifier = try ASN1.Identifier(from: InputByteStream([0x30]))
             assertEqual(identifier.isConstructed, true)
             assertEqual(identifier.class, .universal)
             assertEqual(identifier.tag, .sequence)
@@ -15,8 +14,7 @@ class ASN1DecodeTests: TestCase {
 
     func testContextSpecificBer() {
         scope {
-            let reader = ASN1.Reader(from: InputByteStream([0xa0]))
-            let identifier = try reader.read(ASN1.Identifier.self)
+            let identifier = try ASN1.Identifier(from: InputByteStream([0xa0]))
             assertEqual(identifier.isConstructed, true)
             assertEqual(identifier.class, .contextSpecific)
             assertEqual(identifier.tag, .ber)
