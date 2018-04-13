@@ -12,12 +12,12 @@ class ASN1DecodeTests: TestCase {
         }
     }
 
-    func testContextSpecificBer() {
+    func testContextSpecificEndOfContent() {
         scope {
             let identifier = try ASN1.Identifier(from: InputByteStream([0xa0]))
             assertEqual(identifier.isConstructed, true)
             assertEqual(identifier.class, .contextSpecific)
-            assertEqual(identifier.tag, .ber)
+            assertEqual(identifier.tag, .endOfContent)
         }
     }
 

@@ -35,7 +35,7 @@ public struct ASN1: Equatable {
         }
 
         public enum Tag: UInt8 {
-            case ber = 0x00
+            case endOfContent = 0x00
             case boolean = 0x01
             case integer = 0x02
             case bitString = 0x03

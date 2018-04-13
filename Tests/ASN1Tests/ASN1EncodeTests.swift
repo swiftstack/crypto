@@ -15,13 +15,13 @@ class ASN1EncodeTests: TestCase {
         }
     }
 
-    func testContextSpecificBer() {
+    func testContextSpecificEndOfContent() {
         scope {
             let stream = OutputByteStream()
             let identifier = ASN1.Identifier(
                 isConstructed: true,
                 class: .contextSpecific,
-                tag: .ber)
+                tag: .endOfContent)
             try identifier.encode(to: stream)
             assertEqual(stream.bytes, [0xa0])
         }
