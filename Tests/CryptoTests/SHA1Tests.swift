@@ -1,7 +1,7 @@
-import XCTest
+import Test
 @testable import Crypto
 
-class SHA1Tests: XCTestCase {
+class SHA1Tests: TestCase {
     func testSHA1() {
         let bytes = [UInt8]("The quick brown fox jumps over the lazy dog".utf8)
         var sha1 = SHA1()
@@ -14,11 +14,11 @@ class SHA1Tests: XCTestCase {
             0xbb76e739,
             0x1b93eb12
         )
-        XCTAssertEqual(result.0, expected.0)
-        XCTAssertEqual(result.1, expected.1)
-        XCTAssertEqual(result.2, expected.2)
-        XCTAssertEqual(result.3, expected.3)
-        XCTAssertEqual(result.4, expected.4)
+        assertEqual(result.0, expected.0)
+        assertEqual(result.1, expected.1)
+        assertEqual(result.2, expected.2)
+        assertEqual(result.3, expected.3)
+        assertEqual(result.4, expected.4)
     }
 
     func testSHA1Array() {
@@ -32,7 +32,7 @@ class SHA1Tests: XCTestCase {
                                  0xed, 0x84, 0x9e, 0xe1,
                                  0xbb, 0x76, 0xe7, 0x39,
                                  0x1b, 0x93, 0xeb, 0x12]
-        XCTAssertEqual(result, expected)
+        assertEqual(result, expected)
     }
 
     func testSHA1String() {
@@ -42,7 +42,7 @@ class SHA1Tests: XCTestCase {
         let hash = sha1.final()
         let result = String(hash)
         let expected = "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12"
-        XCTAssertEqual(result, expected)
+        assertEqual(result, expected)
     }
 
     func testSHA1ArrayExtension() {
@@ -53,6 +53,6 @@ class SHA1Tests: XCTestCase {
                                  0xed, 0x84, 0x9e, 0xe1,
                                  0xbb, 0x76, 0xe7, 0x39,
                                  0x1b, 0x93, 0xeb, 0x12]
-        XCTAssertEqual(result, expected)
+        assertEqual(result, expected)
     }
 }
