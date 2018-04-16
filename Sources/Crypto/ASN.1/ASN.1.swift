@@ -9,8 +9,13 @@ public struct ASN1: Equatable {
         self.content = content
     }
 
+    public enum Integer: Equatable {
+        case sane(Int)
+        case insane([UInt8])
+    }
+
     public enum Content: Equatable {
-        case integer(Int)
+        case integer(Integer)
         case string(String)
         case data([UInt8])
         case sequence([ASN1])

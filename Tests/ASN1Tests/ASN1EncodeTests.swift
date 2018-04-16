@@ -35,7 +35,7 @@ class ASN1EncodeTests: TestCase {
                     isConstructed: false,
                     class: .universal,
                     tag: .enumerated),
-                content: .integer(0))
+                content: .integer(.sane(0)))
             try asn1.encode(to: stream)
             assertEqual(stream.bytes, [0x0a, 0x01, 0x00])
         }
@@ -72,13 +72,13 @@ class ASN1EncodeTests: TestCase {
                             isConstructed: false,
                             class: .universal,
                             tag: .enumerated),
-                        content: .integer(0)),
+                        content: .integer(.sane(0))),
                     .init(
                         identifier: .init(
                             isConstructed: false,
                             class: .universal,
                             tag: .enumerated),
-                        content: .integer(0))
+                        content: .integer(.sane(0)))
                     ]))
             try asn1.encode(to: stream)
             let expected: [UInt8] = [

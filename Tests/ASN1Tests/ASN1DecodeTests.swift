@@ -28,7 +28,7 @@ class ASN1DecodeTests: TestCase {
                 isConstructed: false,
                 class: .universal,
                 tag: .enumerated))
-            assertEqual(result.content, .integer(0))
+            assertEqual(result.content, .integer(.sane(0)))
         }
     }
 
@@ -62,13 +62,13 @@ class ASN1DecodeTests: TestCase {
                         isConstructed: false,
                         class: .universal,
                         tag: .enumerated),
-                    content: .integer(0)),
+                    content: .integer(.sane(0))),
                 .init(
                     identifier: .init(
                         isConstructed: false,
                         class: .universal,
                         tag: .enumerated),
-                    content: .integer(0))
+                    content: .integer(.sane(0)))
             ]))
         }
     }

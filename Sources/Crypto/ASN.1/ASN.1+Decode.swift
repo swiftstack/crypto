@@ -44,8 +44,8 @@ extension ASN1 {
                 }
             case false:
                 switch identifier.tag {
-                case .enumerated:
-                    content = .integer(try read(Int.self))
+                case .integer, .enumerated:
+                    content = .integer(try read(Integer.self))
                 case .printableString, .utf8String:
                     content = .string(try read(String.self))
                 default:
@@ -88,15 +88,16 @@ extension ASN1 {
             }
         }
 
-        func read(_ type: Int.Type) throws -> Int {
-            var value = 0
-            switch try Length(from: stream).value {
-            case 1: value = Int(try stream.read(UInt8.self))
-            case 2: value = Int(try stream.read(UInt16.self))
-            case 4: value = Int(try stream.read(UInt32.self))
-            default: throw Error.invalidLength
+        func read(_ type: Integer.Type) throws -> Integer {
+            let length = try Length(from: stream)
+            switch length.value {
+            case 1: return .sane(Int(try stream.read(Int8.self)))
+            case 2: return .sane(Int(try stream.read(Int16.self)))
+            case 3: return .sane(Int(try stream.read(UInt24.self)))
+            case 4: return .sane(Int(try stream.read(Int32.self)))
+            case 8: return .sane(Int(try stream.read(Int64.self)))
+            default: return .insane(try stream.read(count: length.value))
             }
-            return value
         }
 
         func read(_ type: [UInt8].Type) throws ->  [UInt8] {
