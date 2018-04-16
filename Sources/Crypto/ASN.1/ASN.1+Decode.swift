@@ -25,6 +25,7 @@ extension ASN1 {
         public enum Error: Swift.Error {
             case invalidLength
             case invalidIdentifier
+            case invalidBoolean
         }
 
         func read(_ asn1: ASN1.Type) throws -> ASN1 {
@@ -44,6 +45,8 @@ extension ASN1 {
                 }
             case false:
                 switch identifier.tag {
+                case .boolean:
+                    content = .boolean(try read(Bool.self))
                 case .integer, .enumerated:
                     content = .integer(try read(Integer.self))
                 case .printableString, .utf8String:
@@ -86,6 +89,14 @@ extension ASN1 {
                 }
                 return tag
             }
+        }
+
+        func read(_ type: Bool.Type) throws ->  Bool {
+            let length = try Length(from: stream)
+            guard length.value == 1 else {
+                throw Error.invalidBoolean
+            }
+            return try stream.read(UInt8.self) > 0
         }
 
         func read(_ type: Integer.Type) throws -> Integer {

@@ -15,6 +15,7 @@ public struct ASN1: Equatable {
     }
 
     public enum Content: Equatable {
+        case boolean(Bool)
         case integer(Integer)
         case string(String)
         case data([UInt8])

@@ -21,6 +21,23 @@ class ASN1DecodeTests: TestCase {
         }
     }
 
+    func testContentBoolean() {
+        scope {
+            let asn1f = try ASN1(from: InputByteStream([0x01, 0x01, 0x00]))
+            let asn1t = try ASN1(from: InputByteStream([0x01, 0x01, 0xFF]))
+            assertEqual(asn1f.identifier, .init(
+                isConstructed: false,
+                class: .universal,
+                tag: .boolean))
+            assertEqual(asn1t.identifier, .init(
+                isConstructed: false,
+                class: .universal,
+                tag: .boolean))
+            assertEqual(asn1f.content, .boolean(false))
+            assertEqual(asn1t.content, .boolean(true))
+        }
+    }
+
     func testContentEnumerated() {
         scope {
             let result = try ASN1(from: InputByteStream([0x0a, 0x01, 0x00]))

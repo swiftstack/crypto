@@ -27,6 +27,33 @@ class ASN1EncodeTests: TestCase {
         }
     }
 
+    func testContentBoolean() {
+        scope {
+            let streamFalse = OutputByteStream()
+            let streamTrue = OutputByteStream()
+
+            let asnf = ASN1(
+                identifier: .init(
+                    isConstructed: false,
+                    class: .universal,
+                    tag: .boolean),
+                content: .boolean(false))
+
+            let asnt = ASN1(
+                identifier: .init(
+                    isConstructed: false,
+                    class: .universal,
+                    tag: .boolean),
+                content: .boolean(true))
+
+            try asnf.encode(to: streamFalse)
+            try asnt.encode(to: streamTrue)
+
+            assertEqual(streamFalse.bytes, [0x01, 0x01, 0x00])
+            assertEqual(streamTrue.bytes, [0x01, 0x01, 0xff])
+        }
+    }
+
     func testContentEnumerated() {
         scope {
             let stream = OutputByteStream()

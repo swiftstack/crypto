@@ -34,6 +34,9 @@ extension ASN1 {
             try asn1.identifier.encode(to: stream)
 
             switch asn1.content {
+            case .boolean(let value) where
+                asn1.identifier.tag == .boolean:
+                try write(value)
             case .integer(let value) where
                 asn1.identifier.tag == .integer ||
                 asn1.identifier.tag == .enumerated:
@@ -59,6 +62,11 @@ extension ASN1 {
                     try value.encode(to: stream)
                 }
             }
+        }
+
+        func write(_ value: Bool) throws {
+            try stream.write(UInt8(1))
+            try stream.write(value ? UInt8(0xFF) : UInt8(0x0))
         }
 
         func write(_ value: Integer) throws {
