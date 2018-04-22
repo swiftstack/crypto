@@ -18,6 +18,6 @@ let package = Package(
         .target(name: "Crypto", dependencies: ["Stream"]),
         .testTarget(name: "CryptoTests", dependencies: ["Crypto", "Test"]),
         .testTarget(name: "ASN1Tests", dependencies: ["Crypto", "Test"]),
-        .testTarget(name: "UInt24Tests", dependencies: ["Test"])
+        .testTarget(name: "UInt24Tests", dependencies: ["Crypto", "Test"])
     ]
 )
