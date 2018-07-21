@@ -98,10 +98,6 @@ extension UInt24: CustomStringConvertible {
 }
 
 extension UInt24: Numeric {
-    public var magnitude: UInt24 {
-        fatalError("unimplemented")
-    }
-
     public static func + (lhs: UInt24, rhs: UInt24) -> UInt24 {
         fatalError("unimplemented")
     }
@@ -125,23 +121,7 @@ extension UInt24: Numeric {
     public static func *= (lhs: inout UInt24, rhs: UInt24) {
         fatalError("unimplemented")
     }
-
-    public init?<T>(exactly source: T) where T : BinaryInteger {
-        fatalError("unimplemented")
-    }
 }
-
-    public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
-        fatalError("unimplemented")
-    }
-
-    public init<T>(_ source: T) where T : BinaryFloatingPoint {
-        fatalError("unimplemented")
-    }
-
-    public init<T>(clamping source: T) where T : BinaryInteger {
-        fatalError("unimplemented")
-    }
 
 extension UInt24: UnsignedInteger {
     public var trailingZeroBitCount: Int {
@@ -164,19 +144,7 @@ extension UInt24: UnsignedInteger {
         fatalError("unimplemented")
     }
 
-    prefix public static func ~ (x: UInt24) -> UInt24 {
-        fatalError("unimplemented")
-    }
-
-    public static func & (lhs: UInt24, rhs: UInt24) -> UInt24 {
-        fatalError("unimplemented")
-    }
-
     public static func &= (lhs: inout UInt24, rhs: UInt24) {
-        fatalError("unimplemented")
-    }
-
-    public static func | (lhs: UInt24, rhs: UInt24) -> UInt24 {
         fatalError("unimplemented")
     }
 
@@ -184,58 +152,12 @@ extension UInt24: UnsignedInteger {
         fatalError("unimplemented")
     }
 
-    public static func ^ (lhs: UInt24, rhs: UInt24) -> UInt24 {
-        fatalError("unimplemented")
-    }
-
     public static func ^= (lhs: inout UInt24, rhs: UInt24) {
-        fatalError("unimplemented")
-    }
-
-    public static func >> <RHS>(lhs: UInt24, rhs: RHS) -> UInt24
-        where RHS : BinaryInteger
-    {
-        fatalError("unimplemented")
-    }
-
-    public static func >>= <RHS>(lhs: inout UInt24, rhs: RHS)
-        where RHS : BinaryInteger
-    {
-        fatalError("unimplemented")
-    }
-
-    public static func << <RHS>(lhs: UInt24, rhs: RHS) -> UInt24
-        where RHS : BinaryInteger
-    {
-        fatalError("unimplemented")
-    }
-
-    public static func <<= <RHS>(lhs: inout UInt24, rhs: RHS)
-        where RHS : BinaryInteger
-    {
-        fatalError("unimplemented")
-    }
-
-    public func quotientAndRemainder(dividingBy rhs: UInt24)
-        -> (quotient: UInt24, remainder: UInt24)
-    {
-        fatalError("unimplemented")
-    }
-
-    public func signum() -> UInt24 {
         fatalError("unimplemented")
     }
 }
 
 extension UInt24: FixedWidthInteger {
-    public static var max: UInt24 {
-        fatalError("unimplemented")
-    }
-
-    public static var min: UInt24 {
-        fatalError("unimplemented")
-    }
-
     public func addingReportingOverflow(_ rhs: UInt24)
         -> (partialValue: UInt24, overflow: Bool)
     {
@@ -284,34 +206,6 @@ extension UInt24: FixedWidthInteger {
     }
 
     public var leadingZeroBitCount: Int {
-        fatalError("unimplemented")
-    }
-
-    public init(bigEndian value: UInt24) {
-        fatalError("unimplemented")
-    }
-
-    public init(littleEndian value: UInt24) {
-        fatalError("unimplemented")
-    }
-
-    public static func &>> (lhs: UInt24, rhs: UInt24) -> UInt24 {
-        fatalError("unimplemented")
-    }
-
-    public static func &>>= (lhs: inout UInt24, rhs: UInt24) {
-        fatalError("unimplemented")
-    }
-
-    public static func &<< (lhs: UInt24, rhs: UInt24) -> UInt24 {
-        fatalError("unimplemented")
-    }
-
-    public static func &<<= (lhs: inout UInt24, rhs: UInt24) {
-        fatalError("unimplemented")
-    }
-
-    public init<T: FixedWidthInteger>(clamping source: T) {
         fatalError("unimplemented")
     }
 }
