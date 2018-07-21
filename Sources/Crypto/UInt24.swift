@@ -131,7 +131,6 @@ extension UInt24: Numeric {
     }
 }
 
-extension UInt24: BinaryInteger {
     public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
         fatalError("unimplemented")
     }
@@ -144,6 +143,7 @@ extension UInt24: BinaryInteger {
         fatalError("unimplemented")
     }
 
+extension UInt24: UnsignedInteger {
     public var trailingZeroBitCount: Int {
         fatalError("unimplemented")
     }
