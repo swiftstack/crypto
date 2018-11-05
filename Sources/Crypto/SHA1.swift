@@ -243,7 +243,7 @@ public struct SHA1 {
     }
 
     mutating func transform(_ blocks: UnsafeRawBufferPointer) {
-        _debugPrecondition(blocks.count > 0 && blocks.count % blockSize == 0)
+        assert(blocks.count > 0 && blocks.count % blockSize == 0)
 
         var a = intermediateHash.0
         var b = intermediateHash.1
