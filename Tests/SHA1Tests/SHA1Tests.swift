@@ -1,5 +1,5 @@
 import Test
-@testable import Crypto
+@testable import SHA1
 
 class SHA1Tests: TestCase {
     func testSHA1() {

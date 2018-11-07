@@ -4,6 +4,7 @@ import PackageDescription
 let package = Package(
     name: "Crypto",
     products: [
+        .library(name: "SHA1",targets: ["SHA1"]),
         .library(name: "Crypto", targets: ["Crypto"])
     ],
     dependencies: [
@@ -15,9 +16,10 @@ let package = Package(
             .branch("master"))
     ],
     targets: [
+        .target(name: "SHA1"),
         .target(name: "Crypto", dependencies: ["Stream"]),
-        .testTarget(name: "CryptoTests", dependencies: ["Crypto", "Test"]),
-        .testTarget(name: "ASN1Tests", dependencies: ["Crypto", "Test"]),
-        .testTarget(name: "UInt24Tests", dependencies: ["Crypto", "Test"])
+        .testTarget(name: "SHA1Tests", dependencies: ["Test", "SHA1"]),
+        .testTarget(name: "ASN1Tests", dependencies: ["Test", "Crypto"]),
+        .testTarget(name: "UInt24Tests", dependencies: ["Test", "Crypto"]),
     ]
 )
