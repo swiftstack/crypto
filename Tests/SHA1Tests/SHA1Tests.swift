@@ -7,18 +7,14 @@ class SHA1Tests: TestCase {
         var sha1 = SHA1()
         sha1.update(bytes)
         let result = sha1.final()
-        let expected: SHA1.Hash = (
-            0x2fd4e1c6,
-            0x7a2d28fc,
-            0xed849ee1,
-            0xbb76e739,
-            0x1b93eb12
+        let expected: SHA1.Hash = .init(
+            a: 0x2fd4e1c6,
+            b: 0x7a2d28fc,
+            c: 0xed849ee1,
+            d: 0xbb76e739,
+            e: 0x1b93eb12
         )
-        assertEqual(result.0, expected.0)
-        assertEqual(result.1, expected.1)
-        assertEqual(result.2, expected.2)
-        assertEqual(result.3, expected.3)
-        assertEqual(result.4, expected.4)
+        assertEqual(result, expected)
     }
 
     func testSHA1Array() {

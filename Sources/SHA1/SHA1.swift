@@ -1,14 +1,16 @@
 public struct SHA1 {
-    public typealias Hash = (UInt32, UInt32, UInt32, UInt32, UInt32)
+    public struct Hash: Equatable {
+        public var a,b,c,d,e: UInt32
+    }
 
     var intermediateHash: Hash
 
-    let initialHash: Hash = (
-        0x67452301,
-        0xEFCDAB89,
-        0x98BADCFE,
-        0x10325476,
-        0xC3D2E1F0
+    let initialHash: Hash = .init(
+        a: 0x67452301,
+        b: 0xEFCDAB89,
+        c: 0x98BADCFE,
+        d: 0x10325476,
+        e: 0xC3D2E1F0
     )
 
     struct Keys {
@@ -245,11 +247,11 @@ public struct SHA1 {
     mutating func transform(_ blocks: UnsafeRawBufferPointer) {
         assert(blocks.count > 0 && blocks.count % blockSize == 0)
 
-        var a = intermediateHash.0
-        var b = intermediateHash.1
-        var c = intermediateHash.2
-        var d = intermediateHash.3
-        var e = intermediateHash.4
+        var a = intermediateHash.a
+        var b = intermediateHash.b
+        var c = intermediateHash.c
+        var d = intermediateHash.d
+        var e = intermediateHash.e
 
         var t: UInt32 = 0
 
@@ -365,17 +367,17 @@ public struct SHA1 {
             from60To79(78, a, &b, c, d, e, &t, &x.14, x.0, x.6, x.11)
             from60To79(79, t, &a, b, c, d, &e, &x.15, x.1, x.7, x.12)
 
-            intermediateHash.0 = intermediateHash.0 &+ e
-            intermediateHash.1 = intermediateHash.1 &+ t
-            intermediateHash.2 = intermediateHash.2 &+ a
-            intermediateHash.3 = intermediateHash.3 &+ b
-            intermediateHash.4 = intermediateHash.4 &+ c
+            intermediateHash.a = intermediateHash.a &+ e
+            intermediateHash.b = intermediateHash.b &+ t
+            intermediateHash.c = intermediateHash.c &+ a
+            intermediateHash.d = intermediateHash.d &+ b
+            intermediateHash.e = intermediateHash.e &+ c
 
-            a = intermediateHash.0
-            b = intermediateHash.1
-            c = intermediateHash.2
-            d = intermediateHash.3
-            e = intermediateHash.4
+            a = intermediateHash.a
+            b = intermediateHash.b
+            c = intermediateHash.c
+            d = intermediateHash.d
+            e = intermediateHash.e
         }
     }
 }

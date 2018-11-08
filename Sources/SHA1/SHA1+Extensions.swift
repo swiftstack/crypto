@@ -1,11 +1,14 @@
 import Hex
 
-private func bigEndian(_ hash: SHA1.Hash) -> SHA1.Hash {
-    return (hash.0.bigEndian, 
-            hash.1.bigEndian, 
-            hash.2.bigEndian,
-            hash.3.bigEndian,
-            hash.4.bigEndian)
+extension SHA1.Hash {
+    public var bigEndian: SHA1.Hash {
+        return .init(
+            a: a.bigEndian,
+            b: b.bigEndian,
+            c: c.bigEndian,
+            d: d.bigEndian,
+            e: e.bigEndian)
+    }
 }
 
 extension Array where Element == UInt8 {
@@ -13,12 +16,12 @@ extension Array where Element == UInt8 {
         var result = [UInt8](repeating: 0, count: 20)
         result.withUnsafeMutableBufferPointer { buffer in
             buffer.withMemoryRebound(to: UInt32.self) { buffer in
-                let hash = bigEndian(hash)
-                buffer[0] = hash.0
-                buffer[1] = hash.1
-                buffer[2] = hash.2
-                buffer[3] = hash.3
-                buffer[4] = hash.4
+                let hash = hash.bigEndian
+                buffer[0] = hash.a
+                buffer[1] = hash.b
+                buffer[2] = hash.c
+                buffer[3] = hash.d
+                buffer[4] = hash.e
             }
         }
         self = result
@@ -34,7 +37,7 @@ extension Array where Element == UInt8 {
 
 extension String {
     public init(_ hash: SHA1.Hash) {
-        var hash = bigEndian(hash)
+        var hash = hash.bigEndian
         self = withUnsafeBytes(of: &hash) { buffer in
             return String(encodingToHex: buffer)
         }
