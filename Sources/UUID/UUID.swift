@@ -77,18 +77,23 @@ public struct UUID {
     public struct Clock {
         var _value: UInt16
 
-        init(_ value: UInt16) {
-            // most significant 2 bits are reserved
-            _value = (value | 0b1000_0000).bigEndian
+        var isValid: Bool {
+            return _value.bigEndian & 0x8000 == 0x8000
         }
 
-        var isValid: Bool {
-            return _value >> 6 == 0b10
+        mutating func clearReserved() {
+            self.value = self.value
+        }
+
+        init(_ value: UInt16) {
+            _value = value.bigEndian
+            clearReserved()
         }
 
         public internal(set) var value: UInt16 {
-            get { return _value.bigEndian & 0b0011_1111 }
-            set { _value = (value | 0b1000_0000).bigEndian }
+            // most significant 2 bits are reserved
+            get { return _value.bigEndian & 0b0011_1111_1111_1111 }
+            set { _value = (value | 0b1000_0000_0000_0000).bigEndian }
         }
     }
 
