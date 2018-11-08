@@ -17,9 +17,11 @@ let package = Package(
     ],
     targets: [
         .target(name: "SHA1"),
+        .target(name: "UUID", dependencies: ["SHA1"]),
         .target(name: "Crypto", dependencies: ["Stream"]),
         .testTarget(name: "SHA1Tests", dependencies: ["Test", "SHA1"]),
         .testTarget(name: "ASN1Tests", dependencies: ["Test", "Crypto"]),
         .testTarget(name: "UInt24Tests", dependencies: ["Test", "Crypto"]),
+        .testTarget(name: "UUIDTests", dependencies: ["Test", "UUID"]),
     ]
 )
