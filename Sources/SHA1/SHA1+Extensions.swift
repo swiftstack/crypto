@@ -13,18 +13,8 @@ extension SHA1.Hash {
 
 extension Array where Element == UInt8 {
     public init(_ hash: SHA1.Hash) {
-        var result = [UInt8](repeating: 0, count: 20)
-        result.withUnsafeMutableBufferPointer { buffer in
-            buffer.withMemoryRebound(to: UInt32.self) { buffer in
-                let hash = hash.bigEndian
-                buffer[0] = hash.a
-                buffer[1] = hash.b
-                buffer[2] = hash.c
-                buffer[3] = hash.d
-                buffer[4] = hash.e
-            }
-        }
-        self = result
+        var hash = hash.bigEndian
+        self = [UInt8](UnsafeRawBufferPointer(start: &hash, count: 20))
     }
 
     public func sha1() -> [UInt8] {
