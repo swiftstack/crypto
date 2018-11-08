@@ -1,20 +1,20 @@
+import Hex
+
 extension UUID {
     public var uuidString: String {
         var result = ""
         result.reserveCapacity(36)
         var uuid = self
         withUnsafeBytes(of: &uuid) { buffer in
-            for i in 0..<buffer.count {
-                switch i {
-                case 4, 6, 8, 10: result += "-"; fallthrough
-                default:
-                    let byte = buffer[i]
-                    switch byte {
-                    case 0...15: result += "0"; fallthrough
-                    default: result += String(byte, radix: 16, uppercase: true)
-                    }
-                }
-            }
+            result += String(encodingToHex: .init(rebasing: buffer[..<4]))
+            result += "-"
+            result += String(encodingToHex: .init(rebasing: buffer[4..<6]))
+            result += "-"
+            result += String(encodingToHex: .init(rebasing: buffer[6..<8]))
+            result += "-"
+            result += String(encodingToHex: .init(rebasing: buffer[8..<10]))
+            result += "-"
+            result += String(encodingToHex: .init(rebasing: buffer[10...]))
         }
         return result
     }

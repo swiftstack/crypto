@@ -1,3 +1,5 @@
+import Hex
+
 extension Array where Element == UInt8 {
     public init(_ hash: SHA1.Hash) {
         var result = [UInt32]()
@@ -19,22 +21,8 @@ extension Array where Element == UInt8 {
     }
 }
 
-struct Hex {
-    static let values = [
-        "0", "1", "2", "3", "4",
-        "5", "6", "7", "8", "9",
-        "a", "b", "c", "d", "e", "f"
-    ]
-}
-
 extension String {
     public init(_ hash: SHA1.Hash) {
-        var string = ""
-        let bytes = [UInt8](hash)
-        for byte in bytes {
-            string.append(Hex.values[Int(byte / 16)])
-            string.append(Hex.values[Int(byte % 16)])
-        }
-        self = string
+        self = String(encodingToHex:[UInt8](hash))
     }
 }
