@@ -30,40 +30,46 @@ public struct UUID {
     public struct Time {
         var low: UInt32
         var mid: UInt16
-        var hiVersion: UInt16
+        var hi: UInt16
 
         public var value: UInt64 {
-            // clear 4 bits used by version
-            return UInt64(hiCurrentEndian) << 48
+            return UInt64(clearVersion(hi.bigEndian)) << 48
                 | UInt64(mid.bigEndian) << 32
                 | UInt64(low.bigEndian)
         }
 
         public init(_ value: UInt64) {
-            low = UInt32(truncatingIfNeeded: value).bigEndian
-            mid = UInt16(truncatingIfNeeded: value >> 32).bigEndian
-            hiVersion = UInt16(truncatingIfNeeded: value >> 48).bigEndian
-            hiVersion &= ~(0b1111 << 12)
+            self.init(
+                low: UInt32(truncatingIfNeeded: value),
+                mid: UInt16(truncatingIfNeeded: value >> 32),
+                hi: UInt16(truncatingIfNeeded: value >> 48))
         }
 
-        internal init(low: UInt32, mid: UInt16, hiVersion: UInt16) {
+        @inline(__always)
+        private func clearVersion(_ byte: UInt16) -> UInt16 {
+            // clear 4 bits used by version
+            return byte & ~(0b1111 << 12)
+        }
+
+        internal init(low: UInt32, mid: UInt16, hi: UInt16) {
+            self.init(low: low, mid: mid, hiWithVersion: hi & ~(0b1111 << 12))
+        }
+
+        internal init(low: UInt32, mid: UInt16, hiWithVersion hi: UInt16) {
             self.low = low.bigEndian
             self.mid = mid.bigEndian
-            self.hiVersion = hiVersion.bigEndian
-        }
-
-        internal var hiCurrentEndian: UInt16 {
-            return hiVersion.bigEndian & ~(0b1111 << 12)
+            self.hi = hi.bigEndian
         }
 
         internal var version: Version {
             get {
-                return Version(rawValue: UInt8(hiVersion.bigEndian >> 12))
+                return Version(rawValue: UInt8(hi.bigEndian >> 12))
             }
             set {
                 // the version in the most significant 4 bits
-                let newValue = UInt16(newValue.rawValue) << 12
-                hiVersion = (hiCurrentEndian | newValue).bigEndian
+                let versionBits = UInt16(newValue.rawValue) << 12
+                let hiBits = clearVersion(hi.bigEndian)
+                hi = (hiBits | versionBits).bigEndian
             }
         }
     }

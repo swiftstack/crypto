@@ -31,7 +31,7 @@ extension UUID {
 
         guard let timeLow = UInt32(parts[0], radix: 16),
             let timeMid = UInt16(parts[1], radix: 16),
-            let timeHiVersion = UInt16(parts[2], radix: 16),
+            let timeHiWithVersion = UInt16(parts[2], radix: 16),
             let clock = UInt16(parts[3], radix: 16),
             let node = UInt64(parts[4], radix: 16) else {
                 return nil
@@ -41,7 +41,7 @@ extension UUID {
             time: .init(
                 low: timeLow,
                 mid: timeMid,
-                hiVersion: timeHiVersion),
+                hiWithVersion: timeHiWithVersion),
             clock: .init(clock),
             node: .init(node))
     }
