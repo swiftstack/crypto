@@ -5,6 +5,7 @@ let package = Package(
     name: "Crypto",
     products: [
         .library(name: "SHA1",targets: ["SHA1"]),
+        .library(name: "UUID",targets: ["UUID"]),
         .library(name: "Crypto", targets: ["Crypto"])
     ],
     dependencies: [
