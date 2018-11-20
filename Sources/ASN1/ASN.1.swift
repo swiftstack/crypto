@@ -22,7 +22,7 @@ public struct ASN1: Equatable {
         case sequence([ASN1])
     }
 
-    public struct Identifier {
+    public struct Identifier: Equatable {
         public var isConstructed: Bool
         public var `class`: Class
         public var tag: Tag
@@ -72,14 +72,5 @@ public struct ASN1: Equatable {
             case characterString = 0x1d
             case bmpString = 0x1e
         }
-    }
-}
-
-// FIXME: Synthesized Equatable bug
-extension ASN1.Identifier: Equatable {
-    public static func ==(lhs: ASN1.Identifier, rhs: ASN1.Identifier) -> Bool {
-        return lhs.class == rhs.class
-            && lhs.tag == rhs.tag
-            && lhs.isConstructed == rhs.isConstructed
     }
 }
