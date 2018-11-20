@@ -6,6 +6,7 @@ let package = Package(
     products: [
         .library(name: "SHA1",targets: ["SHA1"]),
         .library(name: "UUID",targets: ["UUID"]),
+        .library(name: "ASN1",targets: ["ASN1"]),
         .library(name: "Crypto", targets: ["Crypto"])
     ],
     dependencies: [
@@ -20,12 +21,14 @@ let package = Package(
             .branch("master"))
     ],
     targets: [
+        .target(name: "UInt24"),
         .target(name: "SHA1", dependencies: ["Hex"]),
         .target(name: "UUID", dependencies: ["Hex", "SHA1"]),
-        .target(name: "Crypto", dependencies: ["Stream"]),
+        .target(name: "ASN1", dependencies: ["UInt24", "Stream"]),
+        .target(name: "Crypto", dependencies: ["SHA1", "ASN1"]),
         .testTarget(name: "SHA1Tests", dependencies: ["Test", "SHA1"]),
-        .testTarget(name: "ASN1Tests", dependencies: ["Test", "Crypto"]),
-        .testTarget(name: "UInt24Tests", dependencies: ["Test", "Crypto"]),
         .testTarget(name: "UUIDTests", dependencies: ["Test", "UUID"]),
+        .testTarget(name: "ASN1Tests", dependencies: ["Test", "ASN1"]),
+        .testTarget(name: "UInt24Tests", dependencies: ["Test", "UInt24"]),
     ]
 )

@@ -1,3 +1,4 @@
+import UInt24
 import Stream
 
 extension ASN1 {

@@ -1,5 +1,5 @@
 import Test
-@testable import Crypto
+@testable import UInt24
 
 class UInt24Tests: TestCase {
     func testUInt24() {
