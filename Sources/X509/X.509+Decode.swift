@@ -24,8 +24,8 @@ extension X509 {
     }
 
     public init(from asn1: ASN1) throws {
-        guard asn1.identifier.isConstructed,
-            case .sequence(let sequence) = asn1.content,
+        guard asn1.isConstructed,
+            let sequence = asn1.sequenceValue,
             sequence.count == 3
         else {
             throw Error.invalidX509
@@ -39,7 +39,7 @@ extension X509 {
 
 extension Certificate {
     public init(from asn1: ASN1) throws {
-        guard case .sequence(let sequence) = asn1.content,
+        guard let sequence = asn1.sequenceValue,
             sequence.count >= 8 else
         {
             throw X509.Error.invalidSignature
@@ -58,9 +58,9 @@ extension Certificate {
 
 extension Certificate.Version {
     public init(from asn1: ASN1) throws {
-        guard case .sequence(let sequence) = asn1.content,
+        guard let sequence = asn1.sequenceValue,
             sequence.count == 1,
-            case .integer(.sane(let value)) = sequence[0].content,
+            let value = sequence[0].integerValue,
             let rawVersion = UInt8(exactly: value),
             let version = Certificate.Version(rawValue: rawVersion) else
         {
@@ -72,7 +72,7 @@ extension Certificate.Version {
 
 extension Certificate.SerialNumber {
     public init(from asn1: ASN1) throws {
-        guard case .integer(.insane(let bytes)) = asn1.content,
+        guard let bytes = asn1.insaneIntegerValue,
             bytes.count > 0 else
         {
             throw X509.Error.invalidSerialNumber
@@ -82,6 +82,8 @@ extension Certificate.SerialNumber {
 }
 
 extension Certificate.Identifier {
+    typealias OID = ASN1.Objects
+
     public init(from asn1: ASN1) throws {
         var nameRequired: String? = nil
         var countryRequired: String? = nil
@@ -90,35 +92,35 @@ extension Certificate.Identifier {
         var locality: String? = nil
         var stateOrProvince: String? = nil
 
-        guard case .sequence(let sequence) = asn1.content else {
+        guard let sequence = asn1.sequenceValue else {
             throw X509.Error.invalidIdentifier
         }
 
         for item in sequence {
             guard
-                item.identifier.tag == .set,
-                case .sequence(let set) = item.content,
+                item.tag == .set,
+                let set = item.sequenceValue,
                 set.count == 1,
-                case .sequence(let sequence) = set[0].content,
+                let sequence = set[0].sequenceValue,
                 sequence.count == 2,
-                sequence[0].identifier.tag == .objectIdentifier,
-                case .data(let id) = sequence[0].content,
-                case .string(let value) = sequence[1].content else
+                sequence[0].tag == .objectIdentifier,
+                let id = sequence[0].dataValue,
+                let value = sequence[1].stringValue else
             {
                 throw X509.Error.invalidIdentifier
             }
             switch id {
-            case ASN1.Objects.countryName:
+            case OID.countryName:
                 countryRequired = value
-            case ASN1.Objects.organizationName:
+            case OID.organizationName:
                 organizationRequired = value
-            case ASN1.Objects.organizationalUnitName:
+            case OID.organizationalUnitName:
                 organizationalUnit = value
-            case ASN1.Objects.localityName:
+            case OID.localityName:
                 locality = value
-            case ASN1.Objects.stateOrProvinceName:
+            case OID.stateOrProvinceName:
                 stateOrProvince = value
-            case ASN1.Objects.commonName:
+            case OID.commonName:
                 nameRequired = value
             default:
                 throw X509.Error.unimplementedIdentifierValue(String(oid: id))
@@ -143,12 +145,12 @@ extension Certificate.Identifier {
 
 extension Certificate.Validity {
     public init(from asn1: ASN1) throws {
-        guard case .sequence(let sequence) = asn1.content,
+        guard let sequence = asn1.sequenceValue,
             sequence.count == 2,
-            sequence[0].identifier.tag == .utcTime,
-            sequence[1].identifier.tag == .utcTime,
-            case .data(let notBeforeBytes) = sequence[0].content,
-            case .data(let notAfterBytes) = sequence[1].content,
+            sequence[0].tag == .utcTime,
+            sequence[1].tag == .utcTime,
+            let notBeforeBytes = sequence[0].dataValue,
+            let notAfterBytes = sequence[1].dataValue,
             let notBefore = Time(validity: notBeforeBytes),
             let notAfter = Time(validity: notAfterBytes) else
         {
@@ -161,7 +163,7 @@ extension Certificate.Validity {
 
 extension Certificate.PublicKey {
     public init(from asn1: ASN1) throws {
-        guard case .sequence(let sequence) = asn1.content,
+        guard let sequence = asn1.sequenceValue,
             sequence.count == 2 else
         {
             throw X509.Error.invalidPublicKey
@@ -174,10 +176,10 @@ extension Certificate.PublicKey {
             throw X509.Error.invalidPublicKey
         }
         let key = try ASN1(from: InputByteStream(bitString.bytes))
-        guard case .sequence(let keySequence) = key.content,
+        guard let keySequence = key.sequenceValue,
             keySequence.count == 2,
-            case .integer(.insane(let modulus)) = keySequence[0].content,
-            case .integer(.sane(let exponent)) = keySequence[1].content else
+            let modulus = keySequence[0].insaneIntegerValue,
+            let exponent = keySequence[1].integerValue else
         {
             throw X509.Error.invalidPublicKey
         }
@@ -189,20 +191,20 @@ extension Certificate.Extensions {
     typealias CertificateExtension = ASN1.Objects.CertificateExtension
 
     public init(from asn1: ASN1) throws {
-        guard case .sequence(let contextSpecific) = asn1.content,
+        guard let contextSpecific = asn1.sequenceValue,
             let container = contextSpecific.first,
-            case .sequence(let sequence) = container.content else
+            let sequence = container.sequenceValue else
         {
             throw X509.Error.invalidExtensions
         }
 
-        self.basicConstrains = nil
+        self.init()
 
         for item in sequence {
-            guard case .sequence(let values) = item.content,
+            guard let values = item.sequenceValue,
                 let objectId = values.first,
-                objectId.identifier.tag == .objectIdentifier,
-                case .data(let id) = objectId.content else
+                objectId.tag == .objectIdentifier,
+                let id = objectId.dataValue else
             {
                 throw X509.Error.invalidExtensions
             }
@@ -220,25 +222,26 @@ extension Certificate.Extensions {
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.9
 
 extension Certificate.Extensions.BasicConstrains {
+    typealias CertificateExtension = ASN1.Objects.CertificateExtension
+
     public init(from asn1: ASN1) throws {
         guard
             // object id
-            case .sequence(let values) = asn1.content,
+            let values = asn1.sequenceValue,
             let objectId = values.first,
-            objectId.identifier.tag == .objectIdentifier,
-            case .data(let id) = objectId.content,
-            id == ASN1.Objects.CertificateExtension.basicConstrains,
+            objectId.tag == .objectIdentifier,
+            let id = objectId.dataValue,
+            id == CertificateExtension.basicConstrains,
             values.count == 3,
-            // isCritical (?)
-            case .boolean(let isCritical) = values[1].content,
-            // BasicConstraints (?)
-            case .data(let octetString) = values[2].content else
+            // NOTE: isCritical?
+            let isCritical = values[1].booleanValue,
+            let data = values[2].dataValue else
         {
             throw X509.Error.invalidExtensionBasicConstrain
         }
 
-        let asn1 = try ASN1(from: InputByteStream(octetString))
-        guard case .sequence(let constrains) = asn1.content else {
+        let asn1 = try ASN1(from: InputByteStream(data))
+        guard let constrains = asn1.sequenceValue else {
             throw X509.Error.invalidExtensionBasicConstrain
         }
 
@@ -249,9 +252,9 @@ extension Certificate.Extensions.BasicConstrains {
             throw X509.Error.invalidExtensionBasicConstrain
         }
 
+        // BOOLEAN DEFAULT FALSE
         if constrains.count >= 1 {
-            // BOOLEAN DEFAULT FALSE
-            guard case .boolean(let isCA) = constrains[1].content else {
+            guard let isCA = constrains[1].booleanValue else {
                 throw X509.Error.invalidExtensionBasicConstrain
             }
             self.isCA = isCA
@@ -259,9 +262,9 @@ extension Certificate.Extensions.BasicConstrains {
             self.isCA = false
         }
 
+        // INTEGER (0..MAX) OPTIONAL
         if constrains.count == 2 {
-            // INTEGER (0..MAX) OPTIONAL
-            guard case .integer(let .sane(pathLen)) = constrains[2].content else {
+            guard let pathLen = constrains[2].integerValue else {
                 throw X509.Error.invalidExtensionBasicConstrain
             }
             self.pathLen = pathLen
@@ -274,26 +277,28 @@ extension Certificate.Extensions.BasicConstrains {
 // https://tools.ietf.org/html/rfc5280#section-4.1.1.2
 
 extension Algorithm {
+    typealias OID = ASN1.Objects
+
     public init(from asn1: ASN1) throws {
-        guard case .sequence(let sequence) = asn1.content,
+        guard let sequence = asn1.sequenceValue,
             sequence.count >= 2,
             let object = sequence.first,
-            object.identifier.tag == .objectIdentifier,
-            case .data(let id) = object.content else
+            object.tag == .objectIdentifier,
+            let id = object.dataValue else
         {
             throw X509.Error.invalidSignature
         }
         switch id {
-        case ASN1.Objects.rsaEncryption:
+        case OID.rsaEncryption:
             self = .rsaEncryption
-        case ASN1.Objects.sha256WithRSAEncryption:
+        case OID.sha256WithRSAEncryption:
             self = .sha256WithRSAEncryption
         default:
             throw X509.Error.unimplementedAlgorithm(String(oid: id))
         }
         // TODO: imlement parameters
         let parameters = sequence[1]
-        guard parameters.identifier.tag == .null else {
+        guard parameters.tag == .null else {
             throw X509.Error.invalidSignature
         }
     }
@@ -323,8 +328,8 @@ struct BitString {
     let bytes: [UInt8]
 
     init?(from asn1: ASN1) {
-        guard asn1.identifier.tag == .bitString,
-            case .data(let data) = asn1.content,
+        guard asn1.tag == .bitString,
+            let data = asn1.dataValue,
             data.count >= 2 else
         {
             return nil

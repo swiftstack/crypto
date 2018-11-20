@@ -74,3 +74,55 @@ public struct ASN1: Equatable {
         }
     }
 }
+
+extension ASN1 {
+    public var isConstructed: Bool {
+        return identifier.isConstructed
+    }
+
+    public var tag: ASN1.Identifier.Tag {
+        return identifier.tag
+    }
+
+    public var booleanValue: Bool? {
+        switch self.content {
+        case .boolean(let value): return value
+        default: return nil
+        }
+    }
+
+    public var integerValue: Int? {
+        switch self.content {
+        case .integer(.sane(let value)): return value
+        default: return nil
+        }
+    }
+
+    public var insaneIntegerValue: [UInt8]? {
+        switch self.content {
+        case .integer(.insane(let value)): return value
+        default: return nil
+        }
+    }
+
+    public var stringValue: String? {
+        switch self.content {
+        case .string(let value): return value
+        default: return nil
+        }
+    }
+
+    public var dataValue: [UInt8]? {
+        switch self.content {
+        case .data(let value): return value
+        default: return nil
+        }
+    }
+
+    public var sequenceValue: [ASN1]? {
+        switch self.content {
+        case .sequence(let value): return value
+        default: return nil
+        }
+    }
+}
