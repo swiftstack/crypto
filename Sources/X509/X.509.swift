@@ -1,4 +1,8 @@
+import ASN1
 import Time
+import Stream
+
+// https://tools.ietf.org/html/rfc5280
 
 public struct X509: Equatable {
     public let certificate: Certificate
@@ -16,121 +20,18 @@ public struct X509: Equatable {
     }
 }
 
-public enum Algorithm {
-    case sha256WithRSAEncryption
-    case rsaEncryption
-}
+// https://tools.ietf.org/html/rfc5280#section-4.1
 
-public struct Signature: Equatable {
-    public let padding: Int
-    public let encrypted: [UInt8]
-
-    public init(padding: Int, encrypted: [UInt8]) {
-        self.padding = padding
-        self.encrypted = encrypted
-    }
-}
-
-public struct Certificate: Equatable {
-    public let version: Version
-    public let serialNumber: SerialNumber
-    public let algorithm: Algorithm
-    public let issuer: Identifier
-    public let validity: Validity
-    public let subject: Identifier
-    public let publicKey: PublicKey
-    public let extensions: Extensions
-
-    public init(
-        version: Version,
-        serialNumber: SerialNumber,
-        algorithm: Algorithm,
-        issuer: Identifier,
-        validity: Validity,
-        subject: Identifier,
-        publicKey: PublicKey,
-        extensions: Extensions)
-    {
-        self.version = version
-        self.serialNumber = serialNumber
-        self.algorithm = algorithm
-        self.issuer = issuer
-        self.validity = validity
-        self.subject = subject
-        self.publicKey = publicKey
-        self.extensions = extensions
-    }
-
-    public enum Version: UInt8, Equatable {
-        case v3 = 0x02
-    }
-
-    public struct SerialNumber: Equatable {
-        let bytes: [UInt8]
-    }
-
-    public struct Identifier: Equatable {
-        public let name: String
-        public let country: String
-        public let locality: String?
-        public let stateOrProvince: String?
-        public let organization: String
-        public let organizationalUnit: String?
-
-        public init(
-            country: String,
-            organization: String,
-            organizationalUnit: String? = nil,
-            locality: String? = nil,
-            stateOrProvince: String? = nil,
-            name: String)
-        {
-            self.country = country
-            self.organization = organization
-            self.organizationalUnit = organizationalUnit
-            self.locality = locality
-            self.stateOrProvince = stateOrProvince
-            self.name = name
+extension X509 {
+    public init(from asn1: ASN1) throws {
+        guard asn1.isConstructed,
+            let sequence = asn1.sequenceValue,
+            sequence.count == 3
+        else {
+            throw Error.invalidX509
         }
-    }
-
-    public struct Validity: Equatable {
-        public let notBefore: Time
-        public let notAfter: Time
-
-        public init(notBefore: Time, notAfter: Time) {
-            self.notBefore = notBefore
-            self.notAfter = notAfter
-        }
-    }
-
-    public enum PublicKey: Equatable {
-        case rsa(modulus: [UInt8], exponent: Int)
-    }
-
-    public struct Extensions: Equatable {
-        public var basicConstrains: BasicConstrains?
-
-        public init(
-            basicConstrains: BasicConstrains? = nil)
-        {
-            self.basicConstrains = basicConstrains
-        }
-
-        public struct BasicConstrains: Equatable {
-            public let isCritical: Bool
-            public let isCA: Bool
-            public let pathLen: Int?
-
-            public init(
-                isCritical: Bool,
-                isCA: Bool = false,
-                pathLen: Int? = nil)
-            {
-                self.isCritical = isCritical
-                self.isCA = isCA
-                self.pathLen = pathLen
-            }
-        }
+        self.certificate = try Certificate(from: sequence[0])
+        self.algorithm = try Algorithm(from: sequence[1])
+        self.signature = try Signature(from: sequence[2])
     }
 }
