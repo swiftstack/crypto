@@ -1,19 +1,45 @@
+import ASN1
+
 extension X509 {
-    public enum Error: Swift.Error {
-        case invalidX509
-        case invalidCertificate
-        case invalidAlgorithm
-        case unimplementedAlgorithm(String)
-        case invalidSignature
-        case invalidVersion
-        case invalidSerialNumber
-        case invalidIdentifier
-        case unimplementedIdentifierValue(String)
-        case invalidValidity
-        case unsupportedAlgorithm
-        case invalidPublicKey
-        case invalidExtensions
-        case invalidExtension(String)
-        case unimplementedExtension(String)
+    public struct Error: Swift.Error {
+        public let reason: Reason
+        public let object: ASN1
+
+        init(_ reason: Reason, _ object: ASN1) {
+            self.reason = reason
+            self.object = object
+        }
+
+        public enum Reason {
+            case invalidX509
+            case invalidCertificate
+            case invalidAlgorithm
+            case invalidSignature
+            case invalidVersion
+            case invalidSerialNumber
+            case invalidDistinguishedName
+            case invalidRelativeDistinguishedName
+            case invalidGeneralName
+            case invalidEDIPartyName
+            case invalidOtherName
+            case invalidValidity
+            case invalidTime
+            case unsupportedAlgorithm
+            case invalidPublicKey
+            case invalidExtensions
+            case invalidExtension
+            case invalidAttributeTypeAndValue
+            case invalidRDNSequence
+            case invalidDirectoryString
+            case invalidCRLDistributionPoints
+            case invalidDistributionPoint
+            case invalidDistributionPointName
+            case invalidDistributionPointReasons
+            // unimplemented
+            case unimplemented
+            case unimplementedAlgorithm
+            case unimplementedIdentifierValue
+            case unimplementedExtension
+        }
     }
 }

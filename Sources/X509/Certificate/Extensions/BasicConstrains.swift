@@ -1,5 +1,4 @@
 import ASN1
-import Stream
 
 extension Certificate.Extensions {
     public struct BasicConstrains: Equatable {
@@ -22,37 +21,33 @@ extension Certificate.Extensions {
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.9
 
 extension Certificate.Extensions.BasicConstrains {
-    typealias CertificateExtension = ASN1.Objects.CertificateExtension
-
     public init(from asn1: ASN1) throws {
         guard let sequence = asn1.sequenceValue,
-            let objectId = sequence.first,
-            objectId.tag == .objectIdentifier,
-            let id = objectId.dataValue,
-            id == CertificateExtension.basicConstrains,
+            let oid = sequence.first?.objectIdentifierValue,
+            oid == .certificateExtension(.basicConstrains),
             sequence.count == 3,
             let isCritical = sequence[1].booleanValue,
             let data = sequence[2].dataValue else
         {
-            throw X509.Error.invalidExtension("BasicConstrains")
+            throw X509.Error(.invalidExtension, asn1)
         }
 
-        let asn1 = try ASN1(from: InputByteStream(data))
+        let asn1 = try ASN1(from: data)
         guard let constrains = asn1.sequenceValue else {
-            throw X509.Error.invalidExtension("BasicConstrains")
+            throw X509.Error(.invalidExtension, asn1)
         }
 
         self.isCritical = isCritical
 
         // TODO: test
         guard constrains.count <= 2 else {
-            throw X509.Error.invalidExtension("BasicConstrains")
+            throw X509.Error(.invalidExtension, asn1)
         }
 
         // DEFAULT FALSE
         if constrains.count >= 1 {
-            guard let isCA = constrains[1].booleanValue else {
-                throw X509.Error.invalidExtension("BasicConstrains")
+            guard let isCA = constrains[0].booleanValue else {
+                throw X509.Error(.invalidExtension, asn1)
             }
             self.isCA = isCA
         } else {
@@ -61,8 +56,8 @@ extension Certificate.Extensions.BasicConstrains {
 
         // OPTIONAL
         if constrains.count == 2 {
-            guard let pathLen = constrains[2].integerValue else {
-                throw X509.Error.invalidExtension("BasicConstrains")
+            guard let pathLen = constrains[1].integerValue else {
+                throw X509.Error(.invalidExtension, asn1)
             }
             self.pathLen = pathLen
         } else {

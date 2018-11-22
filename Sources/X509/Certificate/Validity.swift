@@ -1,6 +1,5 @@
 import ASN1
 import Stream
-import Time
 
 extension Certificate {
     public struct Validity: Equatable {
@@ -15,28 +14,16 @@ extension Certificate {
 }
 
 extension Certificate.Validity {
+    // Validity ::= SEQUENCE {
+    //   notBefore      Time,
+    //   notAfter       Time }
     public init(from asn1: ASN1) throws {
         guard let sequence = asn1.sequenceValue,
-            sequence.count == 2,
-            sequence[0].tag == .utcTime,
-            sequence[1].tag == .utcTime,
-            let notBeforeBytes = sequence[0].dataValue,
-            let notAfterBytes = sequence[1].dataValue,
-            let notBefore = Time(validity: notBeforeBytes),
-            let notAfter = Time(validity: notAfterBytes) else
+            sequence.count == 2 else
         {
-            throw X509.Error.invalidValidity
+            throw X509.Error(.invalidValidity, asn1)
         }
-        self.notBefore = notBefore
-        self.notAfter = notAfter
-    }
-}
-
-// MARK: Utils
-
-extension Time {
-    init?(validity: [UInt8]) {
-        let string = String(decoding: validity, as: UTF8.self)
-        self.init(string, format: "%d%m%y%H%M%S")
+        self.notBefore = try Certificate.Time(from: sequence[0])
+        self.notAfter = try Certificate.Time(from: sequence[1])
     }
 }

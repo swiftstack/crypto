@@ -15,7 +15,7 @@ extension Algorithm {
             let value = sequence.first,
             let oid = value.objectIdentifierValue else
         {
-            throw X509.Error.invalidSignature
+            throw X509.Error(.invalidSignature, asn1)
         }
         switch oid {
         case .rsaEncryption:
@@ -23,12 +23,12 @@ extension Algorithm {
         case .sha256WithRSAEncryption:
             self = .sha256WithRSAEncryption
         default:
-            throw X509.Error.unimplementedAlgorithm(oid.stringValue)
+            throw X509.Error(.unimplementedAlgorithm, asn1)
         }
         // TODO: imlement parameters
         let parameters = sequence[1]
         guard parameters.tag == .null else {
-            throw X509.Error.invalidSignature
+            throw X509.Error(.invalidSignature, asn1)
         }
     }
 }

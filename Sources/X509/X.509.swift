@@ -28,7 +28,7 @@ extension X509 {
             let sequence = asn1.sequenceValue,
             sequence.count == 3
         else {
-            throw Error.invalidX509
+            throw Error(.invalidX509, asn1)
         }
         self.certificate = try Certificate(from: sequence[0])
         self.algorithm = try Algorithm(from: sequence[1])

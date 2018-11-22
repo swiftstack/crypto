@@ -16,7 +16,7 @@ public struct Signature: Equatable {
 extension Signature {
     public init(from asn1: ASN1) throws {
         guard let bitString = BitString(from: asn1) else {
-            throw X509.Error.invalidSignature
+            throw X509.Error(.invalidSignature, asn1)
         }
         self.padding = bitString.padding
         self.encrypted = bitString.bytes

@@ -81,6 +81,10 @@ extension ASN1 {
         return identifier.isConstructed
     }
 
+    public var `class`: ASN1.Identifier.Class {
+        return identifier.class
+    }
+
     public var tag: ASN1.Identifier.Tag {
         return identifier.tag
     }

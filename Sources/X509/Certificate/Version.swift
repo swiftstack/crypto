@@ -15,7 +15,7 @@ extension Certificate.Version {
             let rawVersion = UInt8(exactly: value),
             let version = Certificate.Version(rawValue: rawVersion) else
         {
-            throw X509.Error.invalidVersion
+            throw X509.Error(.invalidVersion, asn1)
         }
         self = version
     }

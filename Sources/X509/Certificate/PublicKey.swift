@@ -1,5 +1,4 @@
 import ASN1
-import Stream
 
 extension Certificate {
     public enum PublicKey: Equatable {
@@ -14,22 +13,22 @@ extension Certificate.PublicKey {
         guard let sequence = asn1.sequenceValue,
             sequence.count == 2 else
         {
-            throw X509.Error.invalidPublicKey
+            throw X509.Error(.invalidPublicKey, asn1)
         }
         let algorithm = try Algorithm(from: sequence[0])
         guard algorithm == .rsaEncryption else {
-            throw X509.Error.unsupportedAlgorithm
+            throw X509.Error(.unsupportedAlgorithm, asn1)
         }
         guard let bitString = BitString(from: sequence[1]) else {
-            throw X509.Error.invalidPublicKey
+            throw X509.Error(.invalidPublicKey, asn1)
         }
-        let key = try ASN1(from: InputByteStream(bitString.bytes))
+        let key = try ASN1(from: bitString.bytes)
         guard let keySequence = key.sequenceValue,
             keySequence.count == 2,
             let modulus = keySequence[0].insaneIntegerValue,
             let exponent = keySequence[1].integerValue else
         {
-            throw X509.Error.invalidPublicKey
+            throw X509.Error(.invalidPublicKey, asn1)
         }
         self = .rsa(modulus: modulus, exponent: exponent)
     }

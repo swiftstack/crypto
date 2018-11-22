@@ -12,7 +12,7 @@ extension Certificate.SerialNumber {
         guard let bytes = asn1.insaneIntegerValue,
             bytes.count > 0 else
         {
-            throw X509.Error.invalidSerialNumber
+            throw X509.Error(.invalidSerialNumber, asn1)
         }
         self.bytes = bytes
     }

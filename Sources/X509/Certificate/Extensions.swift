@@ -4,9 +4,14 @@ import Stream
 extension Certificate {
     public struct Extensions: Equatable {
         public var basicConstrains: BasicConstrains?
+        public var cRLDistributionPoints: CRLDistributionPoints?
 
-        public init(basicConstrains: BasicConstrains? = nil) {
+        public init(
+            basicConstrains: BasicConstrains? = nil,
+            cRLDistributionPoints: CRLDistributionPoints? = nil)
+        {
             self.basicConstrains = basicConstrains
+            self.cRLDistributionPoints = cRLDistributionPoints
         }
     }
 }
@@ -14,32 +19,31 @@ extension Certificate {
 // https://tools.ietf.org/html/rfc5280#section-4.2
 
 extension Certificate.Extensions {
-    typealias CertificateExtension = ASN1.Objects.CertificateExtension
-
     public init(from asn1: ASN1) throws {
         guard let contextSpecific = asn1.sequenceValue,
             let container = contextSpecific.first,
             let sequence = container.sequenceValue else
         {
-            throw X509.Error.invalidExtensions
+            throw X509.Error(.invalidExtensions, asn1)
         }
 
         self.init()
 
         for item in sequence {
             guard let values = item.sequenceValue,
-                let objectId = values.first,
-                objectId.tag == .objectIdentifier,
-                let id = objectId.dataValue else
+                let oid = values.first?.objectIdentifierValue,
+                case .certificateExtension(let `extension`) = oid else
             {
-                throw X509.Error.invalidExtensions
+                throw X509.Error(.invalidExtensions, asn1)
             }
 
-            switch id {
-            case CertificateExtension.basicConstrains:
+            switch `extension` {
+            case .basicConstrains:
                 self.basicConstrains = try .init(from: item)
+            case .crlDistributionPoints:
+                self.cRLDistributionPoints = try .init(from: item)
             default:
-                throw X509.Error.unimplementedExtension(String(oid: id))
+                throw X509.Error(.unimplementedExtension, asn1)
             }
         }
     }
