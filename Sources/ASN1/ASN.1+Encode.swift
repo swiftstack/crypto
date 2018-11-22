@@ -1,15 +1,27 @@
 import UInt24
 import Stream
 
-extension ASN1 {
+public protocol StreamEncodable {
+    func encode(to stream: StreamWriter) throws
+}
+
+extension StreamEncodable {
+    public func encode() throws -> [UInt8] {
+        let stream = OutputByteStream()
+        try encode(to: stream)
+        return stream.bytes
+    }
+}
+
+extension ASN1: StreamEncodable {
     public func encode(to stream: StreamWriter) throws {
         let writer = Writer(to: stream)
         try writer.write(self)
     }
 }
 
-extension ASN1.Identifier {
-    func encode(to stream: StreamWriter) throws {
+extension ASN1.Identifier: StreamEncodable {
+    public func encode(to stream: StreamWriter) throws {
         var rawTag = tag.rawValue | (`class`.rawValue << 6)
         if isConstructed {
             rawTag |= 0x20

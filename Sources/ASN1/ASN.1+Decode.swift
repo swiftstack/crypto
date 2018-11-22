@@ -1,14 +1,24 @@
 import UInt24
 import Stream
 
-extension ASN1 {
+public protocol StreamDecodable {
+    init(from stream: StreamReader) throws
+}
+
+extension StreamDecodable {
+    public init(from bytes: [UInt8]) throws {
+        try self.init(from: InputByteStream(bytes))
+    }
+}
+
+extension ASN1: StreamDecodable {
     public init(from stream: StreamReader) throws {
         let reader = Reader(from: stream)
         self = try reader.read(ASN1.self)
     }
 }
 
-extension ASN1.Identifier {
+extension ASN1.Identifier: StreamDecodable {
     public init(from stream: StreamReader) throws {
         let reader = ASN1.Reader(from: stream)
         self = try reader.read(ASN1.Identifier.self)
@@ -52,6 +62,8 @@ extension ASN1 {
                     content = .integer(try read(Integer.self))
                 case .printableString, .utf8String:
                     content = .string(try read(String.self))
+                case .objectIdentifier:
+                    content = .objectIdentifier(try read(ObjectIdentifier.self))
                 default:
                     content = .data(try read([UInt8].self))
                 }
@@ -121,27 +133,10 @@ extension ASN1 {
             let length = try Length(from: stream)
             return try stream.read(count: length.value, as: String.self)
         }
-    }
-}
 
-extension String {
-    public init(oid bytes: [UInt8]) {
-        guard !bytes.isEmpty else {
-            self = ""
-            return
+        func read(_ type: ObjectIdentifier.Type) throws -> ObjectIdentifier {
+            let bytes = try read([UInt8].self)
+            return .init(rawValue: bytes)
         }
-
-        var oid: String = "\(bytes[0] / 40).\(bytes[0] % 40)"
-
-        var next = 0
-        for byte in bytes[1...] {
-            next = (next << 7) | (Int(byte) & 0x7F)
-            if (byte & 0x80) == 0 {
-                oid.append(".\(next)")
-                next = 0
-            }
-        }
-
-        self = oid
     }
 }

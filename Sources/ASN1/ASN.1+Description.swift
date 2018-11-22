@@ -59,8 +59,12 @@ extension ASN1.Content: CustomStringConvertible {
                 .data(\(value)
                 """
         case .sequence(let value):
-                description = """
+            description = """
                 .sequence(\(value))
+                """
+        case .objectIdentifier(let value):
+            description = """
+                .objectIdentifier(\(value))
                 """
         }
         return description.shiftingRight(by: level * 4)
