@@ -135,4 +135,11 @@ extension ASN1 {
             return nil
         }
     }
+
+    public var setValue: [ASN1]? {
+        guard tag == .set else {
+            return nil
+        }
+        return sequenceValue
+    }
 }
