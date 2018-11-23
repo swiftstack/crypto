@@ -25,23 +25,22 @@ extension Certificate.Extension {
             }
 
             public struct Reasons: OptionSet, Equatable {
-                public let rawValue: UInt8
+                public let rawValue: UInt16
 
-                public init(rawValue: UInt8) {
+                public init(rawValue: UInt16) {
                     self.rawValue = rawValue
                 }
 
-                // TODO: inspect, test
-                // FIXME: probably invalid
-                public static let unused = Reasons(rawValue: 0)
-                public static let keyCompromise = Reasons(rawValue: 1 << 7)
-                public static let caCompromise = Reasons(rawValue: 1 << 6)
-                public static let affiliationChanged = Reasons(rawValue: 1 << 5)
-                public static let superseded = Reasons(rawValue: 1 << 4)
-                public static let cessationOfOperation = Reasons(rawValue: 1 << 3)
-                public static let certificateHold = Reasons(rawValue: 1 << 2)
-                public static let privilegeWithdrawn = Reasons(rawValue: 1 << 1)
-                public static let aaCompromise = Reasons(rawValue: 1)
+                // TODO: verify with a dump of real world usage
+                public static let unused = Reasons(rawValue: 1 << 15)
+                public static let keyCompromise = Reasons(rawValue: 1 << 14)
+                public static let caCompromise = Reasons(rawValue: 1 << 13)
+                public static let affiliationChanged = Reasons(rawValue: 1 << 12)
+                public static let superseded = Reasons(rawValue: 1 << 11)
+                public static let cessationOfOperation = Reasons(rawValue: 1 << 10)
+                public static let certificateHold = Reasons(rawValue: 1 << 9)
+                public static let privilegeWithdrawn = Reasons(rawValue: 1 << 8)
+                public static let aaCompromise = Reasons(rawValue: 1 << 7)
             }
         }
     }
@@ -119,10 +118,10 @@ extension Extension.CRLDistributionPoints.DistributionPoint.Reasons {
     public init(from asn1: ASN1) throws {
         guard asn1.tag == .bitString,
             let data = asn1.dataValue,
-            data.count == 1 else
+            data.count == 2 else
         {
             throw X509.Error(.invalidDistributionPointReasons, asn1)
         }
-        self.rawValue = data[0]
+        self.rawValue = UInt16(data[0]) << 8 | UInt16(data[1])
     }
 }

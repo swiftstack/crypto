@@ -236,4 +236,28 @@ class X509DecodeTests: TestCase {
                     content: .string("Unique Name"))))
         }
     }
+
+    typealias DistributionPoint =
+        Certificate.Extension.CRLDistributionPoints.DistributionPoint
+    func testReasons() {
+        scope {
+            let reasons = try DistributionPoint.Reasons(from: .init(
+                identifier: .init(
+                    isConstructed: false,
+                    class: .universal,
+                    tag: .bitString),
+                content: .data([
+                    0b1111_1111, 0b1000_0000
+                ])))
+            assertTrue(reasons.contains(.unused))
+            assertTrue(reasons.contains(.keyCompromise))
+            assertTrue(reasons.contains(.caCompromise))
+            assertTrue(reasons.contains(.affiliationChanged))
+            assertTrue(reasons.contains(.superseded))
+            assertTrue(reasons.contains(.cessationOfOperation))
+            assertTrue(reasons.contains(.certificateHold))
+            assertTrue(reasons.contains(.privilegeWithdrawn))
+            assertTrue(reasons.contains(.aaCompromise))
+        }
+    }
 }
