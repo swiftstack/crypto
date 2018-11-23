@@ -8,8 +8,10 @@ extension Certificate {
         var value: Variant
 
         enum Variant: Equatable {
+        case subjectKeyIdentifier(SubjectKeyIdentifier)
         case basicConstrains(BasicConstrains)
         case crlDistributionPoints(CRLDistributionPoints)
+        case authorityKeyIdentifier(AuthorityKeyIdentifier)
         }
     }
 }
@@ -41,7 +43,8 @@ extension Certificate.Extension {
     public init(from asn1: ASN1) throws {
         guard let values = asn1.sequenceValue,
             values.count >= 2 && values.count <= 3,
-            let id = values[0].objectIdentifierValue else
+            let id = values[0].objectIdentifierValue,
+            case .certificateExtension(let variant) = id else
         {
             throw X509.Error(.invalidExtension, asn1)
         }
@@ -62,11 +65,15 @@ extension Certificate.Extension {
         }
         let `extension` = try ASN1(from: bytes)
 
-        switch id {
-        case .certificateExtension(.basicConstrains):
+        switch variant {
+        case .subjectKeyIdentifier:
+            self.value = .subjectKeyIdentifier(try .init(from: `extension`))
+        case .basicConstrains:
             self.value = .basicConstrains(try .init(from: `extension`))
-        case .certificateExtension(.crlDistributionPoints):
+        case .crlDistributionPoints:
             self.value = .crlDistributionPoints(try .init(from: `extension`))
+        case .authorityKeyIdentifier:
+            self.value = .authorityKeyIdentifier(try .init(from: `extension`))
         default:
             throw X509.Error(.unimplementedExtension, asn1)
         }
