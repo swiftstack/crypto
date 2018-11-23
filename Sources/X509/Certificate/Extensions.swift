@@ -8,11 +8,14 @@ extension Certificate {
         var value: Variant
 
         enum Variant: Equatable {
+        // id-ce-*
         case subjectKeyIdentifier(SubjectKeyIdentifier)
         case keyUsage(KeyUsage)
         case basicConstrains(BasicConstrains)
         case crlDistributionPoints(CRLDistributionPoints)
         case authorityKeyIdentifier(AuthorityKeyIdentifier)
+        // id-pe-*
+        case authorityInfoAccessMethod(AuthorityInfoAccess)
         }
     }
 }
@@ -44,8 +47,7 @@ extension Certificate.Extension {
     public init(from asn1: ASN1) throws {
         guard let values = asn1.sequenceValue,
             values.count >= 2 && values.count <= 3,
-            let id = values[0].objectIdentifierValue,
-            case .certificateExtension(let variant) = id else
+            let id = values[0].objectIdentifierValue else
         {
             throw X509.Error(.invalidExtension, asn1)
         }
@@ -64,19 +66,21 @@ extension Certificate.Extension {
         guard let bytes = values.last?.dataValue else {
             throw X509.Error(.invalidExtension, asn1)
         }
-        let `extension` = try ASN1(from: bytes)
+        let value = try ASN1(from: bytes)
 
-        switch variant {
-        case .subjectKeyIdentifier:
-            self.value = .subjectKeyIdentifier(try .init(from: `extension`))
-        case .keyUsage:
-            self.value = .keyUsage(try .init(from: `extension`))
-        case .basicConstrains:
-            self.value = .basicConstrains(try .init(from: `extension`))
-        case .crlDistributionPoints:
-            self.value = .crlDistributionPoints(try .init(from: `extension`))
-        case .authorityKeyIdentifier:
-            self.value = .authorityKeyIdentifier(try .init(from: `extension`))
+        switch id {
+        case .certificateExtension(.subjectKeyIdentifier):
+            self.value = .subjectKeyIdentifier(try .init(from: value))
+        case .certificateExtension(.keyUsage):
+            self.value = .keyUsage(try .init(from: value))
+        case .certificateExtension(.basicConstrains):
+            self.value = .basicConstrains(try .init(from: value))
+        case .certificateExtension(.crlDistributionPoints):
+            self.value = .crlDistributionPoints(try .init(from: value))
+        case .certificateExtension(.authorityKeyIdentifier):
+            self.value = .authorityKeyIdentifier(try .init(from: value))
+        case .pkix(.extension(.authorityInfoAccessSyntax)):
+            self.value = .authorityInfoAccessMethod(try .init(from: value))
         default:
             throw X509.Error(.unimplementedExtension, asn1)
         }

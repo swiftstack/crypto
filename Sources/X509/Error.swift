@@ -36,6 +36,8 @@ extension X509 {
             case invalidAuthorityKeyIdentifier
             case invalidKeyIdentifier
             case invalidKeyUsage
+            case invalidAuthorityInfoAccess
+            case invalidAccessDescription
             case invalidAttributeTypeAndValue
             case invalidRDNSequence
             case invalidDirectoryString

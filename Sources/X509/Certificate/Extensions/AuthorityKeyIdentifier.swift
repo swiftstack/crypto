@@ -43,13 +43,10 @@ extension Certificate.Extension.AuthorityKeyIdentifier {
         }
         self.init()
         for item in sequence {
-            guard let value = item.sequenceValue?.first else {
-                throw X509.Error(.invalidAuthorityKeyIdentifier, asn1)
-            }
             switch item.tag.rawValue {
-            case 0: self.keyIdentifier = try .init(from: value)
-            case 1: self.authorityCertIssuer = try .init(from: value)
-            case 2: self.authorityCertSerialNumber = try .init(from: value)
+            case 0: self.keyIdentifier = try .init(from: item)
+            case 1: self.authorityCertIssuer = try .init(from: item)
+            case 2: self.authorityCertSerialNumber = try .init(from: item)
             default: throw X509.Error(.invalidAuthorityKeyIdentifier, item)
             }
         }
