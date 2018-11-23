@@ -28,13 +28,14 @@ extension X509 {
             case invalidPublicKey
             case invalidExtensions
             case invalidExtension
-            case invalidAttributeTypeAndValue
-            case invalidRDNSequence
-            case invalidDirectoryString
+            case invalidBasicConstrains
             case invalidCRLDistributionPoints
             case invalidDistributionPoint
             case invalidDistributionPointName
             case invalidDistributionPointReasons
+            case invalidAttributeTypeAndValue
+            case invalidRDNSequence
+            case invalidDirectoryString
             // unimplemented
             case unimplemented
             case unimplementedAlgorithm

@@ -1,6 +1,6 @@
 import ASN1
 
-extension Certificate.Extensions {
+extension Certificate.Extension {
     public struct CRLDistributionPoints: Equatable {
         public let distributionPoints: [DistributionPoint]
 
@@ -49,7 +49,7 @@ extension Certificate.Extensions {
 
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.13
 
-typealias Extension = Certificate.Extensions
+typealias Extension = Certificate.Extension
 
 extension Extension.CRLDistributionPoints {
     public init(from asn1: ASN1) throws {
@@ -64,25 +64,26 @@ extension Extension.CRLDistributionPoints {
 }
 
 extension Extension.CRLDistributionPoints.DistributionPoint {
+    // DistributionPoint ::= SEQUENCE {
+    //     distributionPoint       [0]     DistributionPointName OPTIONAL,
+    //     reasons                 [1]     ReasonFlags OPTIONAL,
+    //     cRLIssuer               [2]     GeneralNames OPTIONAL }
     public init(from asn1: ASN1) throws {
-        // DistributionPoint ::= SEQUENCE {
-        //     distributionPoint       [0]     DistributionPointName OPTIONAL,
-        //     reasons                 [1]     ReasonFlags OPTIONAL,
-        //     cRLIssuer               [2]     GeneralNames OPTIONAL }
         guard let sequence = asn1.sequenceValue,
-            sequence.count >= 1 && sequence.count <= 3 else
+            sequence.count <= 3 else
         {
             throw X509.Error(.invalidDistributionPoint, asn1)
         }
-
         self.init()
-
         for item in sequence {
+            guard let value = item.sequenceValue?.first else {
+                throw X509.Error(.invalidDistributionPoint, asn1)
+            }
             switch item.tag.rawValue {
-            case 0: self.name = try .init(from: item)
-            case 1: self.reasons = try .init(from: item)
-            case 2: self.crlIssuer = try .init(from: item)
-            default: throw X509.Error(.invalidDistributionPoint, asn1)
+            case 0: self.name = try .init(from: value)
+            case 1: self.reasons = try .init(from: value)
+            case 2: self.crlIssuer = try .init(from: value)
+            default: throw X509.Error(.invalidDistributionPoint, item)
             }
         }
     }

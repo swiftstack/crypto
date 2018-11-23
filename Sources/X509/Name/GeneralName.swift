@@ -64,17 +64,27 @@ extension GeneralName {
         switch tag {
         case .otherName:
             self = .otherName(try .init(from: asn1))
-        case .rfc822Name, .dnsName, .uniformResourceIdentifier:
+        case .rfc822Name:
             guard let string = asn1.stringValue else {
                throw X509.Error(.invalidGeneralName, asn1)
             }
             self = .rfc822Name(string)
+        case .dnsName:
+            guard let string = asn1.stringValue else {
+                throw X509.Error(.invalidGeneralName, asn1)
+            }
+            self = .dnsName(string)
         case .x400Address:
             self = .x400Address(try .init(from: asn1))
         case .directoryName:
             self = .directoryName(try .init(from: asn1))
         case .ediPartyName:
             self = .ediPartyName(try .init(from: asn1))
+        case .uniformResourceIdentifier:
+            guard let string = asn1.stringIdentifierValue else {
+                throw X509.Error(.invalidGeneralName, asn1)
+            }
+            self = .uniformResourceIdentifier(string)
         case .ipAddress:
             guard let bytes = asn1.dataValue else {
                throw X509.Error(.invalidGeneralName, asn1)

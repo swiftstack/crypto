@@ -146,4 +146,13 @@ extension ASN1 {
         }
         return sequenceValue
     }
+
+    /// String value encoded as ObjectIdentifier
+    public var stringIdentifierValue: String? {
+        guard let oid = objectIdentifierValue,
+            case .other(let data) = oid else {
+                return nil
+        }
+        return String(decoding: data, as: UTF8.self)
+    }
 }
