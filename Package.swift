@@ -27,7 +27,7 @@ let package = Package(
         .target(name: "UInt24"),
         .target(name: "SHA1", dependencies: ["Hex"]),
         .target(name: "UUID", dependencies: ["Hex", "SHA1"]),
-        .target(name: "ASN1", dependencies: ["UInt24", "Stream"]),
+        .target(name: "ASN1", dependencies: ["UInt24", "Stream", "Hex"]),
         .target(name: "X509", dependencies: ["ASN1", "Stream", "Time"]),
         .target(name: "Crypto", dependencies: ["SHA1", "UUID", "ASN1", "X509"]),
         .testTarget(name: "SHA1Tests", dependencies: ["Test", "SHA1"]),

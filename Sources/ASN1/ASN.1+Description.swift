@@ -1,3 +1,5 @@
+import Hex
+
 extension String {
     func shiftingRight(by spaces: Int) -> String {
         let lines = self.split(separator: "\n")
@@ -44,19 +46,19 @@ extension ASN1.Content: CustomStringConvertible {
         switch self {
         case .boolean(let value):
             description = """
-            .boolean(\(value))
-            """
+                .boolean(\(value))
+                """
         case .integer(let value):
             description = """
                 .integer(\(value))
                 """
         case .string(let value):
             description = """
-            .string(\(value))
-            """
+                .string(\"\(value)\")
+                """
         case .data(let value):
             description = """
-                .data(\(value)
+                .data(\(String(encodingToHex: value))
                 """
         case .sequence(let value):
             description = """
@@ -72,5 +74,83 @@ extension ASN1.Content: CustomStringConvertible {
 
     public var description: String {
         return prettyDescription(level: 0)
+    }
+}
+
+extension ASN1.ObjectIdentifier: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .sha256WithRSAEncryption:
+            return ".sha256WithRSAEncryption"
+        case .rsaEncryption:
+            return ".rsaEncryption"
+        case .attribute(let value):
+            return ".attribute(\(value))"
+        case .certificateExtension(let value):
+            return ".certificateExtension(\(value))"
+        case .pkix(let value):
+            return ".pkix(\(value))"
+        case .other(let value):
+            return ".other(\(value))"
+        }
+    }
+}
+
+extension ASN1.ObjectIdentifier.Attribute: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .name: return ".name"
+        case .surname: return ".surname"
+        case .givenName: return ".givenName"
+        case .initials: return ".initials"
+        case .generationQualifier: return ".generationQualifier"
+        case .commonName: return ".commonName"
+        case .localityName: return ".localityName"
+        case .stateOrProvinceName: return ".stateOrProvinceName"
+        case .organizationName: return ".organizationName"
+        case .organizationalUnitName: return ".organizationalUnitName"
+        case .title: return ".title"
+        case .dnQualifier: return ".dnQualifier"
+        case .countryName: return ".countryName"
+        case .serialNumber: return ".serialNumber"
+        case .pseudonym: return ".pseudonym"
+        }
+    }
+}
+
+extension ASN1.ObjectIdentifier.CertificateExtension: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .subjectKeyIdentifier: return ".subjectKeyIdentifier"
+        case .keyUsage: return ".keyUsage"
+        case .basicConstrains: return ".basicConstrains"
+        case .crlDistributionPoints: return ".crlDistributionPoints"
+        case .certificatePolicies: return ".certificatePolicies"
+        case .authorityKeyIdentifier: return ".authorityKeyIdentifier"
+        case .extKeyUsage: return ".extKeyUsage"
+        }
+    }
+}
+
+extension ASN1.ObjectIdentifier.Pkix: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .extension(.authorityInfoAccessSyntax):
+            return ".extension(.authorityInfoAccessSyntax)"
+        case .accessDescription(.oscp(.basicResponse)):
+            return ".accessDescription(.oscp(.basicResponse))"
+        case .accessDescription(.oscp(.nonce)):
+            return ".accessDescription(.oscp(.nonce))"
+        case .accessDescription(.oscp(.crlReference)):
+            return ".accessDescription(.oscp(.crlReference))"
+        case .accessDescription(.oscp(.nocheck)):
+            return ".accessDescription(.oscp(.nocheck))"
+        case .accessDescription(.caIssuers):
+            return ".accessDescription(.caIssuers)"
+        case .accessDescription(.timeStamping):
+            return ".accessDescription(.timeStamping)"
+        case .accessDescription(.caRepository):
+            return ".accessDescription(.caRepository)"
+        }
     }
 }
