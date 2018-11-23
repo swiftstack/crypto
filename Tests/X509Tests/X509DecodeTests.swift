@@ -247,7 +247,7 @@ class X509DecodeTests: TestCase {
                     class: .universal,
                     tag: .bitString),
                 content: .data([
-                    0b1111_1111, 0b1000_0000
+                    0b1000_0000, 0b1111_1111
                 ])))
             assertTrue(reasons.contains(.unused))
             assertTrue(reasons.contains(.keyCompromise))
@@ -258,6 +258,81 @@ class X509DecodeTests: TestCase {
             assertTrue(reasons.contains(.certificateHold))
             assertTrue(reasons.contains(.privilegeWithdrawn))
             assertTrue(reasons.contains(.aaCompromise))
+        }
+    }
+
+    func testKeyUsageExtension() {
+        scope {
+            let keyUsageExtension = try Certificate.Extension(from: .init(
+                identifier: .init(
+                    isConstructed: true,
+                    class: .universal,
+                    tag: .sequence),
+                content: .sequence([
+                    .init(
+                        identifier: .init(
+                            isConstructed: false,
+                            class: .universal,
+                            tag: .objectIdentifier),
+                        content: .objectIdentifier(
+                            .certificateExtension(.keyUsage))),
+                    .init(
+                        identifier: .init(
+                            isConstructed: false,
+                            class: .universal,
+                            tag: .boolean),
+                        content: .boolean(true)),
+                    .init(
+                        identifier: .init(
+                            isConstructed: false,
+                            class: .universal,
+                            tag: .octetString),
+                        content: .data([0x03, 0x02, 0x05, 0xa0]))
+                ])))
+            assertEqual(keyUsageExtension.id, .certificateExtension(.keyUsage))
+            assertEqual(keyUsageExtension.isCritical, true)
+            guard case .keyUsage(_) = keyUsageExtension.value else {
+                fail()
+                return
+            }
+        }
+    }
+
+    func testKeyUsage() {
+        scope {
+            let keyUsage = try Certificate.Extension.KeyUsage(from: .init(
+                identifier: .init(
+                    isConstructed: false,
+                    class: .universal,
+                    tag: .bitString),
+                content: .data([0x05, 0xa0])))
+            assertTrue(keyUsage.contains(.digitalSignature))
+            assertFalse(keyUsage.contains(.nonRepudiation))
+            assertTrue(keyUsage.contains(.keyEncipherment))
+            assertFalse(keyUsage.contains(.dataEncipherment))
+            assertFalse(keyUsage.contains(.keyAgreement))
+            assertFalse(keyUsage.contains(.keyCertSign))
+            assertFalse(keyUsage.contains(.crlSign))
+            assertFalse(keyUsage.contains(.encipherOnly))
+            assertFalse(keyUsage.contains(.decipherOnly))
+        }
+
+        scope {
+            let keyUsage = try Certificate.Extension.KeyUsage(from: .init(
+                identifier: .init(
+                    isConstructed: false,
+                    class: .universal,
+                    tag: .bitString),
+                content: .data([0x01, 0x06])))
+            assertFalse(keyUsage.contains(.digitalSignature))
+            assertFalse(keyUsage.contains(.nonRepudiation))
+            assertFalse(keyUsage.contains(.keyEncipherment))
+            assertFalse(keyUsage.contains(.dataEncipherment))
+            assertFalse(keyUsage.contains(.keyAgreement))
+            assertTrue(keyUsage.contains(.keyCertSign))
+            assertTrue(keyUsage.contains(.crlSign))
+            assertFalse(keyUsage.contains(.encipherOnly))
+            assertFalse(keyUsage.contains(.decipherOnly))
         }
     }
 }

@@ -35,6 +35,7 @@ extension X509 {
             case invalidDistributionPointReasons
             case invalidAuthorityKeyIdentifier
             case invalidKeyIdentifier
+            case invalidKeyUsage
             case invalidAttributeTypeAndValue
             case invalidRDNSequence
             case invalidDirectoryString

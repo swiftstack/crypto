@@ -122,6 +122,6 @@ extension Extension.CRLDistributionPoints.DistributionPoint.Reasons {
         {
             throw X509.Error(.invalidDistributionPointReasons, asn1)
         }
-        self.rawValue = UInt16(data[0]) << 8 | UInt16(data[1])
+        self.rawValue = UInt16(data[1]) << 8 | UInt16(data[0])
     }
 }
