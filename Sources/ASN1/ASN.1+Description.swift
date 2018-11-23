@@ -84,11 +84,17 @@ extension ASN1.ObjectIdentifier: CustomStringConvertible {
             return ".sha256WithRSAEncryption"
         case .rsaEncryption:
             return ".rsaEncryption"
-        case .attribute(let value):
+        case .attribute(.none):
+            return ".attribute"
+        case .attribute(.some(let value)):
             return ".attribute(\(value))"
-        case .certificateExtension(let value):
+        case .certificateExtension(.none):
+            return ".certificateExtension"
+        case .certificateExtension(.some(let value)):
             return ".certificateExtension(\(value))"
-        case .pkix(let value):
+        case .pkix(.none):
+            return ".pkix"
+        case .pkix(.some(let value)):
             return ".pkix(\(value))"
         case .other(let value):
             return ".other(\(value))"

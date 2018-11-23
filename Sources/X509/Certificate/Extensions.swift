@@ -69,17 +69,17 @@ extension Certificate.Extension {
         let value = try ASN1(from: bytes)
 
         switch id {
-        case .certificateExtension(.subjectKeyIdentifier):
+        case .certificateExtension(.some(.subjectKeyIdentifier)):
             self.value = .subjectKeyIdentifier(try .init(from: value))
-        case .certificateExtension(.keyUsage):
+        case .certificateExtension(.some(.keyUsage)):
             self.value = .keyUsage(try .init(from: value))
-        case .certificateExtension(.basicConstrains):
+        case .certificateExtension(.some(.basicConstrains)):
             self.value = .basicConstrains(try .init(from: value))
-        case .certificateExtension(.crlDistributionPoints):
+        case .certificateExtension(.some(.crlDistributionPoints)):
             self.value = .crlDistributionPoints(try .init(from: value))
-        case .certificateExtension(.authorityKeyIdentifier):
+        case .certificateExtension(.some(.authorityKeyIdentifier)):
             self.value = .authorityKeyIdentifier(try .init(from: value))
-        case .pkix(.extension(.authorityInfoAccessSyntax)):
+        case .pkix(.some(.extension(.authorityInfoAccessSyntax))):
             self.value = .authorityInfoAccessMethod(try .init(from: value))
         default:
             throw X509.Error(.unimplementedExtension, asn1)
