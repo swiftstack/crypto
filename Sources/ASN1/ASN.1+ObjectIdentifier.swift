@@ -48,10 +48,16 @@ extension ASN1 {
 
         public enum Pkix: Equatable, Hashable {
             case `extension`(Extension)
+            case policyQualifier(PolicyQualifier)
             case accessDescription(AccessDescription)
 
             public enum Extension: Equatable, Hashable {
                 case authorityInfoAccessSyntax
+            }
+
+            public enum PolicyQualifier {
+                case cps
+                case unotice
             }
 
             public enum AccessDescription: Equatable, Hashable {
@@ -136,9 +142,18 @@ extension ASN1 {
             static let objectId: [UInt8] = [0x2b, 0x06, 0x01, 0x05, 0x05, 0x07]
 
             enum Extension {
+                // 1.3.6.1.5.5.7.1.*
                 static let objectId: [UInt8] = Pkix.objectId + [0x01]
                 // 1.3.6.1.5.5.7.1.1
                 static let authorityInfoAccessSyntax = objectId + [0x01]
+            }
+
+            enum PolicyQualifier {
+                // 1.3.6.1.5.5.7.2.*
+                static let objectId: [UInt8] = Pkix.objectId + [0x02]
+
+                static let cps = objectId + [0x01]
+                static let unotice = objectId + [0x02]
             }
 
             enum AccessDescription {
@@ -303,6 +318,10 @@ extension ASN1.ObjectIdentifier.Pkix: ObjectIdentifierProtocol {
         switch self {
         case .extension(.authorityInfoAccessSyntax):
             return Raw.Extension.authorityInfoAccessSyntax
+        case .policyQualifier(.cps):
+            return Raw.PolicyQualifier.cps
+        case .policyQualifier(.unotice):
+            return Raw.PolicyQualifier.unotice
         case .accessDescription(.oscp(.basicResponse)):
             return Raw.AccessDescription.OSCP.basicResponse
         case .accessDescription(.oscp(.nonce)):
@@ -324,6 +343,10 @@ extension ASN1.ObjectIdentifier.Pkix: ObjectIdentifierProtocol {
         switch bytes {
         case Raw.Extension.authorityInfoAccessSyntax:
             self = .extension(.authorityInfoAccessSyntax)
+        case Raw.PolicyQualifier.cps:
+            self = .policyQualifier(.cps)
+        case Raw.PolicyQualifier.unotice:
+            self = .policyQualifier(.unotice)
         case Raw.AccessDescription.OSCP.basicResponse:
             self = .accessDescription(.oscp(.basicResponse))
         case Raw.AccessDescription.OSCP.nonce:

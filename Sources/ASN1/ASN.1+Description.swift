@@ -143,6 +143,10 @@ extension ASN1.ObjectIdentifier.Pkix: CustomStringConvertible {
         switch self {
         case .extension(.authorityInfoAccessSyntax):
             return ".extension(.authorityInfoAccessSyntax)"
+        case .policyQualifier(.cps):
+            return ".policyQualifier(.cps)"
+        case .policyQualifier(.unotice):
+            return ".policyQualifier(.unotice)"
         case .accessDescription(.oscp(.basicResponse)):
             return ".accessDescription(.oscp(.basicResponse))"
         case .accessDescription(.oscp(.nonce)):
