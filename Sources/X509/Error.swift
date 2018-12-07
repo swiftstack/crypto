@@ -2,13 +2,25 @@ import ASN1
 
 public struct Error: Swift.Error {
     public let reason: Reason
-    public let origin: Origin
+    public let source: Source
     public let context: ASN1
 
-    init(_ reason: Reason, in origin: Origin, data context: ASN1) {
+    init(_ reason: Reason, source: Source, context: ASN1) {
         self.reason = reason
-        self.origin = origin
+        self.source = source
         self.context = context
+    }
+
+    public struct Source {
+        public let function: String
+        public let file: String
+        public let line: Int
+
+        init(_ function: String, _ file: String, _ line: Int) {
+            self.function = function
+            self.file = file
+            self.line = line
+        }
     }
 
     public enum Reason {
@@ -17,44 +29,27 @@ public struct Error: Swift.Error {
         case innerError(Swift.Error)
     }
 
-    public enum Origin {
-        // root
-        case format
-        case tbsCertificate(TBSCertificate.Error.Origin)
-        case signature(Signature.Error.Origin)
-        // tbsCertificate
-        case version(Version.Error.Origin)
-        case serialNumber(SerialNumber.Error.Origin)
-        case name(Name.Error.Origin)
-        case validity(Validity.Error.Origin)
-        case publicKey(PublicKey.Error.Origin)
-        // common structures
-        case time(TimeVariant.Error.Origin)
-        case attributeTypeAndValue(AttributeTypeAndValue.Error.Origin)
-        case directoryString(DirectoryString.Error.Origin)
-        case ediPartyName(EDIPartyName.Error.Origin)
-        case distinguishedName(Name.Error.Origin)
-        case rdnSequence(RDNSequence.Error.Origin)
-        case relativeDistinguishedName(RelativeDistinguishedName.Error.Origin)
-        case generalName(GeneralName.Error.Origin)
-        case otherName(OtherName.Error.Origin)
-        case orAddress(ORAddress.Error.Origin)
-        // extensions
-        case `extension`(Extension.Error.Origin)
-        case basicConstrains(Extension.BasicConstrains.Error.Origin)
-        case certificatePolicies(Extension.Policy.Error.Origin)
-        case crlDistributionPoints(Extension.CRLDistributionPoints.Error.Origin)
-        case authorityKeyIdentifier(Extension.AuthorityKeyIdentifier.Error.Origin)
-        case keyIdentifier(Extension.KeyIdentifier.Error.Origin)
-        case authorityInfoAccess(Extension.AccessDescription.Error.Origin)
-        case keyUsage(Extension.KeyUsage.Error.Origin)
+    static func invalidASN1(
+        _ asn1: ASN1,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line) -> Error
+    {
+        return .init(
+            .invalidASN1,
+            source: .init(function, file, line),
+            context: asn1)
     }
 
-    static func invalidASN1(_ asn1: ASN1, in origin: Origin) -> X509.Error {
-        return .init(.invalidASN1, in: origin, data: asn1)
-    }
-
-    static func unimplemented(_ origin: Origin, data: ASN1) -> X509.Error {
-        return .init(.unimplemented, in: origin, data: data)
+    static func unimplemented(
+        _ asn1: ASN1,
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line) -> Error
+    {
+        return .init(
+            .unimplemented,
+            source: .init(function, file, line),
+            context: asn1)
     }
 }

@@ -29,7 +29,7 @@ extension Extension.AuthorityKeyIdentifier {
         guard let sequence = asn1.sequenceValue,
             sequence.count <= 3 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .authorityKeyIdentifier(.rootSequence))
+            throw Error.invalidASN1(asn1)
         }
         self.init()
         for item in sequence {
@@ -37,19 +37,8 @@ extension Extension.AuthorityKeyIdentifier {
             case 0: self.keyIdentifier = try .init(from: item)
             case 1: self.authorityCertIssuer = try .init(from: item)
             case 2: self.authorityCertSerialNumber = try .init(from: item)
-            default: throw X509.Error.invalidASN1(item, in: .authorityKeyIdentifier(.tag))
+            default: throw Error.invalidASN1(item)
             }
-        }
-    }
-}
-
-// MARK: Error
-
-extension Extension.AuthorityKeyIdentifier {
-    public enum Error {
-        public enum Origin {
-            case rootSequence
-            case tag
         }
     }
 }

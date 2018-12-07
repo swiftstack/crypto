@@ -39,18 +39,8 @@ extension Extension.KeyUsage {
             let data = asn1.dataValue,
             data.count == 2 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .keyUsage(.format))
+            throw Error.invalidASN1(asn1)
         }
         self.rawValue = UInt16(data[1]) << 8 | UInt16(data[0])
-    }
-}
-
-// MARK: Error
-
-extension Extension.KeyUsage {
-    public enum Error {
-        public enum Origin {
-            case format
-        }
     }
 }

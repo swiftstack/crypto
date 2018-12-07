@@ -23,13 +23,13 @@ extension Extension.BasicConstrains {
             // TODO: test
             sequence.count <= 2 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .basicConstrains(.format))
+            throw Error.invalidASN1(asn1)
         }
 
         // DEFAULT FALSE
         if sequence.count >= 1 {
             guard let isCA = sequence[0].booleanValue else {
-                throw X509.Error.invalidASN1(asn1, in: .basicConstrains(.isCA))
+                throw Error.invalidASN1(asn1)
             }
             self.isCA = isCA
         } else {
@@ -39,23 +39,11 @@ extension Extension.BasicConstrains {
         // OPTIONAL
         if sequence.count == 2 {
             guard let pathLen = sequence[1].integerValue else {
-                throw X509.Error.invalidASN1(asn1, in: .basicConstrains(.pathLen))
+                throw Error.invalidASN1(asn1)
             }
             self.pathLen = pathLen
         } else {
             self.pathLen = nil
-        }
-    }
-}
-
-// MARK: Error
-
-extension Extension.BasicConstrains {
-    public enum Error {
-        public enum Origin {
-            case format
-            case isCA
-            case pathLen
         }
     }
 }

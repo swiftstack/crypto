@@ -54,7 +54,7 @@ extension Extension.CRLDistributionPoints {
         guard let sequence = asn1.sequenceValue,
             sequence.count > 0 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.rootSequence))
+            throw Error.invalidASN1(asn1)
         }
         self.distributionPoints = try sequence.map(DistributionPoint.init)
     }
@@ -69,18 +69,18 @@ extension Extension.CRLDistributionPoints.DistributionPoint {
         guard let sequence = asn1.sequenceValue,
             sequence.count <= 3 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.distributionPoint))
+            throw Error.invalidASN1(asn1)
         }
         self.init()
         for item in sequence {
             guard let value = item.sequenceValue?.first else {
-                throw X509.Error.invalidASN1(item, in: .crlDistributionPoints(.distributionPointItem))
+                throw Error.invalidASN1(item)
             }
             switch item.tag.rawValue {
             case 0: self.name = try .init(from: value)
             case 1: self.reasons = try .init(from: value)
             case 2: self.crlIssuer = try .init(from: value)
-            default: throw X509.Error.invalidASN1(item, in: .crlDistributionPoints(.distributionPointItem))
+            default: throw Error.invalidASN1(item)
             }
         }
     }
@@ -92,12 +92,12 @@ extension Extension.CRLDistributionPoints.DistributionPoint.Name {
     //     nameRelativeToCRLIssuer [1]     RelativeDistinguishedName }
     public init(from asn1: ASN1) throws {
         guard asn1.class == .contextSpecific else {
-            throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.distributionPointName))
+            throw Error.invalidASN1(asn1)
         }
         switch asn1.tag.rawValue {
         case 0: self = .full(try .init(from: asn1))
         case 1: self = .relativeToCRLIssuer(try .init(from: asn1))
-        default: throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.distributionPointName))
+        default: throw Error.invalidASN1(asn1)
         }
     }
 }
@@ -118,22 +118,8 @@ extension Extension.CRLDistributionPoints.DistributionPoint.Reasons {
             let data = asn1.dataValue,
             data.count == 2 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.distributionPointReasons))
+            throw Error.invalidASN1(asn1)
         }
         self.rawValue = UInt16(data[1]) << 8 | UInt16(data[0])
-    }
-}
-
-// MARK: Error
-
-extension Extension.CRLDistributionPoints {
-    public enum Error {
-        public enum Origin {
-            case rootSequence
-            case distributionPoint
-            case distributionPointItem
-            case distributionPointName
-            case distributionPointReasons
-        }
     }
 }

@@ -13,18 +13,8 @@ extension SerialNumber {
         guard let bytes = asn1.insaneIntegerValue,
             bytes.count > 0 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .serialNumber(.format))
+            throw Error.invalidASN1(asn1)
         }
         self.bytes = bytes
-    }
-}
-
-// MARK: Error
-
-extension SerialNumber {
-    public enum Error {
-        public enum Origin {
-            case format
-        }
     }
 }

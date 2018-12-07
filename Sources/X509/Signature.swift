@@ -54,7 +54,7 @@ extension Signature.Algorithm {
             let value = sequence.first,
             let oid = value.objectIdentifierValue else
         {
-            throw X509.Error.invalidASN1(asn1, in: .signature(.algorithm))
+            throw Error.invalidASN1(asn1)
         }
         switch oid {
         // TODO: move to public key
@@ -63,12 +63,12 @@ extension Signature.Algorithm {
         case .sha256WithRSAEncryption:
             self = .sha256WithRSA
         default:
-            throw X509.Error.unimplemented(.signature(.algorithm), data: asn1)
+            throw Error.unimplemented(asn1)
         }
         // TODO: imlement parameters
         let parameters = sequence[1]
         guard parameters.tag == .null else {
-            throw X509.Error.unimplemented(.signature(.parameters), data: asn1)
+            throw Error.unimplemented(asn1)
         }
     }
 }
@@ -78,7 +78,7 @@ extension Signature.Algorithm {
 extension Signature.Value {
     public init(from asn1: ASN1) throws {
         guard let bitString = BitString(from: asn1) else {
-            throw X509.Error.invalidASN1(asn1, in: .signature(.value))
+            throw Error.invalidASN1(asn1)
         }
         self.padding = bitString.padding
         self.encrypted = bitString.bytes
@@ -99,17 +99,5 @@ struct BitString {
         }
         self.padding = Int(data[0])
         self.bytes = [UInt8](data[1...])
-    }
-}
-
-// MARK: Error
-
-extension Signature {
-    public enum Error {
-        public enum Origin {
-            case algorithm
-            case parameters
-            case value
-        }
     }
 }

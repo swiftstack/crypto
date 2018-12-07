@@ -26,7 +26,7 @@ extension Array where Element == Extension.AccessDescription {
         guard let sequence = asn1.sequenceValue,
             sequence.count > 0 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .authorityInfoAccess(.rootSequence))
+            throw Error.invalidASN1(asn1)
         }
         self = try sequence.map(Extension.AccessDescription.init)
     }
@@ -41,20 +41,9 @@ extension Extension.AccessDescription {
             sequence.count == 2,
             let method = sequence[0].objectIdentifierValue else
         {
-            throw X509.Error.invalidASN1(asn1, in: .authorityInfoAccess(.accessDescription))
+            throw Error.invalidASN1(asn1)
         }
         self.method = method
         self.location = try .init(from: sequence[1])
-    }
-}
-
-// MARK: Error
-
-extension Extension.AccessDescription {
-    public enum Error {
-        public enum Origin {
-            case rootSequence
-            case accessDescription
-        }
     }
 }

@@ -25,7 +25,7 @@ extension RSA.PublicKey {
             let modulus = keySequence[0].insaneIntegerValue,
             let exponent = keySequence[1].integerValue else
         {
-            throw X509.Error.invalidASN1(asn1, in: .publicKey(.value))
+            throw Error.invalidASN1(asn1)
         }
         self.modulus = modulus
         self.exponent = exponent
@@ -37,25 +37,13 @@ extension PublicKey {
         guard let sequence = asn1.sequenceValue,
             sequence.count == 2 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .publicKey(.format))
+            throw Error.invalidASN1(asn1)
         }
         let algorithm = try Signature.Algorithm(from: sequence[0])
         guard let bitString = BitString(from: sequence[1]) else {
-            throw X509.Error.invalidASN1(asn1, in: .publicKey(.bitString))
+            throw Error.invalidASN1(asn1)
         }
         let key = try ASN1(from: bitString.bytes)
         self = .rsa(try .init(from: key))
-    }
-}
-
-// MARK: Error
-
-extension PublicKey {
-    public enum Error {
-        public enum Origin {
-            case format
-            case bitString
-            case value
-        }
     }
 }

@@ -19,7 +19,7 @@ extension DirectoryString {
     //     bmpString               BMPString (SIZE (1..MAX)) }
     public init(from asn1: ASN1) throws {
         guard let value = asn1.stringValue else {
-            throw X509.Error.invalidASN1(asn1, in: .directoryString(.format))
+            throw Error.invalidASN1(asn1)
         }
         switch asn1.tag {
             case .teletexString: self = .teletexString(value)
@@ -27,18 +27,7 @@ extension DirectoryString {
             case .universalString: self = .universalString(value)
             case .utf8String: self = .utf8String(value)
             case .bmpString: self = .bmpString(value)
-            default: throw X509.Error.invalidASN1(asn1, in: .directoryString(.tag))
-        }
-    }
-}
-
-// MARK: Error
-
-extension DirectoryString {
-    public enum Error {
-        public enum Origin {
-            case format
-            case tag
+            default: throw Error.invalidASN1(asn1)
         }
     }
 }

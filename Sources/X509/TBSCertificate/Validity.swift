@@ -21,19 +21,9 @@ extension Validity {
         guard let sequence = asn1.sequenceValue,
             sequence.count == 2 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .validity(.format))
+            throw Error.invalidASN1(asn1)
         }
         self.notBefore = try TimeVariant(from: sequence[0])
         self.notAfter = try TimeVariant(from: sequence[1])
-    }
-}
-
-// MARK: Error
-
-extension Validity {
-    public enum Error {
-        public enum Origin {
-            case format
-        }
     }
 }

@@ -17,23 +17,12 @@ extension TimeVariant {
         guard let bytes = asn1.dataValue,
             let time = Time(validity: bytes) else
         {
-            throw X509.Error.invalidASN1(asn1, in: .time(.format))
+            throw Error.invalidASN1(asn1)
         }
         switch asn1.tag {
         case .utcTime: self = .utc(time)
         case .generalizedTime: self = .generalized(time)
-        default: throw X509.Error.invalidASN1(asn1, in: .time(.tag))
-        }
-    }
-}
-
-// MARK: Error
-
-extension TimeVariant {
-    public enum Error {
-        public enum Origin {
-            case format
-            case tag
+        default: throw Error.invalidASN1(asn1)
         }
     }
 }

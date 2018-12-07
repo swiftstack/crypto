@@ -38,7 +38,7 @@ extension TBSCertificate {
         guard let sequence = asn1.sequenceValue,
             sequence.count >= 8 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .tbsCertificate(.format))
+            throw Error.invalidASN1(asn1)
         }
 
         self.version = try Version(from: sequence[0])
@@ -49,15 +49,5 @@ extension TBSCertificate {
         self.subject = try Name(from: sequence[5])
         self.publicKey = try PublicKey(from: sequence[6])
         self.extensions = try [Extension](from: sequence[7])
-    }
-}
-
-// MARK: Error
-
-extension TBSCertificate {
-    public enum Error {
-        public enum Origin {
-            case format
-        }
     }
 }

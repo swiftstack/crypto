@@ -27,7 +27,7 @@ extension Array where Element == GeneralName {
         guard let sequence = asn1.sequenceValue,
             sequence.count >= 1 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .generalName(.rootSequence))
+            throw Error.invalidASN1(asn1)
         }
         self = try sequence.map(GeneralName.init)
     }
@@ -59,19 +59,19 @@ extension GeneralName {
         guard asn1.class == .contextSpecific,
             let tag = Tag(rawValue: asn1.tag.rawValue) else
         {
-            throw X509.Error.invalidASN1(asn1, in: .generalName(.generalName))
+            throw Error.invalidASN1(asn1)
         }
         switch tag {
         case .otherName:
             self = .otherName(try .init(from: asn1))
         case .rfc822Name:
             guard let string = asn1.stringValue else {
-               throw X509.Error.invalidASN1(asn1, in: .generalName(.rfc822Name))
+               throw Error.invalidASN1(asn1)
             }
             self = .rfc822Name(string)
         case .dnsName:
             guard let string = asn1.stringValue else {
-                throw X509.Error.invalidASN1(asn1, in: .generalName(.dnsName))
+                throw Error.invalidASN1(asn1)
             }
             self = .dnsName(string)
         case .x400Address:
@@ -82,35 +82,19 @@ extension GeneralName {
             self = .ediPartyName(try .init(from: asn1))
         case .uniformResourceIdentifier:
             guard let string = asn1.stringIdentifierValue else {
-                throw X509.Error.invalidASN1(asn1, in: .generalName(.uniformResourceIdentifier))
+                throw Error.invalidASN1(asn1)
             }
             self = .uniformResourceIdentifier(string)
         case .ipAddress:
             guard let bytes = asn1.dataValue else {
-               throw X509.Error.invalidASN1(asn1, in: .generalName(.ipAddress))
+               throw Error.invalidASN1(asn1)
             }
             self = .ipAddress(bytes)
         case .registeredId:
             guard let bytes = asn1.dataValue else {
-               throw X509.Error.invalidASN1(asn1, in: .generalName(.registeredId))
+               throw Error.invalidASN1(asn1)
             }
             self = .registeredId(.init(rawValue: bytes))
-        }
-    }
-}
-
-// Error
-
-extension GeneralName {
-    public enum Error {
-        public enum Origin {
-            case rootSequence
-            case generalName
-            case rfc822Name
-            case dnsName
-            case uniformResourceIdentifier
-            case ipAddress
-            case registeredId
         }
     }
 }

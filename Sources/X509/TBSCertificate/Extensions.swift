@@ -27,7 +27,7 @@ extension Array where Element == Extension {
             let container = contextSpecific.first,
             let sequence = container.sequenceValue else
         {
-            throw X509.Error.invalidASN1(asn1, in: .extension(.rootSequence))
+            throw Error.invalidASN1(asn1)
         }
         self = try sequence.map(Extension.init)
     }
@@ -47,7 +47,7 @@ extension Extension {
             values.count >= 2 && values.count <= 3,
             let id = values[0].objectIdentifierValue else
         {
-            throw X509.Error.invalidASN1(asn1, in: .extension(.format))
+            throw Error.invalidASN1(asn1)
         }
 
         self.id = id
@@ -56,13 +56,13 @@ extension Extension {
             self.isCritical = false
         } else  {
             guard let isCritical = values[1].booleanValue else {
-                throw X509.Error.invalidASN1(asn1, in: .extension(.isCritical))
+                throw Error.invalidASN1(asn1)
             }
             self.isCritical = isCritical
         }
 
         guard let bytes = values.last?.dataValue else {
-            throw X509.Error.invalidASN1(asn1, in: .extension(.dataValue))
+            throw Error.invalidASN1(asn1)
         }
         let value = try ASN1(from: bytes)
 
@@ -80,21 +80,7 @@ extension Extension {
         case .pkix(.some(.extension(.authorityInfoAccessSyntax))):
             self.value = .authorityInfoAccessMethod(try .init(from: value))
         default:
-            throw X509.Error.unimplemented(.extension(.id), data: asn1)
-        }
-    }
-}
-
-// MARK: Error
-
-extension Extension {
-    public enum Error {
-        public enum Origin {
-            case rootSequence
-            case format
-            case isCritical
-            case dataValue
-            case id
+            throw Error.unimplemented(asn1)
         }
     }
 }

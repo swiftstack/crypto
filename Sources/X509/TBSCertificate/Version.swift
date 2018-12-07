@@ -13,18 +13,8 @@ extension Version {
             let rawVersion = UInt8(exactly: value),
             let version = Version(rawValue: rawVersion) else
         {
-            throw X509.Error.invalidASN1(asn1, in: .version(.format))
+            throw Error.invalidASN1(asn1)
         }
         self = version
-    }
-}
-
-// MARK: Error
-
-extension Version {
-    public enum Error {
-        public enum Origin {
-            case format
-        }
     }
 }

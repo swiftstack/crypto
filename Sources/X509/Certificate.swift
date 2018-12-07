@@ -21,7 +21,7 @@ extension Certificate {
             let sequence = asn1.sequenceValue,
             sequence.count == 3
         else {
-            throw X509.Error.invalidASN1(asn1, in: .format)
+            throw Error.invalidASN1(asn1)
         }
         self.tbsCertificate = try .init(from: sequence[0])
         self.signature = try .init(

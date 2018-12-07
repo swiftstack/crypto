@@ -17,22 +17,12 @@ extension RelativeDistinguishedName {
         guard let items = asn1.setValue,
             items.count >= 1 else
         {
-            throw X509.Error.invalidASN1(asn1, in: .relativeDistinguishedName(.format))
+            throw Error.invalidASN1(asn1)
         }
         var components = Set<AttributeTypeAndValue>()
         for item in items {
             try components.insert(.init(from: item))
         }
         self.components = components
-    }
-}
-
-// MARK: Error
-
-extension RelativeDistinguishedName {
-    public enum Error {
-        public enum Origin {
-            case format
-        }
     }
 }
