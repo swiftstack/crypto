@@ -1,6 +1,6 @@
 import ASN1
 
-extension Certificate {
+extension TBSCertificate {
     public enum PublicKey: Equatable {
         case rsa(modulus: [UInt8], exponent: Int)
     }
@@ -8,7 +8,7 @@ extension Certificate {
 
 // https://tools.ietf.org/html/rfc5280#section-4.1.2.7
 
-extension Certificate.PublicKey {
+extension TBSCertificate.PublicKey {
     public init(from asn1: ASN1) throws {
         guard let sequence = asn1.sequenceValue,
             sequence.count == 2 else

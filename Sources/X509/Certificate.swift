@@ -1,34 +1,22 @@
 import ASN1
+import Time
 import Stream
 
+// https://tools.ietf.org/html/rfc5280
+
 public struct Certificate: Equatable {
-    public let version: Version
-    public let serialNumber: SerialNumber
+    public let tbsCertificate: TBSCertificate
     public let algorithm: Algorithm
-    public let issuer: Name
-    public let validity: Validity
-    public let subject: Name
-    public let publicKey: PublicKey
-    public let extensions: [Extension]
+    public let signature: Signature
 
     public init(
-        version: Version,
-        serialNumber: SerialNumber,
+        tbsCertificate: TBSCertificate,
         algorithm: Algorithm,
-        issuer: Name,
-        validity: Validity,
-        subject: Name,
-        publicKey: PublicKey,
-        extensions: [Extension])
+        signature: Signature)
     {
-        self.version = version
-        self.serialNumber = serialNumber
+        self.tbsCertificate = tbsCertificate
         self.algorithm = algorithm
-        self.issuer = issuer
-        self.validity = validity
-        self.subject = subject
-        self.publicKey = publicKey
-        self.extensions = extensions
+        self.signature = signature
     }
 }
 
@@ -36,19 +24,14 @@ public struct Certificate: Equatable {
 
 extension Certificate {
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count >= 8 else
-        {
-            throw X509.Error(.invalidSignature, asn1)
+        guard asn1.isConstructed,
+            let sequence = asn1.sequenceValue,
+            sequence.count == 3
+        else {
+            throw Error(.invalidX509, asn1)
         }
-
-        self.version = try Version(from: sequence[0])
-        self.serialNumber = try SerialNumber(from: sequence[1])
-        self.algorithm = try Algorithm(from: sequence[2])
-        self.issuer = try Name(from: sequence[3])
-        self.validity = try Validity(from: sequence[4])
-        self.subject = try Name(from: sequence[5])
-        self.publicKey = try PublicKey(from: sequence[6])
-        self.extensions = try [Extension](from: sequence[7])
+        self.tbsCertificate = try TBSCertificate(from: sequence[0])
+        self.algorithm = try Algorithm(from: sequence[1])
+        self.signature = try Signature(from: sequence[2])
     }
 }

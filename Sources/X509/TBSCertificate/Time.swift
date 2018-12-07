@@ -4,7 +4,7 @@ import Time
 
 public typealias SwiftCoreTime = Time
 
-extension Certificate {
+extension TBSCertificate {
     public enum Time: Equatable {
         case utc(SwiftCoreTime)
         case generalized(SwiftCoreTime)
@@ -13,7 +13,7 @@ extension Certificate {
 
 // https://tools.ietf.org/html/rfc5280#section-4.1
 
-extension Certificate.Time {
+extension TBSCertificate.Time {
     // Time ::= CHOICE {
     //   utcTime        UTCTime,
     //   generalTime    GeneralizedTime }

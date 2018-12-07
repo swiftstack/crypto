@@ -1,7 +1,7 @@
 import ASN1
 import Stream
 
-extension Certificate {
+extension TBSCertificate {
     public struct Extension: Equatable {
         var id: ASN1.ObjectIdentifier
         var isCritical: Bool
@@ -22,7 +22,7 @@ extension Certificate {
 
 // https://tools.ietf.org/html/rfc5280#section-4.2
 
-extension Array where Element == Certificate.Extension {
+extension Array where Element == TBSCertificate.Extension {
     // Extensions  ::=  SEQUENCE SIZE (1..MAX) OF Extension
     public init(from asn1: ASN1) throws {
         guard let contextSpecific = asn1.sequenceValue,
@@ -31,11 +31,11 @@ extension Array where Element == Certificate.Extension {
         {
             throw X509.Error(.invalidExtensions, asn1)
         }
-        self = try sequence.map(Certificate.Extension.init)
+        self = try sequence.map(TBSCertificate.Extension.init)
     }
 }
 
-extension Certificate.Extension {
+extension TBSCertificate.Extension {
     // Extension  ::=  SEQUENCE  {
     //   extnID      OBJECT IDENTIFIER,
     //   critical    BOOLEAN DEFAULT FALSE,

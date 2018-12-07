@@ -1,6 +1,6 @@
 import ASN1
 
-extension Certificate.Extension {
+extension TBSCertificate.Extension {
     public struct BasicConstrains: Equatable {
         public let isCA: Bool
         public let pathLen: Int?
@@ -17,7 +17,7 @@ extension Certificate.Extension {
 
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.9
 
-extension Certificate.Extension.BasicConstrains {
+extension TBSCertificate.Extension.BasicConstrains {
     public init(from asn1: ASN1) throws {
         guard let sequence = asn1.sequenceValue,
             // TODO: test

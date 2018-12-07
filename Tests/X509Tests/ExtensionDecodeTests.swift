@@ -3,7 +3,7 @@ import ASN1
 @testable import X509
 
 class ExtensionDecodeTests: TestCase {
-    typealias Extension = Certificate.Extension
+    typealias Extension = TBSCertificate.Extension
     typealias CRLDistributionPoints = Extension.CRLDistributionPoints
     typealias DistributionPoint = CRLDistributionPoints.DistributionPoint
     typealias Reasons = DistributionPoint.Reasons

@@ -1,7 +1,7 @@
 import ASN1
 import Stream
 
-extension Certificate {
+extension TBSCertificate {
     public struct Validity: Equatable {
         public let notBefore: Time
         public let notAfter: Time
@@ -13,7 +13,7 @@ extension Certificate {
     }
 }
 
-extension Certificate.Validity {
+extension TBSCertificate.Validity {
     // Validity ::= SEQUENCE {
     //   notBefore      Time,
     //   notAfter       Time }
@@ -23,7 +23,7 @@ extension Certificate.Validity {
         {
             throw X509.Error(.invalidValidity, asn1)
         }
-        self.notBefore = try Certificate.Time(from: sequence[0])
-        self.notAfter = try Certificate.Time(from: sequence[1])
+        self.notBefore = try TBSCertificate.Time(from: sequence[0])
+        self.notAfter = try TBSCertificate.Time(from: sequence[1])
     }
 }

@@ -19,7 +19,7 @@ class X509DecodeTests: TestCase {
                             tag: .integer),
                             content: .integer(.sane(2)))
                     ]))
-            let version = try Certificate.Version(from: asn1)
+            let version = try TBSCertificate.Version(from: asn1)
             assertEqual(version, .v3)
         }
     }
@@ -38,14 +38,14 @@ class X509DecodeTests: TestCase {
                     tag: .integer),
                 content: .integer(.insane(serialNumberBytes)))
 
-            let serialNumber = try Certificate.SerialNumber(from: asn1)
+            let serialNumber = try TBSCertificate.SerialNumber(from: asn1)
             assertEqual(serialNumber.bytes, serialNumberBytes)
         }
     }
 
     func testTime() {
         scope {
-            let time = try Certificate.Time(from: .init(
+            let time = try TBSCertificate.Time(from: .init(
                 identifier: .init(
                     isConstructed: false,
                     class: .universal,
@@ -58,7 +58,7 @@ class X509DecodeTests: TestCase {
         }
 
         scope {
-            let time = try Certificate.Time(from: .init(
+            let time = try TBSCertificate.Time(from: .init(
                 identifier: .init(
                     isConstructed: false,
                     class: .universal,
@@ -99,7 +99,7 @@ class X509DecodeTests: TestCase {
                         ]))
                     ]))
 
-            let validity = try Certificate.Validity(from: asn1)
+            let validity = try TBSCertificate.Validity(from: asn1)
             assertEqual(validity.notBefore, .utc(Time(1368706755.0)))
             assertEqual(validity.notAfter, .utc(Time(1368879555.0)))
         }

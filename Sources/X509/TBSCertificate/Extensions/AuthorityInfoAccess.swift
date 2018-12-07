@@ -1,6 +1,6 @@
 import ASN1
 
-extension Certificate.Extension {
+extension TBSCertificate.Extension {
     public typealias AuthorityInfoAccess = [AccessDescription]
 
     public struct AccessDescription: Equatable {
@@ -19,7 +19,7 @@ extension Certificate.Extension {
 
 // https://tools.ietf.org/html/rfc5280#section-4.2.2.1
 
-extension Array where Element == Certificate.Extension.AccessDescription {
+extension Array where Element == TBSCertificate.Extension.AccessDescription {
     public init(from asn1: ASN1) throws {
         // AuthorityInfoAccessSyntax  ::=
         //  SEQUENCE SIZE (1..MAX) OF AccessDescription
@@ -28,11 +28,11 @@ extension Array where Element == Certificate.Extension.AccessDescription {
         {
             throw X509.Error(.invalidAuthorityInfoAccess, asn1)
         }
-        self = try sequence.map(Certificate.Extension.AccessDescription.init)
+        self = try sequence.map(TBSCertificate.Extension.AccessDescription.init)
     }
 }
 
-extension Certificate.Extension.AccessDescription {
+extension TBSCertificate.Extension.AccessDescription {
     // AccessDescription  ::=  SEQUENCE {
     //   accessMethod          OBJECT IDENTIFIER,
     //   accessLocation        GeneralName  }

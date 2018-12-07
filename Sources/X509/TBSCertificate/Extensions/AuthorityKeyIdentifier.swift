@@ -1,7 +1,7 @@
 import ASN1
 
-extension Certificate.Extension {
-    public typealias SerialNumber = Certificate.SerialNumber
+extension TBSCertificate.Extension {
+    public typealias SerialNumber = TBSCertificate.SerialNumber
 
     public struct AuthorityKeyIdentifier: Equatable {
         public var keyIdentifier: KeyIdentifier?
@@ -30,7 +30,7 @@ extension Certificate.Extension {
 
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.9
 
-extension Certificate.Extension.AuthorityKeyIdentifier {
+extension TBSCertificate.Extension.AuthorityKeyIdentifier {
     // AuthorityKeyIdentifier ::= SEQUENCE {
     //   keyIdentifier             [0] KeyIdentifier           OPTIONAL,
     //   authorityCertIssuer       [1] GeneralNames            OPTIONAL,
@@ -53,7 +53,7 @@ extension Certificate.Extension.AuthorityKeyIdentifier {
     }
 }
 
-extension Certificate.Extension.KeyIdentifier {
+extension TBSCertificate.Extension.KeyIdentifier {
     // KeyIdentifier ::= OCTET STRING
     public init(from asn1: ASN1) throws {
         guard let bytes = asn1.dataValue else {

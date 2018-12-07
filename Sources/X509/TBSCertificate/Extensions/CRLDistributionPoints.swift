@@ -1,6 +1,6 @@
 import ASN1
 
-extension Certificate.Extension {
+extension TBSCertificate.Extension {
     public struct CRLDistributionPoints: Equatable {
         public let distributionPoints: [DistributionPoint]
 
@@ -48,7 +48,7 @@ extension Certificate.Extension {
 
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.13
 
-typealias Extension = Certificate.Extension
+typealias Extension = TBSCertificate.Extension
 
 extension Extension.CRLDistributionPoints {
     public init(from asn1: ASN1) throws {

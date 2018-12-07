@@ -1,6 +1,6 @@
 import ASN1
 
-extension Certificate.Extension {
+extension TBSCertificate.Extension {
     public struct KeyUsage: OptionSet, Equatable {
         public let rawValue: UInt16
 
