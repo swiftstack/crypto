@@ -24,9 +24,26 @@ extension AttributeTypeAndValue {
             sequence.count == 2,
             let type = sequence[0].objectIdentifierValue else
         {
-            throw X509.Error(.invalidAttributeTypeAndValue, asn1)
+            throw Error.invalidASN1(asn1, origin: .header)
         }
         self.type = type
         self.value = sequence[1]
+    }
+}
+
+// MARK: Error
+
+extension AttributeTypeAndValue {
+    public enum Error {
+        public enum Origin {
+            case header
+        }
+
+        static func invalidASN1(_ asn1: ASN1, origin: Origin) -> X509.Error {
+            return .init(
+                .invalidASN1,
+                in: .attributeTypeAndValue(origin),
+                data: asn1)
+        }
     }
 }

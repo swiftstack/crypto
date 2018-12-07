@@ -16,9 +16,19 @@ extension OtherName {
             sequence.count == 2,
             let type = sequence[0].objectIdentifierValue else
         {
-            throw X509.Error(.invalidOtherName, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .otherName(.format))
         }
         self.type = type
         self.value = sequence[1]
+    }
+}
+
+// MARK: Error
+
+extension OtherName {
+    public enum Error {
+        public enum Origin {
+            case format
+        }
     }
 }

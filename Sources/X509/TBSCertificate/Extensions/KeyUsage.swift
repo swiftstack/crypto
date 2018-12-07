@@ -1,6 +1,6 @@
 import ASN1
 
-extension TBSCertificate.Extension {
+extension Extension {
     public struct KeyUsage: OptionSet, Equatable {
         public let rawValue: UInt16
 
@@ -20,7 +20,7 @@ extension TBSCertificate.Extension {
     }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.2.1.3
+// MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.2.1.3
 
 extension Extension.KeyUsage {
     // KeyUsage ::= BIT STRING {
@@ -39,8 +39,18 @@ extension Extension.KeyUsage {
             let data = asn1.dataValue,
             data.count == 2 else
         {
-            throw X509.Error(.invalidKeyUsage, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .keyUsage(.format))
         }
         self.rawValue = UInt16(data[1]) << 8 | UInt16(data[0])
+    }
+}
+
+// MARK: Error
+
+extension Extension.KeyUsage {
+    public enum Error {
+        public enum Origin {
+            case format
+        }
     }
 }

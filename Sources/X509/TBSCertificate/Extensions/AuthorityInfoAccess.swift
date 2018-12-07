@@ -1,6 +1,6 @@
 import ASN1
 
-extension TBSCertificate.Extension {
+extension Extension {
     public typealias AuthorityInfoAccess = [AccessDescription]
 
     public struct AccessDescription: Equatable {
@@ -17,22 +17,22 @@ extension TBSCertificate.Extension {
     }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.2.2.1
+// MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.2.2.1
 
-extension Array where Element == TBSCertificate.Extension.AccessDescription {
+extension Array where Element == Extension.AccessDescription {
     public init(from asn1: ASN1) throws {
         // AuthorityInfoAccessSyntax  ::=
         //  SEQUENCE SIZE (1..MAX) OF AccessDescription
         guard let sequence = asn1.sequenceValue,
             sequence.count > 0 else
         {
-            throw X509.Error(.invalidAuthorityInfoAccess, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .authorityInfoAccess(.rootSequence))
         }
-        self = try sequence.map(TBSCertificate.Extension.AccessDescription.init)
+        self = try sequence.map(Extension.AccessDescription.init)
     }
 }
 
-extension TBSCertificate.Extension.AccessDescription {
+extension Extension.AccessDescription {
     // AccessDescription  ::=  SEQUENCE {
     //   accessMethod          OBJECT IDENTIFIER,
     //   accessLocation        GeneralName  }
@@ -41,9 +41,20 @@ extension TBSCertificate.Extension.AccessDescription {
             sequence.count == 2,
             let method = sequence[0].objectIdentifierValue else
         {
-            throw X509.Error(.invalidAccessDescription, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .authorityInfoAccess(.accessDescription))
         }
         self.method = method
         self.location = try .init(from: sequence[1])
+    }
+}
+
+// MARK: Error
+
+extension Extension.AccessDescription {
+    public enum Error {
+        public enum Origin {
+            case rootSequence
+            case accessDescription
+        }
     }
 }

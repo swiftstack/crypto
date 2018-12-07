@@ -1,6 +1,6 @@
 import ASN1
 
-extension TBSCertificate.Extension {
+extension Extension {
     public struct CRLDistributionPoints: Equatable {
         public let distributionPoints: [DistributionPoint]
 
@@ -46,9 +46,7 @@ extension TBSCertificate.Extension {
     }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.2.1.13
-
-typealias Extension = TBSCertificate.Extension
+// MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.2.1.13
 
 extension Extension.CRLDistributionPoints {
     public init(from asn1: ASN1) throws {
@@ -56,7 +54,7 @@ extension Extension.CRLDistributionPoints {
         guard let sequence = asn1.sequenceValue,
             sequence.count > 0 else
         {
-            throw X509.Error(.invalidCRLDistributionPoints, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.rootSequence))
         }
         self.distributionPoints = try sequence.map(DistributionPoint.init)
     }
@@ -71,18 +69,18 @@ extension Extension.CRLDistributionPoints.DistributionPoint {
         guard let sequence = asn1.sequenceValue,
             sequence.count <= 3 else
         {
-            throw X509.Error(.invalidDistributionPoint, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.distributionPoint))
         }
         self.init()
         for item in sequence {
             guard let value = item.sequenceValue?.first else {
-                throw X509.Error(.invalidDistributionPoint, asn1)
+                throw X509.Error.invalidASN1(item, in: .crlDistributionPoints(.distributionPointItem))
             }
             switch item.tag.rawValue {
             case 0: self.name = try .init(from: value)
             case 1: self.reasons = try .init(from: value)
             case 2: self.crlIssuer = try .init(from: value)
-            default: throw X509.Error(.invalidDistributionPoint, item)
+            default: throw X509.Error.invalidASN1(item, in: .crlDistributionPoints(.distributionPointItem))
             }
         }
     }
@@ -94,12 +92,12 @@ extension Extension.CRLDistributionPoints.DistributionPoint.Name {
     //     nameRelativeToCRLIssuer [1]     RelativeDistinguishedName }
     public init(from asn1: ASN1) throws {
         guard asn1.class == .contextSpecific else {
-            throw X509.Error(.invalidDistributionPointName, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.distributionPointName))
         }
         switch asn1.tag.rawValue {
         case 0: self = .full(try .init(from: asn1))
         case 1: self = .relativeToCRLIssuer(try .init(from: asn1))
-        default: throw X509.Error(.invalidDistributionPointName, asn1)
+        default: throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.distributionPointName))
         }
     }
 }
@@ -120,8 +118,22 @@ extension Extension.CRLDistributionPoints.DistributionPoint.Reasons {
             let data = asn1.dataValue,
             data.count == 2 else
         {
-            throw X509.Error(.invalidDistributionPointReasons, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .crlDistributionPoints(.distributionPointReasons))
         }
         self.rawValue = UInt16(data[1]) << 8 | UInt16(data[0])
+    }
+}
+
+// MARK: Error
+
+extension Extension.CRLDistributionPoints {
+    public enum Error {
+        public enum Origin {
+            case rootSequence
+            case distributionPoint
+            case distributionPointItem
+            case distributionPointName
+            case distributionPointReasons
+        }
     }
 }

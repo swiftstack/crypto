@@ -1,10 +1,9 @@
 import ASN1
-import Stream
 
 public struct TBSCertificate: Equatable {
     public let version: Version
     public let serialNumber: SerialNumber
-    public let algorithm: Algorithm
+    public let signature: Signature.Algorithm
     public let issuer: Name
     public let validity: Validity
     public let subject: Name
@@ -14,7 +13,7 @@ public struct TBSCertificate: Equatable {
     public init(
         version: Version,
         serialNumber: SerialNumber,
-        algorithm: Algorithm,
+        signature: Signature.Algorithm,
         issuer: Name,
         validity: Validity,
         subject: Name,
@@ -23,7 +22,7 @@ public struct TBSCertificate: Equatable {
     {
         self.version = version
         self.serialNumber = serialNumber
-        self.algorithm = algorithm
+        self.signature = signature
         self.issuer = issuer
         self.validity = validity
         self.subject = subject
@@ -32,23 +31,33 @@ public struct TBSCertificate: Equatable {
     }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.1
+// MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.1
 
 extension TBSCertificate {
     public init(from asn1: ASN1) throws {
         guard let sequence = asn1.sequenceValue,
             sequence.count >= 8 else
         {
-            throw X509.Error(.invalidSignature, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .tbsCertificate(.format))
         }
 
         self.version = try Version(from: sequence[0])
         self.serialNumber = try SerialNumber(from: sequence[1])
-        self.algorithm = try Algorithm(from: sequence[2])
+        self.signature = try Signature.Algorithm(from: sequence[2])
         self.issuer = try Name(from: sequence[3])
         self.validity = try Validity(from: sequence[4])
         self.subject = try Name(from: sequence[5])
         self.publicKey = try PublicKey(from: sequence[6])
         self.extensions = try [Extension](from: sequence[7])
+    }
+}
+
+// MARK: Error
+
+extension TBSCertificate {
+    public enum Error {
+        public enum Origin {
+            case format
+        }
     }
 }

@@ -3,14 +3,12 @@ import ASN1
 @testable import X509
 
 class ExtensionDecodeTests: TestCase {
-    typealias Extension = TBSCertificate.Extension
     typealias CRLDistributionPoints = Extension.CRLDistributionPoints
     typealias DistributionPoint = CRLDistributionPoints.DistributionPoint
     typealias Reasons = DistributionPoint.Reasons
     typealias KeyUsage = Extension.KeyUsage
     typealias AuthorityKeyIdentifier = Extension.AuthorityKeyIdentifier
     typealias KeyIdentifier = Extension.KeyIdentifier
-
 
     func testReasons() {
         scope {

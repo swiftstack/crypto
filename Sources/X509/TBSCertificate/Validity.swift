@@ -1,19 +1,19 @@
 import ASN1
-import Stream
+import Time
 
-extension TBSCertificate {
-    public struct Validity: Equatable {
-        public let notBefore: Time
-        public let notAfter: Time
+public struct Validity: Equatable {
+    public let notBefore: TimeVariant
+    public let notAfter: TimeVariant
 
-        public init(notBefore: Time, notAfter: Time) {
-            self.notBefore = notBefore
-            self.notAfter = notAfter
-        }
+    public init(notBefore: TimeVariant, notAfter: TimeVariant) {
+        self.notBefore = notBefore
+        self.notAfter = notAfter
     }
 }
 
-extension TBSCertificate.Validity {
+// MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.1.2.5
+
+extension Validity {
     // Validity ::= SEQUENCE {
     //   notBefore      Time,
     //   notAfter       Time }
@@ -21,9 +21,19 @@ extension TBSCertificate.Validity {
         guard let sequence = asn1.sequenceValue,
             sequence.count == 2 else
         {
-            throw X509.Error(.invalidValidity, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .validity(.format))
         }
-        self.notBefore = try TBSCertificate.Time(from: sequence[0])
-        self.notAfter = try TBSCertificate.Time(from: sequence[1])
+        self.notBefore = try TimeVariant(from: sequence[0])
+        self.notAfter = try TimeVariant(from: sequence[1])
+    }
+}
+
+// MARK: Error
+
+extension Validity {
+    public enum Error {
+        public enum Origin {
+            case format
+        }
     }
 }

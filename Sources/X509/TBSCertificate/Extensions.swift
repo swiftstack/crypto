@@ -1,41 +1,39 @@
 import ASN1
 import Stream
 
-extension TBSCertificate {
-    public struct Extension: Equatable {
-        var id: ASN1.ObjectIdentifier
-        var isCritical: Bool
-        var value: Variant
+public struct Extension: Equatable {
+    var id: ASN1.ObjectIdentifier
+    var isCritical: Bool
+    var value: Variant
 
-        enum Variant: Equatable {
-        // id-ce-*
-        case subjectKeyIdentifier(SubjectKeyIdentifier)
-        case keyUsage(KeyUsage)
-        case basicConstrains(BasicConstrains)
-        case crlDistributionPoints(CRLDistributionPoints)
-        case authorityKeyIdentifier(AuthorityKeyIdentifier)
-        // id-pe-*
-        case authorityInfoAccessMethod(AuthorityInfoAccess)
-        }
+    enum Variant: Equatable {
+    // id-ce-*
+    case subjectKeyIdentifier(SubjectKeyIdentifier)
+    case keyUsage(KeyUsage)
+    case basicConstrains(BasicConstrains)
+    case crlDistributionPoints(CRLDistributionPoints)
+    case authorityKeyIdentifier(AuthorityKeyIdentifier)
+    // id-pe-*
+    case authorityInfoAccessMethod(AuthorityInfoAccess)
     }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.2
+// MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.2
 
-extension Array where Element == TBSCertificate.Extension {
+extension Array where Element == Extension {
     // Extensions  ::=  SEQUENCE SIZE (1..MAX) OF Extension
     public init(from asn1: ASN1) throws {
         guard let contextSpecific = asn1.sequenceValue,
             let container = contextSpecific.first,
             let sequence = container.sequenceValue else
         {
-            throw X509.Error(.invalidExtensions, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .extension(.rootSequence))
         }
-        self = try sequence.map(TBSCertificate.Extension.init)
+        self = try sequence.map(Extension.init)
     }
 }
 
-extension TBSCertificate.Extension {
+extension Extension {
     // Extension  ::=  SEQUENCE  {
     //   extnID      OBJECT IDENTIFIER,
     //   critical    BOOLEAN DEFAULT FALSE,
@@ -49,7 +47,7 @@ extension TBSCertificate.Extension {
             values.count >= 2 && values.count <= 3,
             let id = values[0].objectIdentifierValue else
         {
-            throw X509.Error(.invalidExtension, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .extension(.format))
         }
 
         self.id = id
@@ -58,13 +56,13 @@ extension TBSCertificate.Extension {
             self.isCritical = false
         } else  {
             guard let isCritical = values[1].booleanValue else {
-                throw X509.Error(.invalidExtension, asn1)
+                throw X509.Error.invalidASN1(asn1, in: .extension(.isCritical))
             }
             self.isCritical = isCritical
         }
 
         guard let bytes = values.last?.dataValue else {
-            throw X509.Error(.invalidExtension, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .extension(.dataValue))
         }
         let value = try ASN1(from: bytes)
 
@@ -82,7 +80,21 @@ extension TBSCertificate.Extension {
         case .pkix(.some(.extension(.authorityInfoAccessSyntax))):
             self.value = .authorityInfoAccessMethod(try .init(from: value))
         default:
-            throw X509.Error(.unimplementedExtension, asn1)
+            throw X509.Error.unimplemented(.extension(.id), data: asn1)
+        }
+    }
+}
+
+// MARK: Error
+
+extension Extension {
+    public enum Error {
+        public enum Origin {
+            case rootSequence
+            case format
+            case isCritical
+            case dataValue
+            case id
         }
     }
 }

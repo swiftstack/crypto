@@ -1,8 +1,6 @@
 import ASN1
 
-extension TBSCertificate.Extension {
-    public typealias SerialNumber = TBSCertificate.SerialNumber
-
+extension Extension {
     public struct AuthorityKeyIdentifier: Equatable {
         public var keyIdentifier: KeyIdentifier?
         public var authorityCertIssuer: GeneralNames?
@@ -18,19 +16,11 @@ extension TBSCertificate.Extension {
             self.authorityCertSerialNumber = authorityCertSerialNumber
         }
     }
-
-    public struct KeyIdentifier: RawRepresentable, Equatable {
-        public var rawValue: [UInt8]
-
-        public init(rawValue: [UInt8]) {
-            self.rawValue = rawValue
-        }
-    }
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.2.1.9
+// MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.2.1.9
 
-extension TBSCertificate.Extension.AuthorityKeyIdentifier {
+extension Extension.AuthorityKeyIdentifier {
     // AuthorityKeyIdentifier ::= SEQUENCE {
     //   keyIdentifier             [0] KeyIdentifier           OPTIONAL,
     //   authorityCertIssuer       [1] GeneralNames            OPTIONAL,
@@ -39,7 +29,7 @@ extension TBSCertificate.Extension.AuthorityKeyIdentifier {
         guard let sequence = asn1.sequenceValue,
             sequence.count <= 3 else
         {
-            throw X509.Error(.invalidAuthorityKeyIdentifier, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .authorityKeyIdentifier(.rootSequence))
         }
         self.init()
         for item in sequence {
@@ -47,18 +37,19 @@ extension TBSCertificate.Extension.AuthorityKeyIdentifier {
             case 0: self.keyIdentifier = try .init(from: item)
             case 1: self.authorityCertIssuer = try .init(from: item)
             case 2: self.authorityCertSerialNumber = try .init(from: item)
-            default: throw X509.Error(.invalidAuthorityKeyIdentifier, item)
+            default: throw X509.Error.invalidASN1(item, in: .authorityKeyIdentifier(.tag))
             }
         }
     }
 }
 
-extension TBSCertificate.Extension.KeyIdentifier {
-    // KeyIdentifier ::= OCTET STRING
-    public init(from asn1: ASN1) throws {
-        guard let bytes = asn1.dataValue else {
-            throw X509.Error(.invalidKeyIdentifier, asn1)
+// MARK: Error
+
+extension Extension.AuthorityKeyIdentifier {
+    public enum Error {
+        public enum Origin {
+            case rootSequence
+            case tag
         }
-        self.rawValue = bytes
     }
 }

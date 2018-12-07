@@ -1,19 +1,15 @@
 import ASN1
-import Stream
 import Time
+import Stream
 
-public typealias SwiftCoreTime = Time
-
-extension TBSCertificate {
-    public enum Time: Equatable {
-        case utc(SwiftCoreTime)
-        case generalized(SwiftCoreTime)
-    }
+public enum TimeVariant: Equatable {
+    case utc(Time)
+    case generalized(Time)
 }
 
-// https://tools.ietf.org/html/rfc5280#section-4.1
+// MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.1
 
-extension TBSCertificate.Time {
+extension TimeVariant {
     // Time ::= CHOICE {
     //   utcTime        UTCTime,
     //   generalTime    GeneralizedTime }
@@ -21,19 +17,30 @@ extension TBSCertificate.Time {
         guard let bytes = asn1.dataValue,
             let time = Time(validity: bytes) else
         {
-            throw X509.Error(.invalidTime, asn1)
+            throw X509.Error.invalidASN1(asn1, in: .time(.format))
         }
         switch asn1.tag {
-            case .utcTime: self = .utc(time)
-            case .generalizedTime: self = .generalized(time)
-            default: throw X509.Error(.invalidTime, asn1)
+        case .utcTime: self = .utc(time)
+        case .generalizedTime: self = .generalized(time)
+        default: throw X509.Error.invalidASN1(asn1, in: .time(.tag))
+        }
+    }
+}
+
+// MARK: Error
+
+extension TimeVariant {
+    public enum Error {
+        public enum Origin {
+            case format
+            case tag
         }
     }
 }
 
 // MARK: Utils
 
-extension Time {
+private extension Time {
     init?(validity: [UInt8]) {
         let string = String(decoding: validity, as: UTF8.self)
         self.init(string, format: "%d%m%y%H%M%S")
