@@ -53,3 +53,9 @@ public struct Error: Swift.Error {
             context: asn1)
     }
 }
+
+extension Error: CustomStringConvertible {
+    public var description: String {
+        return "\(source.file):\(source.line) context: \(context)"
+    }
+}

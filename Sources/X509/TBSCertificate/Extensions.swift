@@ -13,6 +13,7 @@ public struct Extension: Equatable {
     case basicConstrains(BasicConstrains)
     case crlDistributionPoints(CRLDistributionPoints)
     case authorityKeyIdentifier(AuthorityKeyIdentifier)
+    case certificatePolicies(CertificatePolicies)
     // id-pe-*
     case authorityInfoAccessMethod(AuthorityInfoAccess)
     }
@@ -79,6 +80,8 @@ extension Extension {
             self.value = .authorityKeyIdentifier(try .init(from: value))
         case .pkix(.some(.extension(.authorityInfoAccessSyntax))):
             self.value = .authorityInfoAccessMethod(try .init(from: value))
+        case .certificateExtension(.some(.certificatePolicies)):
+            self.value = .certificatePolicies(try .init(from: value))
         default:
             throw Error.unimplemented(asn1)
         }

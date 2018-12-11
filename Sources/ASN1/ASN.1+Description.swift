@@ -127,13 +127,20 @@ extension ASN1.ObjectIdentifier.Attribute: CustomStringConvertible {
 extension ASN1.ObjectIdentifier.CertificateExtension: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .subjectKeyIdentifier: return ".subjectKeyIdentifier"
-        case .keyUsage: return ".keyUsage"
-        case .basicConstrains: return ".basicConstrains"
-        case .crlDistributionPoints: return ".crlDistributionPoints"
-        case .certificatePolicies: return ".certificatePolicies"
-        case .authorityKeyIdentifier: return ".authorityKeyIdentifier"
-        case .extKeyUsage: return ".extKeyUsage"
+        case .subjectKeyIdentifier:
+            return ".subjectKeyIdentifier"
+        case .keyUsage:
+            return ".keyUsage"
+        case .basicConstrains:
+            return ".basicConstrains"
+        case .crlDistributionPoints:
+            return ".crlDistributionPoints"
+        case .certificatePolicies(let value):
+            return ".certificatePolicies(\(value))"
+        case .authorityKeyIdentifier:
+            return ".authorityKeyIdentifier"
+        case .extKeyUsage:
+            return ".extKeyUsage"
         }
     }
 }
