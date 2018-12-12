@@ -36,6 +36,7 @@ extension ASN1 {
         public enum CertificateExtension: Equatable, Hashable {
             case subjectKeyIdentifier
             case keyUsage
+            case subjectAltName
             case basicConstrains
             case crlDistributionPoints
             case certificatePolicies(CertificatePolicy?)
@@ -141,6 +142,7 @@ extension ASN1 {
             static let objectId: [UInt8] = [0x55, 0x1d]
             static let subjectKeyIdentifier = objectId + [0x0e]
             static let keyUsage = objectId + [0x0f]
+            static let subjectAltName = objectId + [0x11]
             static let basicConstrains = objectId + [0x13]
             static let crlDistributionPoints = objectId + [0x1f]
             static let authorityKeyIdentifier = objectId + [0x23]
@@ -333,6 +335,7 @@ extension ASN1.ObjectIdentifier.CertificateExtension: ObjectIdentifierProtocol {
         switch self {
         case .subjectKeyIdentifier: return Raw.subjectKeyIdentifier
         case .keyUsage: return Raw.keyUsage
+        case .subjectAltName: return Raw.subjectAltName
         case .basicConstrains: return Raw.basicConstrains
         case .crlDistributionPoints: return Raw.crlDistributionPoints
         case .certificatePolicies(.none): return CertificatePolicies.objectId
@@ -346,6 +349,7 @@ extension ASN1.ObjectIdentifier.CertificateExtension: ObjectIdentifierProtocol {
         switch bytes {
         case Raw.subjectKeyIdentifier: self = .subjectKeyIdentifier
         case Raw.keyUsage: self = .keyUsage
+        case Raw.subjectAltName: self = .subjectAltName
         case Raw.basicConstrains: self = .basicConstrains
         case Raw.crlDistributionPoints: self = .crlDistributionPoints
         case Raw.CertificatePolicies.objectId: self = .certificatePolicies(nil)

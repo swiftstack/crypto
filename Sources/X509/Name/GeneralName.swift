@@ -16,8 +16,6 @@ public enum GeneralName: Equatable {
 // https://tools.ietf.org/html/rfc5280#section-4.2.1.6
 
 public typealias GeneralNames = [GeneralName]
-// SubjectAltName ::= GeneralNames
-public typealias SubjectAltName = GeneralNames
 // IssuerAltName ::= GeneralNames
 public typealias IssuerAltName = GeneralNames
 
@@ -70,10 +68,10 @@ extension GeneralName {
             }
             self = .rfc822Name(string)
         case .dnsName:
-            guard let string = asn1.stringValue else {
+            guard case .integer(.insane(let bytes)) = asn1.content else {
                 throw Error.invalidASN1(asn1)
             }
-            self = .dnsName(string)
+            self = .dnsName(String(decoding: bytes, as: UTF8.self))
         case .x400Address:
             self = .x400Address(try .init(from: asn1))
         case .directoryName:

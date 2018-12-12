@@ -135,6 +135,8 @@ extension ASN1.ObjectIdentifier.CertificateExtension: CustomStringConvertible {
             return ".subjectKeyIdentifier"
         case .keyUsage:
             return ".keyUsage"
+        case .subjectAltName:
+            return ".subjectAltName"
         case .basicConstrains:
             return ".basicConstrains"
         case .crlDistributionPoints:
