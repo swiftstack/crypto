@@ -56,6 +56,6 @@ public struct Error: Swift.Error {
 
 extension Error: CustomStringConvertible {
     public var description: String {
-        return "\(source.file):\(source.line) context: \(context)"
+        return "\n\(source.file):\(source.line) - \(reason) - \(context)"
     }
 }

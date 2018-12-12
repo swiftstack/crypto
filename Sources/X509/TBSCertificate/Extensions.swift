@@ -10,6 +10,7 @@ public struct Extension: Equatable {
     // id-ce-*
     case subjectKeyIdentifier(SubjectKeyIdentifier)
     case keyUsage(KeyUsage)
+    case extKeyUsage(ExtendedKeyUsage)
     case basicConstrains(BasicConstrains)
     case crlDistributionPoints(CRLDistributionPoints)
     case authorityKeyIdentifier(AuthorityKeyIdentifier)
@@ -72,6 +73,8 @@ extension Extension {
             self.value = .subjectKeyIdentifier(try .init(from: value))
         case .certificateExtension(.some(.keyUsage)):
             self.value = .keyUsage(try .init(from: value))
+        case .certificateExtension(.some(.extKeyUsage)):
+            self.value = .extKeyUsage(try .init(from: value))
         case .certificateExtension(.some(.basicConstrains)):
             self.value = .basicConstrains(try .init(from: value))
         case .certificateExtension(.some(.crlDistributionPoints)):

@@ -107,6 +107,43 @@ class ExtensionDecodeTests: TestCase {
         }
     }
 
+    func testExtKeyUsage() {
+        scope {
+            let asn1 = ASN1(
+                identifier: .init(
+                    isConstructed: true,
+                    class: .universal,
+                    tag: .sequence),
+                content: .sequence([
+                    .init(
+                        identifier: .init(
+                            isConstructed: false,
+                            class: .universal,
+                            tag: .objectIdentifier),
+                        content: .objectIdentifier(
+                            .certificateExtension(.extKeyUsage))),
+                    .init(
+                        identifier: .init(
+                            isConstructed: false,
+                            class: .universal,
+                            tag: .octetString),
+                        content: .data([
+                            0x30, 0x14, 0x06, 0x08, 0x2b, 0x06, 0x01, 0x05,
+                            0x05, 0x07, 0x03, 0x01, 0x06, 0x08, 0x2b, 0x06,
+                            0x01, 0x05, 0x05, 0x07, 0x03, 0x02
+                        ]))
+                ]))
+            let expected: Extension = .init(
+                id: .certificateExtension(.extKeyUsage),
+                isCritical: false,
+                value: .extKeyUsage(.init(keyPurposeIds: [
+                    .other([43, 6, 1, 5, 5, 7, 3, 1]),
+                    .other([43, 6, 1, 5, 5, 7, 3, 2])])))
+            let extKeyUsage: Extension = try .init(from: asn1)
+            assertEqual(extKeyUsage, expected)
+        }
+    }
+
     func testAuthorityKeyIdentifierExtension() {
         scope {
             let authorityKeyIdentifierExtension = try Extension(from: .init(
