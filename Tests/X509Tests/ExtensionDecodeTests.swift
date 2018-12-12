@@ -136,9 +136,9 @@ class ExtensionDecodeTests: TestCase {
             let expected: Extension = .init(
                 id: .certificateExtension(.extKeyUsage),
                 isCritical: false,
-                value: .extKeyUsage(.init(keyPurposeIds: [
-                    .other([43, 6, 1, 5, 5, 7, 3, 1]),
-                    .other([43, 6, 1, 5, 5, 7, 3, 2])])))
+                value: .extKeyUsage(.init(keyPurposes: [
+                    .serverAuth,
+                    .clientAuth])))
             let extKeyUsage: Extension = try .init(from: asn1)
             assertEqual(extKeyUsage, expected)
         }

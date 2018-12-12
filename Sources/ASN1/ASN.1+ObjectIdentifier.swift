@@ -49,6 +49,7 @@ extension ASN1 {
         public enum Pkix: Equatable, Hashable {
             case `extension`(Extension)
             case policyQualifier(PolicyQualifier)
+            case keyPurpose(KeyPurpose)
             case accessDescription(AccessDescription)
 
             public enum Extension: Equatable, Hashable {
@@ -58,6 +59,13 @@ extension ASN1 {
             public enum PolicyQualifier {
                 case cps
                 case unotice
+            }
+
+            public enum KeyPurpose: Equatable {
+                case serverAuth
+                case clientAuth
+                // TODO: delete?
+                indirect case other(ASN1.ObjectIdentifier)
             }
 
             public enum AccessDescription: Equatable, Hashable {
@@ -154,6 +162,14 @@ extension ASN1 {
 
                 static let cps = objectId + [0x01]
                 static let unotice = objectId + [0x02]
+            }
+
+            enum KeyPurpose {
+                // 1.3.6.1.5.5.7.3.*
+                static let objectId: [UInt8] = Pkix.objectId + [0x03]
+
+                static let serverAuth = objectId + [0x01]
+                static let clientAuth = objectId + [0x02]
             }
 
             enum AccessDescription {
@@ -322,6 +338,12 @@ extension ASN1.ObjectIdentifier.Pkix: ObjectIdentifierProtocol {
             return Raw.PolicyQualifier.cps
         case .policyQualifier(.unotice):
             return Raw.PolicyQualifier.unotice
+        case .keyPurpose(.serverAuth):
+            return Raw.KeyPurpose.serverAuth
+        case .keyPurpose(.clientAuth):
+            return Raw.KeyPurpose.clientAuth
+        case .keyPurpose(.other(let id)):
+            return id.rawValue
         case .accessDescription(.oscp(.basicResponse)):
             return Raw.AccessDescription.OSCP.basicResponse
         case .accessDescription(.oscp(.nonce)):
@@ -347,6 +369,10 @@ extension ASN1.ObjectIdentifier.Pkix: ObjectIdentifierProtocol {
             self = .policyQualifier(.cps)
         case Raw.PolicyQualifier.unotice:
             self = .policyQualifier(.unotice)
+        case Raw.KeyPurpose.serverAuth:
+            self = .keyPurpose(.serverAuth)
+        case Raw.KeyPurpose.clientAuth:
+            self = .keyPurpose(.clientAuth)
         case Raw.AccessDescription.OSCP.basicResponse:
             self = .accessDescription(.oscp(.basicResponse))
         case Raw.AccessDescription.OSCP.nonce:

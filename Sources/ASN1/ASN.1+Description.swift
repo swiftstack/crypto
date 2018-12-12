@@ -97,7 +97,7 @@ extension ASN1.ObjectIdentifier: CustomStringConvertible {
         case .pkix(.some(let value)):
             return ".pkix(\(value))"
         case .other(let value):
-            return ".other(\(value))"
+            return ".other(\"\(stringValue)\")"
         }
     }
 }
@@ -154,6 +154,12 @@ extension ASN1.ObjectIdentifier.Pkix: CustomStringConvertible {
             return ".policyQualifier(.cps)"
         case .policyQualifier(.unotice):
             return ".policyQualifier(.unotice)"
+        case .keyPurpose(.serverAuth):
+            return ".keyPurpose(.serverAuth)"
+        case .keyPurpose(.clientAuth):
+            return ".keyPurpose(.clientAuth)"
+        case .keyPurpose(.other(let id)):
+            return ".keyPurpose(.other(\(id.stringValue)))"
         case .accessDescription(.oscp(.basicResponse)):
             return ".accessDescription(.oscp(.basicResponse))"
         case .accessDescription(.oscp(.nonce)):
