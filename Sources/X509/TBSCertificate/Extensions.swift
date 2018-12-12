@@ -17,6 +17,12 @@ public struct Extension: Equatable {
     case certificatePolicies(CertificatePolicies)
     // id-pe-*
     case authorityInfoAccessMethod(AuthorityInfoAccess)
+    // netscape
+    case netscape(Netscape)
+    }
+
+    public enum Netscape: Equatable {
+        case certificateType(CertificateType)
     }
 }
 
@@ -85,6 +91,8 @@ extension Extension {
             self.value = .authorityInfoAccessMethod(try .init(from: value))
         case .certificateExtension(.some(.certificatePolicies)):
             self.value = .certificatePolicies(try .init(from: value))
+        case .netscape(.some(.certificateExtension(.certificateType))):
+            self.value = .netscape(.certificateType(try .init(from: value)))
         default:
             throw Error.unimplemented(asn1)
         }

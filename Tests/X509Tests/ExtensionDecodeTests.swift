@@ -300,4 +300,52 @@ class ExtensionDecodeTests: TestCase {
 
         }
     }
+
+    func testCertificateType() {
+        scope {
+            let asn1 = ASN1(
+                identifier: .init(
+                isConstructed: true,
+                class: .universal,
+                tag: .sequence),
+                content: .sequence([
+                    .init(
+                        identifier: .init(
+                            isConstructed: false,
+                            class: .universal,
+                            tag: .objectIdentifier),
+                        content: .objectIdentifier(
+                            .netscape(.certificateExtension(.certificateType)))
+                    ),
+                    .init(
+                        identifier: .init(
+                            isConstructed: false,
+                            class: .universal,
+                            tag: .octetString),
+                        content: .data([0x03, 0x02, 0x06, 0xc0]))
+                ]))
+
+            let expected: Extension = .init(
+                id: .netscape(.certificateExtension(.certificateType)),
+                isCritical: false,
+                value: .netscape(.certificateType(.init(
+                    padding: 0x06,
+                    rawValue: 0xc0))))
+            let certificateType = try Extension(from: asn1)
+            assertEqual(certificateType, expected)
+
+            switch certificateType.value {
+            case .netscape(.certificateType(let value)):
+                assertTrue(value.contains(.sslClient))
+                assertTrue(value.contains(.sslServer))
+                assertFalse(value.contains(.smime))
+                assertFalse(value.contains(.objectSigning))
+                assertFalse(value.contains(.sslCA))
+                assertFalse(value.contains(.smimeCA))
+                assertFalse(value.contains(.objectSigningCA))
+            default:
+                fail("unreachable")
+            }
+        }
+    }
 }

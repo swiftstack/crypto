@@ -11,6 +11,7 @@ extension ASN1 {
         case certificateExtension(CertificateExtension?)
         // MARK: id-pkix-*
         case pkix(Pkix?)
+        case netscape(Netscape?)
         // MARK: unknown
         case other([UInt8])
 
@@ -80,6 +81,14 @@ extension ASN1 {
                     case crlReference
                     case nocheck
                 }
+            }
+        }
+
+        public enum Netscape {
+            case `certificateExtension`(CertificateExtension)
+
+            public enum CertificateExtension {
+                case certificateType
             }
         }
     }
@@ -178,7 +187,8 @@ extension ASN1 {
 
                 enum OSCP {
                     // 1.3.6.1.5.5.7.48.1.*
-                    static let objectId: [UInt8] = AccessDescription.objectId + [0x01]
+                    static let objectId: [UInt8] =
+                        AccessDescription.objectId + [0x01]
                     static let basicResponse = objectId + [0x01]
                     static let nonce = objectId + [0x02]
                     static let crlReference = objectId + [0x03]
@@ -188,6 +198,21 @@ extension ASN1 {
                 static let caIssuers: [UInt8] = objectId + [0x02]
                 static let timeStamping: [UInt8] = objectId + [0x03]
                 static let caRepository: [UInt8] = objectId + [0x05]
+            }
+        }
+
+        // MARK: Netscape Certificate Extensions
+
+        enum Netscape {
+            // 2.16.840.1.113730 (netscape)
+            static let objectId: [UInt8] = [
+                0x60, 0x86, 0x48, 0x01, 0x86, 0xf8, 0x42]
+
+            enum CertificateExtension {
+                // 2.16.840.1.113730.1 (cert-ext)
+                static let objectId: [UInt8] = Netscape.objectId + [0x01]
+                // 2.16.840.1.113730.1.1 (cert-type)
+                static let certificateType: [UInt8] = objectId + [0x01]
             }
         }
     }
@@ -213,6 +238,8 @@ extension ASN1.ObjectIdentifier: ObjectIdentifierProtocol {
         case .certificateExtension(.some(let value)): return value.rawValue
         case .pkix(.none): return Raw.Pkix.objectId
         case .pkix(.some(let value)): return value.rawValue
+        case .netscape(.none): return Raw.Netscape.objectId
+        case .netscape(.some(let value)): return value.rawValue
         case .other(let value): return value
         }
     }
@@ -236,6 +263,11 @@ extension ASN1.ObjectIdentifier: ObjectIdentifierProtocol {
         case _ where bytes.starts(with: Raw.Pkix.objectId):
             switch Pkix(rawValue: bytes) {
             case .some(let value): self = .pkix(value)
+            case .none: self = .other(bytes)
+            }
+        case _ where bytes.starts(with: Raw.Netscape.objectId):
+            switch Netscape(rawValue: bytes) {
+            case .some(let value): self = .netscape(value)
             case .none: self = .other(bytes)
             }
         default:
@@ -388,6 +420,28 @@ extension ASN1.ObjectIdentifier.Pkix: ObjectIdentifierProtocol {
         case Raw.AccessDescription.caRepository:
             self = .accessDescription(.caRepository)
         default: return nil
+        }
+    }
+}
+
+// MARK: ObjectIdentifier.Netscape
+
+extension ASN1.ObjectIdentifier.Netscape: ObjectIdentifierProtocol {
+    typealias Raw = ASN1.ObjectIdentifierBytes.Netscape
+
+    public var rawValue: [UInt8] {
+        switch self {
+        case .certificateExtension(.certificateType):
+            return Raw.CertificateExtension.certificateType
+        }
+    }
+
+    public init?(rawValue bytes: [UInt8]) {
+        switch bytes {
+        case Raw.CertificateExtension.certificateType:
+            self = .certificateExtension(.certificateType)
+        default:
+            return nil
         }
     }
 }

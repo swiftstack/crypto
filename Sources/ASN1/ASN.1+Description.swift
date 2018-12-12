@@ -96,7 +96,11 @@ extension ASN1.ObjectIdentifier: CustomStringConvertible {
             return ".pkix"
         case .pkix(.some(let value)):
             return ".pkix(\(value))"
-        case .other(let value):
+        case .netscape(.none):
+            return ".netscape"
+        case .netscape(.some(let value)):
+            return ".netscape(\(value))"
+        case .other:
             return ".other(\"\(stringValue)\")"
         }
     }
@@ -136,7 +140,7 @@ extension ASN1.ObjectIdentifier.CertificateExtension: CustomStringConvertible {
         case .crlDistributionPoints:
             return ".crlDistributionPoints"
         case .certificatePolicies(let value):
-            return ".certificatePolicies(\(value))"
+            return ".certificatePolicies(\(String(describing: value)))"
         case .authorityKeyIdentifier:
             return ".authorityKeyIdentifier"
         case .extKeyUsage:
@@ -174,6 +178,15 @@ extension ASN1.ObjectIdentifier.Pkix: CustomStringConvertible {
             return ".accessDescription(.timeStamping)"
         case .accessDescription(.caRepository):
             return ".accessDescription(.caRepository)"
+        }
+    }
+}
+
+extension ASN1.ObjectIdentifier.Netscape: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .certificateExtension(.certificateType):
+            return ".certificateExtension(.certificateType)"
         }
     }
 }
