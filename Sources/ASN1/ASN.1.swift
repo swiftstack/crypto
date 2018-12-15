@@ -164,8 +164,8 @@ extension ASN1 {
 extension ASN1.Identifier.Tag {
     var isString: Bool {
         switch self {
-        // TODO: handle all cases (printableString, etc.)
-        case .ia5String, .visibleString: return true
+        // TODO: handle all cases (graphicString, teletexString etc.)
+        case .ia5String, .visibleString, .printableString: return true
         default: return false
         }
     }
