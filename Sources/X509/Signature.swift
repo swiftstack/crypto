@@ -37,37 +37,18 @@ public struct Signature: Equatable {
 
 extension Signature {
     public init(from asn1: ASN1) throws {
-        fatalError()
+        fatalError("unimplemented")
     }
 }
 
 extension Signature.Algorithm {
-    // AlgorithmIdentifier  ::=  SEQUENCE  {
-    //   algorithm               OBJECT IDENTIFIER,
-    //   parameters              ANY DEFINED BY algorithm OPTIONAL  }
-    //                              -- contains a value of the type
-    //                              -- registered for use with the
-    //                              -- algorithm object identifier value
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count >= 2,
-            let value = sequence.first,
-            let oid = value.objectIdentifierValue else
-        {
-            throw Error.invalidASN1(asn1)
-        }
-        switch oid {
-        // TODO: move to public key
-        // case .rsaEncryption:
-        //     self = .rsa
+        let algorithmIdentifier = try AlgorithmIdentifier(from: asn1)
+        // TODO: Use enum Signature with payload
+        switch algorithmIdentifier.objectId {
         case .sha256WithRSAEncryption:
             self = .sha256WithRSA
         default:
-            throw Error.unimplemented(asn1)
-        }
-        // TODO: imlement parameters
-        let parameters = sequence[1]
-        guard parameters.tag == .null else {
             throw Error.unimplemented(asn1)
         }
     }

@@ -39,11 +39,14 @@ extension PublicKey {
         {
             throw Error.invalidASN1(asn1)
         }
-        let algorithm = try Signature.Algorithm(from: sequence[0])
+        let algorithmIdentifier = try AlgorithmIdentifier(from: sequence[0])
         guard let bitString = BitString(from: sequence[1]) else {
             throw Error.invalidASN1(asn1)
         }
         let key = try ASN1(from: bitString.bytes)
-        self = .rsa(try .init(from: key))
+        switch algorithmIdentifier.objectId {
+        case .rsaEncryption: self = .rsa(try .init(from: key))
+        default: throw Error.unimplemented(asn1)
+        }
     }
 }
