@@ -75,7 +75,11 @@ extension GeneralName {
         case .x400Address:
             self = .x400Address(try .init(from: asn1))
         case .directoryName:
-            self = .directoryName(try .init(from: asn1))
+            // TODO: test why this is nested
+            guard let sequence = asn1.sequenceValue, sequence.count == 1 else {
+                throw Error.invalidASN1(asn1)
+            }
+            self = .directoryName(try .init(from: sequence[0]))
         case .ediPartyName:
             self = .ediPartyName(try .init(from: asn1))
         case .uniformResourceIdentifier:
