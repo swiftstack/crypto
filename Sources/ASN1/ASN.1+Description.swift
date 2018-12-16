@@ -1,79 +1,77 @@
 import Hex
 
-extension String {
-    func shiftingRight(by spaces: Int) -> String {
-        let lines = self.split(separator: "\n")
-        return lines[0] + "\n" + lines[1...]
-            .map{ String(repeating: " ", count: spaces) + $0 }
-            .joined(separator: "\n")
+extension Array where Element == ASN1 {
+    func dump(format: Format) -> String {
+        guard !self.isEmpty else {
+            return "[]"
+        }
+        var result = "["
+        let prefix = format.nextLevel.prefix
+        for item in self {
+            result += "\n"
+            result += prefix
+            result += item.dump(format: format.nextLevel)
+            result += ","
+        }
+        result.removeLast()
+        result += "\n"
+        result += format.prefix
+        result += "]"
+        return result
     }
 }
 
 extension ASN1: CustomStringConvertible {
-    func prettyDescription(level: Int) -> String {
+    func dump(format: Format) -> String {
+        let prefix = format.nextLevel.prefix
         return """
-
-        .init(
-            identifier: \(identifier.prettyDescription(level: level + 1)),
-            content: \(content.prettyDescription(level: level + 1)))
-        """.shiftingRight(by: level * 4)
+            .init(
+            \(prefix)identifier: \(identifier.dump(format: format.nextLevel)),
+            \(prefix)content: \(content.dump(format: format.nextLevel)))
+            """
     }
 
     public var description: String {
-        return prettyDescription(level: 0)
+        return dump(format: .prettify)
     }
 }
 
 extension ASN1.Identifier: CustomStringConvertible {
-    func prettyDescription(level: Int) -> String {
+    func dump(format: Format) -> String {
+        let prefix = format.nextLevel.prefix
         return """
-
-        .init(
-            isConstructed: \(isConstructed),
-            class: .\(`class`),
-            tag: .\(tag))
-        """.shiftingRight(by: level * 4)
+            .init(
+            \(prefix)isConstructed: \(isConstructed),
+            \(prefix)class: .\(`class`),
+            \(prefix)tag: .\(tag))
+            """
     }
 
     public var description: String {
-        return prettyDescription(level: 0)
+        return dump(format: .prettify)
     }
 }
 
 extension ASN1.Content: CustomStringConvertible {
-    func prettyDescription(level: Int) -> String {
-        let description: String
+    func dump(format: Format) -> String {
         switch self {
         case .boolean(let value):
-            description = """
-                .boolean(\(value))
-                """
+            return ".boolean(\(value))"
         case .integer(let value):
-            description = """
-                .integer(\(value))
-                """
+            return ".integer(\(value))"
         case .string(let value):
-            description = """
-                .string(\"\(value)\")
-                """
+            return ".string(\"\(value)\")"
         case .data(let value):
-            description = """
-                .data(\(String(encodingToHex: value))
-                """
+            return ".data([\(String(encodingToHex: value))])"
         case .sequence(let value):
-            description = """
-                .sequence(\(value))
-                """
+            return ".sequence(\(value.dump(format: format)))"
         case .objectIdentifier(let value):
-            description = """
-                .objectIdentifier(\(value))
-                """
+            return ".objectIdentifier(\(value))"
         }
-        return description.shiftingRight(by: level * 4)
     }
 
     public var description: String {
-        return prettyDescription(level: 0)
+        return dump(format: .prettify)
     }
 }
 
@@ -189,6 +187,51 @@ extension ASN1.ObjectIdentifier.Netscape: CustomStringConvertible {
         switch self {
         case .certificateExtension(.certificateType):
             return ".certificateExtension(.certificateType)"
+        }
+    }
+}
+
+enum Format {
+    case compact
+    case prettify
+    case prettifyAt(level: Int)
+
+    var isPrettify: Bool {
+        switch self {
+        case .compact: return false
+        case .prettify: return true
+        case .prettifyAt: return true
+        }
+    }
+
+    var level: Int {
+        switch self {
+        case .compact: return 0
+        case .prettify: return 0
+        case .prettifyAt(let level): return level
+        }
+    }
+
+    var nextLevel: Format {
+        switch self {
+        case .compact: return .compact
+        case .prettify: return .prettifyAt(level: 1)
+        case .prettifyAt(let level): return .prettifyAt(level: level + 1)
+        }
+    }
+
+    var parentLevel: Format {
+        switch self {
+        case .compact: return .compact
+        case .prettify: return .prettify
+        case .prettifyAt(let level): return .prettifyAt(level: level - 1)
+        }
+    }
+
+    var prefix: String {
+        switch level {
+        case ...0: return ""
+        default: return .init(repeating: " ", count: level * 4)
         }
     }
 }
