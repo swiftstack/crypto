@@ -16,6 +16,10 @@ public struct Certificate: Equatable {
 // MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.1
 
 extension Certificate {
+    // Certificate  ::=  SEQUENCE  {
+    //   tbsCertificate       TBSCertificate,
+    //   signatureAlgorithm   AlgorithmIdentifier,
+    //   signatureValue       BIT STRING  }
     public init(from asn1: ASN1) throws {
         guard asn1.isConstructed,
             let sequence = asn1.sequenceValue,
