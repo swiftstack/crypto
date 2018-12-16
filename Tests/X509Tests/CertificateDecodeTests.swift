@@ -39,7 +39,19 @@ class CertificateDecodeTests: TestCase {
                 content: .integer(.insane(serialNumberBytes)))
 
             let serialNumber = try SerialNumber(from: asn1)
-            assertEqual(serialNumber.bytes, serialNumberBytes)
+            assertEqual(serialNumber.value, .insane(serialNumberBytes))
+        }
+
+        scope {
+            let asn1 = ASN1(
+                identifier: .init(
+                    isConstructed: false,
+                    class: .universal,
+                    tag: .integer),
+                content: .integer(.sane(65568)))
+
+            let serialNumber = try SerialNumber(from: asn1)
+            assertEqual(serialNumber.value, .sane(65568))
         }
     }
 
