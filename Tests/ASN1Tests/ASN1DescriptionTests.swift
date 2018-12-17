@@ -76,7 +76,7 @@ class ASN1DescriptionTests: TestCase {
                                 isConstructed: false,
                                 class: .universal,
                                 tag: .octetString),
-                            content: .data([030205a0]))
+                            content: .data([0x03, 0x02, 0x05, 0xa0]))
                     ]))
                 """
             assertEqual(asn1.description, expected)

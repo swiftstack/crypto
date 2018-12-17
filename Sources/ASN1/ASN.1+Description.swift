@@ -62,7 +62,7 @@ extension ASN1.Content: CustomStringConvertible {
         case .string(let value):
             return ".string(\"\(value)\")"
         case .data(let value):
-            return ".data([\(String(encodingToHex: value))])"
+            return ".data(\(String(encodingToHex: value, format: .array)))"
         case .sequence(let value):
             return ".sequence(\(value.dump(format: format)))"
         case .objectIdentifier(let value):
