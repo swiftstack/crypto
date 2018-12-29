@@ -4,8 +4,8 @@ public struct AttributeTypeAndValue: Hashable {
     public let type: ASN1.ObjectIdentifier
     public let value: ASN1
 
-    public var hashValue: Int {
-        return type.hashValue
+    public func hash(into hasher: inout Hasher) {
+        type.hash(into: &hasher)
     }
 }
 
