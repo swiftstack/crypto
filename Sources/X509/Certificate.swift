@@ -32,4 +32,8 @@ extension Certificate {
             algorithm: .init(from: sequence[1]),
             value: .init(from: sequence[2]))
     }
+
+    public func encode() -> ASN1 {
+        fatalError("unimplemented")
+    }
 }
