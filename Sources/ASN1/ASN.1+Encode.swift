@@ -70,7 +70,7 @@ extension ASN1 {
         }
 
         func write(_ values: [ASN1]) throws {
-            try stream.withSubStream(sizedBy: Length.self) { stream in
+            try stream.withSubStreamWriter(sizedBy: Length.self) { stream in
                 for value in values {
                     try value.encode(to: stream)
                 }

@@ -47,17 +47,17 @@ extension ASN1 {
 }
 
 extension StreamReader {
-    func withSubStream<T>(
+    func withSubStreamReader<T>(
         sizedBy type: ASN1.Length.Type,
         body: (SubStreamReader) throws -> T) throws -> T
     {
         let length = try ASN1.Length(from: self)
-        return try withSubStream(limitedBy: length.value, body: body)
+        return try withSubStreamReader(limitedBy: length.value, body: body)
     }
 }
 
 extension StreamWriter {
-    func withSubStream(
+    func withSubStreamWriter(
         sizedBy type: ASN1.Length.Type,
         body: (SubStreamWriter) throws -> Void) throws
     {

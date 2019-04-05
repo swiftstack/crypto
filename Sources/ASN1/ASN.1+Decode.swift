@@ -46,7 +46,7 @@ extension ASN1 {
 
             switch identifier.isConstructed {
             case true:
-                content = try stream.withSubStream(sizedBy: Length.self)
+                content = try stream.withSubStreamReader(sizedBy: Length.self)
                 { stream in
                     var children = [ASN1]()
                     while !stream.isEmpty {
