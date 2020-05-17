@@ -14,7 +14,9 @@ extension SHA1.Hash {
 extension Array where Element == UInt8 {
     public init(_ hash: SHA1.Hash) {
         var hash = hash.bigEndian
-        self = [UInt8](UnsafeRawBufferPointer(start: &hash, count: 20))
+        self = Swift.withUnsafeBytes(of: &hash) { buffer in
+            return [UInt8](buffer)
+        }
     }
 
     public func sha1() -> [UInt8] {

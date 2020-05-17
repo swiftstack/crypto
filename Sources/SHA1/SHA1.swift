@@ -40,11 +40,8 @@ public struct SHA1 {
         reminder.removeAll(keepingCapacity: true)
     }
 
-    public mutating func update(_ bytes: [UInt8]) {
-        var bytes = UnsafeRawBufferPointer(
-            start: bytes,
-            count: bytes.count)
-
+    mutating func update(_ bytes: UnsafeRawBufferPointer) {
+        var bytes = bytes
         processed += UInt64(bytes.count) << 3
 
         if reminder.count > 0 {
@@ -55,9 +52,7 @@ public struct SHA1 {
             reminder.append(
                 contentsOf: bytes.prefix(upTo: blockSize - reminder.count))
 
-            transform(UnsafeRawBufferPointer(
-                start: reminder,
-                count: reminder.count))
+            transform(reminder)
 
             bytes = UnsafeRawBufferPointer(
                 rebasing: bytes.suffix(from: blockSize))
@@ -85,9 +80,7 @@ public struct SHA1 {
             for _ in 0..<endIndex {
                 reminder.append(0)
             }
-            transform(UnsafeRawBufferPointer(
-                start: reminder,
-                count: reminder.count))
+            transform(reminder)
             reminder.removeAll(keepingCapacity: true)
         }
 
@@ -96,14 +89,16 @@ public struct SHA1 {
             reminder.append(0)
         }
 
-        UnsafeMutableRawPointer(mutating: reminder)
-            .advanced(by: blockSize - 8)
-            .assumingMemoryBound(to: UInt64.self)
-            .pointee = processed.bigEndian
+        @inline(__always)
+        // suppress warnings for UnsafePointer
+        func writeProcessed(to pointer: UnsafeMutableRawPointer) {
+            pointer.advanced(by: blockSize - 8)
+                .assumingMemoryBound(to: UInt64.self)
+                .pointee = processed.bigEndian
+        }
+        writeProcessed(to: &reminder)
 
-        transform(UnsafeRawBufferPointer(
-            start: reminder,
-            count: reminder.count))
+        transform(reminder)
 
         defer { reset() }
         return intermediateHash
@@ -262,7 +257,7 @@ public struct SHA1 {
                 start: blocks.baseAddress!
                     .advanced(by: i)
                     .assumingMemoryBound(to: UInt32.self),
-                count: blockSize / 4 // MemoryLayout<UInt32>.size
+                count: blockSize / MemoryLayout<UInt32>.size
             )
 
             x.0 = block[0].bigEndian
@@ -379,5 +374,25 @@ public struct SHA1 {
             d = intermediateHash.d
             e = intermediateHash.e
         }
+    }
+}
+
+// suppress warnings for UnsafePointer
+
+extension SHA1 {
+    public mutating func update(_ bytes: [UInt8]) {
+        self.update(pointer: bytes, count: bytes.count)
+    }
+
+    private mutating func update(pointer: UnsafePointer<UInt8>, count: Int) {
+        self.update(.init(start: pointer, count: count))
+    }
+
+    private mutating func transform(_ bytes: [UInt8]) {
+        transform(pointer: bytes, count: bytes.count)
+    }
+
+    private mutating func transform(pointer: UnsafePointer<UInt8>, count: Int) {
+        transform(.init(start: pointer, count: count))
     }
 }
