@@ -6,7 +6,7 @@ class ASN1LengthTests: TestCase {
     func testReadLength1Octet() {
         scope {
             let length = try ASN1.Length(from: InputByteStream([0x81, 0x01]))
-            assertEqual(length.value, 1)
+            expect(length.value == 1)
         }
     }
 
@@ -14,7 +14,7 @@ class ASN1LengthTests: TestCase {
         scope {
             let length = try ASN1.Length(
                 from: InputByteStream([0x82, 0x00, 0x01]))
-            assertEqual(length.value, 1)
+            expect(length.value == 1)
         }
     }
 
@@ -22,7 +22,7 @@ class ASN1LengthTests: TestCase {
         scope {
             let length = try ASN1.Length(
                 from: InputByteStream([0x84, 0x00, 0x00, 0x00, 0x01]))
-            assertEqual(length.value, 1)
+            expect(length.value == 1)
         }
     }
 }

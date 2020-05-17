@@ -20,7 +20,7 @@ class CertificateDecodeTests: TestCase {
                             content: .integer(.sane(2)))
                     ]))
             let version = try Version(from: asn1)
-            assertEqual(version, .v3)
+            expect(version == .v3)
         }
     }
 
@@ -39,7 +39,7 @@ class CertificateDecodeTests: TestCase {
                 content: .integer(.insane(serialNumberBytes)))
 
             let serialNumber = try SerialNumber(from: asn1)
-            assertEqual(serialNumber.value, .insane(serialNumberBytes))
+            expect(serialNumber.value == .insane(serialNumberBytes))
         }
 
         scope {
@@ -51,7 +51,7 @@ class CertificateDecodeTests: TestCase {
                 content: .integer(.sane(65568)))
 
             let serialNumber = try SerialNumber(from: asn1)
-            assertEqual(serialNumber.value, .sane(65568))
+            expect(serialNumber.value == .sane(65568))
         }
     }
 
@@ -66,7 +66,7 @@ class CertificateDecodeTests: TestCase {
                     0x31, 0x36, 0x30, 0x35, 0x31, 0x33, 0x31, 0x32,
                     0x31, 0x39, 0x31, 0x35, 0x5a
                 ])))
-            assertEqual(time, .utc(Time(1368706755.0)))
+            expect(time == .utc(Time(1368706755.0)))
         }
 
         scope {
@@ -79,7 +79,7 @@ class CertificateDecodeTests: TestCase {
                     0x31, 0x36, 0x30, 0x35, 0x31, 0x33, 0x31, 0x32,
                     0x31, 0x39, 0x31, 0x35, 0x5a
                 ])))
-            assertEqual(time, .generalized(Time(1368706755.0)))
+            expect(time == .generalized(Time(1368706755.0)))
         }
     }
 
@@ -112,8 +112,8 @@ class CertificateDecodeTests: TestCase {
                     ]))
 
             let validity = try Validity(from: asn1)
-            assertEqual(validity.notBefore, .utc(Time(1368706755.0)))
-            assertEqual(validity.notAfter, .utc(Time(1368879555.0)))
+            expect(validity.notBefore == .utc(Time(1368706755.0)))
+            expect(validity.notAfter == .utc(Time(1368879555.0)))
         }
     }
 
@@ -154,7 +154,7 @@ class CertificateDecodeTests: TestCase {
                                 ]))
                         ])),
                 ])))
-            assertEqual(name, .rdnSequence(RDNSequence([
+            expect(name == .rdnSequence(RDNSequence([
                 .init([
                     .init(
                         type: .attribute(.commonName),
@@ -192,7 +192,7 @@ class CertificateDecodeTests: TestCase {
                         content: .string("RU")
                     )
                 ])))
-            assertEqual(typeValue, .init(
+            expect(typeValue == .init(
                 type: .attribute(.countryName),
                 value: .init(
                     identifier: .init(
@@ -211,7 +211,7 @@ class CertificateDecodeTests: TestCase {
                     class: .universal,
                     tag: .printableString),
                 content: .string("RU")))
-            assertEqual(directoryString, .printableString("RU"))
+            expect(directoryString == .printableString("RU"))
         }
     }
 
@@ -238,7 +238,7 @@ class CertificateDecodeTests: TestCase {
                             tag: .utf8String),
                         content: .string("Unique Name"))
                 ])))
-            assertEqual(otherName, .init(
+            expect(otherName == .init(
                 type: .attribute(.commonName),
                 value: .init(
                     identifier: .init(
@@ -271,7 +271,7 @@ class CertificateDecodeTests: TestCase {
                         content: .data([]))
                 ]))
             let algorithmIdentifier = try AlgorithmIdentifier(from: asn1)
-            assertEqual(algorithmIdentifier, .init(
+            expect(algorithmIdentifier == .init(
                 objectId: .rsaEncryption,
                 parameters: nil))
         }
@@ -347,7 +347,7 @@ class CertificateDecodeTests: TestCase {
                     ]))
 
             let publicKey = try PublicKey(from: asn1)
-            assertEqual(publicKey, .rsa(.init(
+            expect(publicKey == .rsa(.init(
                 modulus: [
                     0x00, 0xdf, 0x8b, 0x73, 0x06, 0x95, 0xff, 0x53,
                     0x9a, 0xcb, 0x03, 0xab, 0xd2, 0xe0, 0xfd, 0x3e,

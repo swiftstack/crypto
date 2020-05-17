@@ -209,7 +209,7 @@ class OCSPDecodeTests: TestCase {
         scope {
             let asn1 = try ASN1(from: bytes)
             let response = try OCSP.Response(from: asn1)
-            assertNotNil(response)
+            expect(response != nil)
         }
     }
 }

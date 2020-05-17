@@ -5,18 +5,18 @@ class ASN1DecodeTests: TestCase {
     func testUniversalSequence() {
         scope {
             let identifier = try ASN1.Identifier(from: [0x30])
-            assertEqual(identifier.isConstructed, true)
-            assertEqual(identifier.class, .universal)
-            assertEqual(identifier.tag, .sequence)
+            expect(identifier.isConstructed == true)
+            expect(identifier.class == .universal)
+            expect(identifier.tag == .sequence)
         }
     }
 
     func testContextSpecificEndOfContent() {
         scope {
             let identifier = try ASN1.Identifier(from: [0xa0])
-            assertEqual(identifier.isConstructed, true)
-            assertEqual(identifier.class, .contextSpecific)
-            assertEqual(identifier.tag, .endOfContent)
+            expect(identifier.isConstructed == true)
+            expect(identifier.class == .contextSpecific)
+            expect(identifier.tag == .endOfContent)
         }
     }
 
@@ -24,27 +24,27 @@ class ASN1DecodeTests: TestCase {
         scope {
             let asn1f = try ASN1(from: [0x01, 0x01, 0x00])
             let asn1t = try ASN1(from: [0x01, 0x01, 0xFF])
-            assertEqual(asn1f.identifier, .init(
+            expect(asn1f.identifier == .init(
                 isConstructed: false,
                 class: .universal,
                 tag: .boolean))
-            assertEqual(asn1t.identifier, .init(
+            expect(asn1t.identifier == .init(
                 isConstructed: false,
                 class: .universal,
                 tag: .boolean))
-            assertEqual(asn1f.content, .boolean(false))
-            assertEqual(asn1t.content, .boolean(true))
+            expect(asn1f.content == .boolean(false))
+            expect(asn1t.content == .boolean(true))
         }
     }
 
     func testContentEnumerated() {
         scope {
             let result = try ASN1(from: [0x0a, 0x01, 0x00])
-            assertEqual(result.identifier, .init(
+            expect(result.identifier == .init(
                 isConstructed: false,
                 class: .universal,
                 tag: .enumerated))
-            assertEqual(result.content, .integer(.sane(0)))
+            expect(result.content == .integer(.sane(0)))
         }
     }
 
@@ -54,11 +54,11 @@ class ASN1DecodeTests: TestCase {
                     0x17, 0x0d,
                     0x31, 0x36, 0x30, 0x35, 0x31, 0x33,
                     0x31, 0x32, 0x31, 0x39, 0x31, 0x35, 0x5a])
-            assertEqual(result.identifier, .init(
+            expect(result.identifier == .init(
                 isConstructed: false,
                 class: .universal,
                 tag: .utcTime))
-            assertEqual(result.content, .data([
+            expect(result.content == .data([
                 0x31, 0x36, 0x30, 0x35, 0x31, 0x33,
                 0x31, 0x32, 0x31, 0x39, 0x31, 0x35, 0x5a]))
         }
@@ -71,11 +71,11 @@ class ASN1DecodeTests: TestCase {
                 0x0a, 0x01, 0x00,
                 0x0a, 0x01, 0x00
             ])
-            assertEqual(result.identifier, .init(
+            expect(result.identifier == .init(
                 isConstructed: true,
                 class: .universal,
                 tag: .sequence))
-            assertEqual(result.content, .sequence([
+            expect(result.content == .sequence([
                 .init(
                     identifier: .init(
                         isConstructed: false,
@@ -97,11 +97,11 @@ class ASN1DecodeTests: TestCase {
             let result = try ASN1(from: [
                 0x13, 0x02, 0x52, 0x55
             ])
-            assertEqual(result.identifier, .init(
+            expect(result.identifier == .init(
                 isConstructed: false,
                 class: .universal,
                 tag: .printableString))
-            assertEqual(result.content, .string("RU"))
+            expect(result.content == .string("RU"))
         }
     }
 
@@ -114,11 +114,11 @@ class ASN1DecodeTests: TestCase {
                 0x6e, 0x20, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
                 0x65
             ])
-            assertEqual(result.identifier, .init(
+            expect(result.identifier == .init(
                 isConstructed: false,
                 class: .universal,
                 tag: .utf8String))
-            assertEqual(result.content, .string("Certum Validation Service"))
+            expect(result.content == .string("Certum Validation Service"))
         }
     }
 
@@ -127,12 +127,15 @@ class ASN1DecodeTests: TestCase {
             let result = try ASN1(from: [
                     0x06, 0x09,
                     0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b])
-            assertEqual(result.identifier, .init(
+
+            expect(result.identifier ==  .init(
                 isConstructed: false,
                 class: .universal,
                 tag: .objectIdentifier))
-            assertEqual(
-                result.content,
+
+            expect(
+                result.content
+                ==
                 .objectIdentifier(.sha256WithRSAEncryption))
         }
     }

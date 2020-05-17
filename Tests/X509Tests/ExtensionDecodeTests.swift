@@ -20,15 +20,15 @@ class ExtensionDecodeTests: TestCase {
                 content: .data([
                     0b1000_0000, 0b1111_1111
                 ])))
-            assertTrue(reasons.contains(.unused))
-            assertTrue(reasons.contains(.keyCompromise))
-            assertTrue(reasons.contains(.caCompromise))
-            assertTrue(reasons.contains(.affiliationChanged))
-            assertTrue(reasons.contains(.superseded))
-            assertTrue(reasons.contains(.cessationOfOperation))
-            assertTrue(reasons.contains(.certificateHold))
-            assertTrue(reasons.contains(.privilegeWithdrawn))
-            assertTrue(reasons.contains(.aaCompromise))
+            expect(reasons.contains(.unused))
+            expect(reasons.contains(.keyCompromise))
+            expect(reasons.contains(.caCompromise))
+            expect(reasons.contains(.affiliationChanged))
+            expect(reasons.contains(.superseded))
+            expect(reasons.contains(.cessationOfOperation))
+            expect(reasons.contains(.certificateHold))
+            expect(reasons.contains(.privilegeWithdrawn))
+            expect(reasons.contains(.aaCompromise))
         }
     }
 
@@ -60,8 +60,8 @@ class ExtensionDecodeTests: TestCase {
                             tag: .octetString),
                         content: .data([0x03, 0x02, 0x05, 0xa0]))
                 ])))
-            assertEqual(keyUsageExtension.id, .certificateExtension(.keyUsage))
-            assertEqual(keyUsageExtension.isCritical, true)
+            expect(keyUsageExtension.id == .certificateExtension(.keyUsage))
+            expect(keyUsageExtension.isCritical == true)
             guard case .keyUsage(_) = keyUsageExtension.value else {
                 fail()
                 return
@@ -77,15 +77,15 @@ class ExtensionDecodeTests: TestCase {
                     class: .universal,
                     tag: .bitString),
                 content: .data([0x05, 0xa0])))
-            assertTrue(keyUsage.contains(.digitalSignature))
-            assertFalse(keyUsage.contains(.nonRepudiation))
-            assertTrue(keyUsage.contains(.keyEncipherment))
-            assertFalse(keyUsage.contains(.dataEncipherment))
-            assertFalse(keyUsage.contains(.keyAgreement))
-            assertFalse(keyUsage.contains(.keyCertSign))
-            assertFalse(keyUsage.contains(.crlSign))
-            assertFalse(keyUsage.contains(.encipherOnly))
-            assertFalse(keyUsage.contains(.decipherOnly))
+            expect(keyUsage.contains(.digitalSignature))
+            expect(!keyUsage.contains(.nonRepudiation))
+            expect(keyUsage.contains(.keyEncipherment))
+            expect(!keyUsage.contains(.dataEncipherment))
+            expect(!keyUsage.contains(.keyAgreement))
+            expect(!keyUsage.contains(.keyCertSign))
+            expect(!keyUsage.contains(.crlSign))
+            expect(!keyUsage.contains(.encipherOnly))
+            expect(!keyUsage.contains(.decipherOnly))
         }
 
         scope {
@@ -95,15 +95,15 @@ class ExtensionDecodeTests: TestCase {
                     class: .universal,
                     tag: .bitString),
                 content: .data([0x01, 0x06])))
-            assertFalse(keyUsage.contains(.digitalSignature))
-            assertFalse(keyUsage.contains(.nonRepudiation))
-            assertFalse(keyUsage.contains(.keyEncipherment))
-            assertFalse(keyUsage.contains(.dataEncipherment))
-            assertFalse(keyUsage.contains(.keyAgreement))
-            assertTrue(keyUsage.contains(.keyCertSign))
-            assertTrue(keyUsage.contains(.crlSign))
-            assertFalse(keyUsage.contains(.encipherOnly))
-            assertFalse(keyUsage.contains(.decipherOnly))
+            expect(!keyUsage.contains(.digitalSignature))
+            expect(!keyUsage.contains(.nonRepudiation))
+            expect(!keyUsage.contains(.keyEncipherment))
+            expect(!keyUsage.contains(.dataEncipherment))
+            expect(!keyUsage.contains(.keyAgreement))
+            expect(keyUsage.contains(.keyCertSign))
+            expect(keyUsage.contains(.crlSign))
+            expect(!keyUsage.contains(.encipherOnly))
+            expect(!keyUsage.contains(.decipherOnly))
         }
     }
 
@@ -140,7 +140,7 @@ class ExtensionDecodeTests: TestCase {
                     .serverAuth,
                     .clientAuth])))
             let extKeyUsage: Extension = try .init(from: asn1)
-            assertEqual(extKeyUsage, expected)
+            expect(extKeyUsage == expected)
         }
     }
 
@@ -195,9 +195,10 @@ class ExtensionDecodeTests: TestCase {
                             0xa8, 0x4e, 0xd2, 0xcf, 0xab, 0xd0, 0xdc, 0xe3,
                             0x0b, 0x5c, 0x35, 0x4d]))
                 ])))
-            assertNotNil(authorityKeyIdentifier.keyIdentifier)
-            assertEqual(
-                authorityKeyIdentifier.keyIdentifier,
+            expect(authorityKeyIdentifier.keyIdentifier != nil)
+            expect(
+                authorityKeyIdentifier.keyIdentifier
+                ==
                 KeyIdentifier(rawValue: [
                     0x37, 0x5c, 0xe3, 0x19, 0xe0, 0xb2, 0x8e, 0xa1,
                     0xa8, 0x4e, 0xd2, 0xcf, 0xab, 0xd0, 0xdc, 0xe3,
@@ -277,8 +278,9 @@ class ExtensionDecodeTests: TestCase {
                                "(CPS) incorporated by reference " +
                                "herein and in the repository at " +
                                "https://www.certum.pl/repository."
-            assertEqual(
-                certificatePoliciesExtension,
+            expect(
+                certificatePoliciesExtension
+                ==
                 .init(
                     id: .certificateExtension(.certificatePolicies(nil)),
                     isCritical: false,
@@ -332,17 +334,17 @@ class ExtensionDecodeTests: TestCase {
                     padding: 0x06,
                     rawValue: 0xc0))))
             let certificateType = try Extension(from: asn1)
-            assertEqual(certificateType, expected)
+            expect(certificateType == expected)
 
             switch certificateType.value {
             case .netscape(.certificateType(let value)):
-                assertTrue(value.contains(.sslClient))
-                assertTrue(value.contains(.sslServer))
-                assertFalse(value.contains(.smime))
-                assertFalse(value.contains(.objectSigning))
-                assertFalse(value.contains(.sslCA))
-                assertFalse(value.contains(.smimeCA))
-                assertFalse(value.contains(.objectSigningCA))
+                expect(value.contains(.sslClient))
+                expect(value.contains(.sslServer))
+                expect(!value.contains(.smime))
+                expect(!value.contains(.objectSigning))
+                expect(!value.contains(.sslCA))
+                expect(!value.contains(.smimeCA))
+                expect(!value.contains(.objectSigningCA))
             default:
                 fail("unreachable")
             }
@@ -462,7 +464,7 @@ class ExtensionDecodeTests: TestCase {
                     .dnsName("m.ya.ru"),
                     .dnsName("www.yandex.ua")]))
             let subjectAltNames = try Extension(from: asn1)
-            assertEqual(subjectAltNames, expected)
+            expect(subjectAltNames == expected)
         }
     }
 }

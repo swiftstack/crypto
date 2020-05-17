@@ -19,7 +19,7 @@ class ASN1DescriptionTests: TestCase {
                         tag: .null),
                     content: .data([]))
                 """
-            assertEqual(asn1.description, expected)
+            expect(asn1.description == expected)
         }
     }
 
@@ -79,7 +79,7 @@ class ASN1DescriptionTests: TestCase {
                             content: .data([0x03, 0x02, 0x05, 0xa0]))
                     ]))
                 """
-            assertEqual(asn1.description, expected)
+            expect(asn1.description == expected)
         }
     }
 }

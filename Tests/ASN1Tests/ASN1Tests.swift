@@ -14,6 +14,6 @@ class ASN1Tests: TestCase {
             class: .universal,
             tag: .sequence)
 
-        assertNotEqual(identifier1, identifier2)
+        expect(identifier1 != identifier2)
     }
 }

@@ -14,7 +14,7 @@ class SHA1Tests: TestCase {
             d: 0xbb76e739,
             e: 0x1b93eb12
         )
-        assertEqual(result, expected)
+        expect(result == expected)
     }
 
     func testSHA1Array() {
@@ -28,7 +28,7 @@ class SHA1Tests: TestCase {
                                  0xed, 0x84, 0x9e, 0xe1,
                                  0xbb, 0x76, 0xe7, 0x39,
                                  0x1b, 0x93, 0xeb, 0x12]
-        assertEqual(result, expected)
+        expect(result == expected)
     }
 
     func testSHA1String() {
@@ -38,7 +38,7 @@ class SHA1Tests: TestCase {
         let hash = sha1.final()
         let result = String(hash)
         let expected = "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12"
-        assertEqual(result, expected)
+        expect(result == expected)
     }
 
     func testSHA1ArrayExtension() {
@@ -49,6 +49,6 @@ class SHA1Tests: TestCase {
                                  0xed, 0x84, 0x9e, 0xe1,
                                  0xbb, 0x76, 0xe7, 0x39,
                                  0x1b, 0x93, 0xeb, 0x12]
-        assertEqual(result, expected)
+        expect(result == expected)
     }
 }
