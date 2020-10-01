@@ -8,7 +8,7 @@ public struct TBSCertificate: Equatable {
     public let validity: Validity
     public let subject: Name
     public let publicKey: PublicKey
-    public let extensions: [Extension]
+    public let extensions: Extensions
 
     public init(
         version: Version,
@@ -18,7 +18,7 @@ public struct TBSCertificate: Equatable {
         validity: Validity,
         subject: Name,
         publicKey: PublicKey,
-        extensions: [Extension])
+        extensions: Extensions)
     {
         self.version = version
         self.serialNumber = serialNumber
@@ -48,6 +48,6 @@ extension TBSCertificate {
         self.validity = try Validity(from: sequence[4])
         self.subject = try Name(from: sequence[5])
         self.publicKey = try PublicKey(from: sequence[6])
-        self.extensions = try [Extension](from: sequence[7])
+        self.extensions = try Extensions(from: sequence[7])
     }
 }

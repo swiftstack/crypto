@@ -1,6 +1,14 @@
 import ASN1
 import Stream
 
+public struct Extensions: Equatable {
+    var items: [Extension]
+
+    init(_ items: [Extension]) {
+        self.items = items
+    }
+}
+
 public struct Extension: Equatable {
     var id: ASN1.ObjectIdentifier
     var isCritical: Bool
@@ -27,9 +35,15 @@ public struct Extension: Equatable {
     }
 }
 
+extension Extensions: ExpressibleByArrayLiteral {
+    public init(arrayLiteral elemens: Extension...) {
+        self.items = elemens
+    }
+}
+
 // MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.2
 
-extension Array where Element == Extension {
+extension Extensions {
     // Extensions  ::=  SEQUENCE SIZE (1..MAX) OF Extension
     public init(from asn1: ASN1) throws {
         guard let contextSpecific = asn1.sequenceValue,
@@ -38,7 +52,7 @@ extension Array where Element == Extension {
         {
             throw Error.invalidASN1(asn1)
         }
-        self = try sequence.map(Extension.init)
+        self.items = try sequence.map(Extension.init)
     }
 }
 
