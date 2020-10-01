@@ -205,11 +205,9 @@ class OCSPDecodeTests: TestCase {
         return ocspResponseHeaderBytes + ocspBasicResponseBytes
     }
 
-    func testBasicResponse() {
-        scope {
-            let asn1 = try ASN1(from: bytes)
-            let response = try OCSP.Response(from: asn1)
-            expect(response != nil)
-        }
+    func testBasicResponse() throws {
+        let asn1 = try ASN1(from: bytes)
+        let response = try OCSP.Response(from: asn1)
+        expect(response != nil)
     }
 }
