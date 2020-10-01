@@ -77,23 +77,16 @@ public struct UUID {
     public struct Clock {
         var _value: UInt16
 
-        var isValid: Bool {
-            return _value.bigEndian & 0x8000 == 0x8000
-        }
-
-        mutating func clearReserved() {
-            self.value = self.value
-        }
+        // most significant 2 bits are reserved
+        public var value: UInt16 { _value.bigEndian & 0x3fff }
 
         init(_ value: UInt16) {
             _value = value.bigEndian
             clearReserved()
         }
 
-        public internal(set) var value: UInt16 {
-            // most significant 2 bits are reserved
-            get { return _value.bigEndian & 0b0011_1111_1111_1111 }
-            set { _value = (value | 0b1000_0000_0000_0000).bigEndian }
+        mutating func clearReserved() {
+            _value = (_value.bigEndian & 0x3fff | 0x8000).bigEndian
         }
     }
 
@@ -141,17 +134,11 @@ extension UUID.Version {
 }
 
 extension UUID: RawRepresentable {
-    public typealias RawValue = (UInt64, UInt64)
-
-    public init?(rawValue: RawValue) {
-        let uuid = unsafeBitCast(rawValue, to: UUID.self)
-        guard uuid.clock.isValid else {
-            return nil
-        }
-        self = uuid
+    public init(rawValue: (UInt64, UInt64)) {
+        self = unsafeBitCast(rawValue, to: UUID.self)
     }
 
-    public var rawValue: RawValue {
+    public var rawValue: (UInt64, UInt64) {
         return unsafeBitCast(self, to: RawValue.self)
     }
 }
