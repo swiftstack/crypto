@@ -8,6 +8,9 @@ let package = Package(
             name: "SHA1",
             targets: ["SHA1"]),
         .library(
+            name: "X509",
+            targets: ["X509"]),
+        .library(
             name: "UUID",
             targets: ["UUID"]),
         .library(
