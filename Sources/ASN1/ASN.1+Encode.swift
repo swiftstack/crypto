@@ -2,31 +2,31 @@ import UInt24
 import Stream
 
 public protocol StreamEncodable {
-    func encode(to stream: StreamWriter) throws
+    func encode(to stream: StreamWriter) async throws
 }
 
 extension StreamEncodable {
-    public func encode() throws -> [UInt8] {
+    public func encode() async throws -> [UInt8] {
         let stream = OutputByteStream()
-        try encode(to: stream)
+        try await encode(to: stream)
         return stream.bytes
     }
 }
 
 extension ASN1: StreamEncodable {
-    public func encode(to stream: StreamWriter) throws {
+    public func encode(to stream: StreamWriter) async throws {
         let writer = Writer(to: stream)
-        try writer.write(self)
+        try await writer.write(self)
     }
 }
 
 extension ASN1.Identifier: StreamEncodable {
-    public func encode(to stream: StreamWriter) throws {
+    public func encode(to stream: StreamWriter) async throws {
         var rawTag = tag.rawValue | (`class`.rawValue << 6)
         if isConstructed {
             rawTag |= 0x20
         }
-        try stream.write(UInt8(rawTag))
+        try await stream.write(UInt8(rawTag))
     }
 }
 
@@ -43,80 +43,86 @@ extension ASN1 {
             case invalidIdentifier
         }
 
-        func write(_ asn1: ASN1) throws {
-            try asn1.identifier.encode(to: stream)
+        func write(_ asn1: ASN1) async throws {
+            try await asn1.identifier.encode(to: stream)
 
             switch asn1.content {
             case .boolean(let value) where
                 asn1.identifier.tag == .boolean:
-                try write(value)
+                try await write(value)
             case .integer(let value) where
                 asn1.identifier.tag == .integer ||
                 asn1.identifier.tag == .enumerated:
-                try write(value)
+                 try await write(value)
             case .string(let value) where
                     asn1.identifier.tag == .printableString ||
                     asn1.identifier.tag == .utf8String:
-                try write(value)
+                try await write(value)
             case .data(let value) where
                 asn1.identifier.tag == .objectIdentifier ||
                 asn1.identifier.tag == .octetString:
-                try write(value)
+                try await write(value)
             case .sequence(let value) where asn1.identifier.isConstructed:
-                try write(value)
+                try await write(value)
             default:
                 throw Error.invalidIdentifier
             }
         }
 
-        func write(_ values: [ASN1]) throws {
-            try stream.withSubStreamWriter(sizedBy: Length.self) { stream in
+        func write(_ values: [ASN1]) async throws {
+            try await stream.withSubStreamWriter(sizedBy: Length.self) { stream in
                 for value in values {
-                    try value.encode(to: stream)
+                    try await value.encode(to: stream)
                 }
             }
         }
 
-        func write(_ value: Bool) throws {
-            try stream.write(UInt8(1))
-            try stream.write(value ? UInt8(0xFF) : UInt8(0x0))
+        func write(_ value: Bool) async throws {
+            try await stream.write(UInt8(1))
+            try await stream.write(value ? UInt8(0xFF) : UInt8(0x0))
         }
 
-        func write(_ value: Integer) throws {
+        func write(_ value: Integer) async throws {
             switch value {
             case .sane(let value):
                 switch value {
                 case 0...0xFF:
-                    try stream.write(UInt8(1))
-                    try stream.write(UInt8(value))
+                    try await stream.write(UInt8(1))
+                    try await stream.write(UInt8(value))
                 case 0x01_00...0xFF_FF:
-                    try stream.write(UInt8(2))
-                    try stream.write(UInt16(value))
+                    try await stream.write(UInt8(2))
+                    try await stream.write(UInt16(value))
                 case 0x0001_0000...0x00FF_FFFF:
-                    try stream.write(UInt8(3))
-                    try stream.write(UInt24(value))
+                    try await stream.write(UInt8(3))
+                    try await stream.write(UInt24(value))
                 case 0x0100_0000...0xFFFF_FFFF:
-                    try stream.write(UInt8(4))
-                    try stream.write(UInt32(value))
+                    try await stream.write(UInt8(4))
+                    try await stream.write(UInt32(value))
                 default:
-                    try stream.write(UInt8(8))
-                    try stream.write(UInt64(value))
+                    try await stream.write(UInt8(8))
+                    try await stream.write(UInt64(value))
                 }
-            case .insane(let bytes):
-                let length = Length(bytes.count)
-                try length.encode(to: stream)
-                try stream.write(bytes)
+            // FIXME [Concurrency] compiler crash
+            // case .insane(let bytes):
+            //     let length = Length(bytes.count)
+            //     try await length.encode(to: stream)
+            //     try await stream.write(bytes)
+            // workaround:
+            case .insane(let storage):
+                let length = Length(storage.size)
+                try await length.encode(to: stream)
+                try await stream.write(storage.bytes)
             }
         }
 
-        func write(_ bytes: [UInt8]) throws {
+        func write(_ bytes: [UInt8]) async throws {
             let length = Length(bytes.count)
-            try length.encode(to: stream)
-            try stream.write(bytes)
+            try await length.encode(to: stream)
+            try await stream.write(bytes)
         }
 
-        func write(_ string: String) throws {
-            try write([UInt8](string.utf8))
+        func write(_ string: String) async throws {
+            try await write([UInt8](string.utf8))
         }
     }
 }

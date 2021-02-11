@@ -33,7 +33,7 @@ extension RSA.PublicKey {
 }
 
 extension PublicKey {
-    public init(from asn1: ASN1) throws {
+    public static func decode(from asn1: ASN1) async throws -> Self {
         guard let sequence = asn1.sequenceValue,
             sequence.count == 2 else
         {
@@ -43,9 +43,9 @@ extension PublicKey {
         guard let bitString = BitString(from: sequence[1]) else {
             throw Error.invalidASN1(asn1)
         }
-        let key = try ASN1(from: bitString.bytes)
+        let key = try await ASN1.decode(from: bitString.bytes)
         switch algorithmIdentifier.objectId {
-        case .rsaEncryption: self = .rsa(try .init(from: key))
+        case .rsaEncryption: return .rsa(try .init(from: key))
         default: throw Error.unimplemented(asn1)
         }
     }

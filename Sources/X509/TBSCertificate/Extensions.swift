@@ -45,14 +45,18 @@ extension Extensions: ExpressibleByArrayLiteral {
 
 extension Extensions {
     // Extensions  ::=  SEQUENCE SIZE (1..MAX) OF Extension
-    public init(from asn1: ASN1) throws {
+    public static func decode(from asn1: ASN1) async throws -> Self {
         guard let contextSpecific = asn1.sequenceValue,
             let container = contextSpecific.first,
             let sequence = container.sequenceValue else
         {
             throw Error.invalidASN1(asn1)
         }
-        self.items = try sequence.map(Extension.init)
+        var items: [Extension] = []
+        for item in sequence {
+            try await items.append(Extension.decode(from: item))
+        }
+        return .init(items)
     }
 }
 
@@ -65,7 +69,7 @@ extension Extension {
     //               -- corresponding to the extension type identified
     //               -- by extnID
     //   }
-    public init(from asn1: ASN1) throws {
+    public static func decode(from asn1: ASN1) async throws -> Self {
         guard let values = asn1.sequenceValue,
             values.count >= 2 && values.count <= 3,
             let id = values[0].objectIdentifierValue else
@@ -73,45 +77,49 @@ extension Extension {
             throw Error.invalidASN1(asn1)
         }
 
-        self.id = id
+        let isCritical: Bool
 
         if values.count == 2 {
-            self.isCritical = false
+            isCritical = false
         } else  {
-            guard let isCritical = values[1].booleanValue else {
+            guard let _isCritical = values[1].booleanValue else {
                 throw Error.invalidASN1(asn1)
             }
-            self.isCritical = isCritical
+            isCritical = _isCritical
         }
 
         guard let bytes = values.last?.dataValue else {
             throw Error.invalidASN1(asn1)
         }
-        let value = try ASN1(from: bytes)
+        let value = try await ASN1.decode(from: bytes)
+
+        let variant: Variant
 
         switch id {
         case .certificateExtension(.some(.subjectKeyIdentifier)):
-            self.value = .subjectKeyIdentifier(try .init(from: value))
+            variant = .subjectKeyIdentifier(try .init(from: value))
         case .certificateExtension(.some(.keyUsage)):
-            self.value = .keyUsage(try .init(from: value))
+            variant = .keyUsage(try .init(from: value))
         case .certificateExtension(.some(.subjectAltName)):
-            self.value = .subjectAltName(try .init(from: value))
+            variant = .subjectAltName(try .init(from: value))
         case .certificateExtension(.some(.extKeyUsage)):
-            self.value = .extKeyUsage(try .init(from: value))
+            variant = .extKeyUsage(try .init(from: value))
         case .certificateExtension(.some(.basicConstrains)):
-            self.value = .basicConstrains(try .init(from: value))
+            variant = .basicConstrains(try .init(from: value))
         case .certificateExtension(.some(.crlDistributionPoints)):
-            self.value = .crlDistributionPoints(try .init(from: value))
+            variant = .crlDistributionPoints(try .init(from: value))
         case .certificateExtension(.some(.authorityKeyIdentifier)):
-            self.value = .authorityKeyIdentifier(try .init(from: value))
+            variant = .authorityKeyIdentifier(try .init(from: value))
         case .pkix(.some(.extension(.authorityInfoAccessSyntax))):
-            self.value = .authorityInfoAccessMethod(try .init(from: value))
+            variant = .authorityInfoAccessMethod(try .init(from: value))
         case .certificateExtension(.some(.certificatePolicies)):
-            self.value = .certificatePolicies(try .init(from: value))
+            variant = .certificatePolicies(try .init(from: value))
         case .netscape(.some(.certificateExtension(.certificateType))):
-            self.value = .netscape(.certificateType(try .init(from: value)))
+            variant = .netscape(.certificateType(try .init(from: value)))
         default:
             throw Error.unimplemented(asn1)
         }
+
+        return .init(id: id, isCritical: isCritical, value: variant)
     }
 }

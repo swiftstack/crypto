@@ -34,20 +34,30 @@ public struct TBSCertificate: Equatable {
 // MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.1
 
 extension TBSCertificate {
-    public init(from asn1: ASN1) throws {
+    public static func decode(from asn1: ASN1) async throws -> Self {
         guard let sequence = asn1.sequenceValue,
             sequence.count >= 8 else
         {
             throw Error.invalidASN1(asn1)
         }
 
-        self.version = try Version(from: sequence[0])
-        self.serialNumber = try SerialNumber(from: sequence[1])
-        self.signature = try Signature.Algorithm(from: sequence[2])
-        self.issuer = try Name(from: sequence[3])
-        self.validity = try Validity(from: sequence[4])
-        self.subject = try Name(from: sequence[5])
-        self.publicKey = try PublicKey(from: sequence[6])
-        self.extensions = try Extensions(from: sequence[7])
+        let version = try Version(from: sequence[0])
+        let serialNumber = try SerialNumber(from: sequence[1])
+        let signature = try Signature.Algorithm(from: sequence[2])
+        let issuer = try Name(from: sequence[3])
+        let validity = try Validity(from: sequence[4])
+        let subject = try Name(from: sequence[5])
+        let publicKey = try await PublicKey.decode(from: sequence[6])
+        let extensions = try await Extensions.decode(from: sequence[7])
+
+        return .init(
+            version: version,
+            serialNumber: serialNumber,
+            signature: signature,
+            issuer: issuer,
+            validity: validity,
+            subject: subject,
+            publicKey: publicKey,
+            extensions: extensions)
     }
 }

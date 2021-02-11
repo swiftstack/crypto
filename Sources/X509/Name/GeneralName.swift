@@ -83,11 +83,12 @@ extension GeneralName {
         self = .rfc822Name(string)
     }
 
+    // TODO: test
     private init(decodingDNSName asn1: ASN1) throws {
-        guard case .integer(.insane(let bytes)) = asn1.content else {
+        guard case .integer(.insane(let storage)) = asn1.content else {
             throw Error.invalidASN1(asn1)
         }
-        self = .dnsName(String(decoding: bytes, as: UTF8.self))
+        self = .dnsName(String(decoding: storage.bytes, as: UTF8.self))
     }
 
     private init(decodingX400Address asn1: ASN1) throws {
