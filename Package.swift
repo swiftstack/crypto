@@ -28,36 +28,66 @@ let package = Package(
         .target(
             name: "SHA1",
             dependencies: [
-                .product(name: "Hex", package: "Radix")]),
+                .product(name: "Hex", package: "Radix")],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .target(
             name: "UUID",
             dependencies: [
-                .product(name: "Hex", package: "Radix"), "SHA1"]),
+                .product(name: "Hex", package: "Radix"), "SHA1"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .target(
             name: "ASN1",
             dependencies: [
-                "UInt24", "Stream", .product(name: "Hex", package: "Radix")]),
+                "UInt24", "Stream", .product(name: "Hex", package: "Radix")],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .target(
             name: "X509",
-            dependencies: ["ASN1", "Stream", "Time"]),
+            dependencies: ["ASN1", "Stream", "Time"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .target(
             name: "Crypto",
-            dependencies: ["SHA1", "UUID", "ASN1", "X509"]),
+            dependencies: ["SHA1", "UUID", "ASN1", "X509"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .testTarget(
             name: "SHA1Tests",
-            dependencies: ["Test", "SHA1"]),
+            dependencies: ["Test", "SHA1"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .testTarget(
             name: "UUIDTests",
-            dependencies: ["Test", "UUID"]),
+            dependencies: ["Test", "UUID"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .testTarget(
             name: "ASN1Tests",
-            dependencies: ["Test", "ASN1"]),
+            dependencies: ["Test", "ASN1"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .testTarget(
             name: "X509Tests",
-            dependencies: ["Test", "X509"]),
+            dependencies: ["Test", "X509"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
         .testTarget(
             name: "UInt24Tests",
-            dependencies: ["Test", "UInt24"]),
+            dependencies: ["Test", "UInt24"],
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]),
     ]
 )
 
