@@ -61,38 +61,51 @@ let package = Package(
             swiftSettings: [
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ]),
-        .testTarget(
-            name: "SHA1Tests",
-            dependencies: ["Test", "SHA1"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
-        .testTarget(
-            name: "UUIDTests",
-            dependencies: ["Test", "UUID"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
-        .testTarget(
-            name: "ASN1Tests",
-            dependencies: ["Test", "ASN1"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
-        .testTarget(
-            name: "X509Tests",
-            dependencies: ["Test", "X509"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
-        .testTarget(
-            name: "UInt24Tests",
-            dependencies: ["Test", "UInt24"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
     ]
 )
+
+// MARK: - tests
+
+testTarget("ASN1") { test in
+    test("ASN1")
+    test("Decode")
+    test("Description")
+    test("Encode")
+    test("Length")
+}
+
+testTarget("SHA1") { test in
+    test("SHA1")
+}
+
+testTarget("UInt24") { test in
+    test("UInt24")
+}
+
+testTarget("UUID") { test in
+    test("UUID")
+}
+
+testTarget("X509") { test in
+    test("CertificateDecode")
+    test("ExtensionDecode")
+    test("OCSPDecode")
+}
+
+func testTarget(_ target: String, task: ((String) -> Void) -> Void) {
+    task { test in addTest(target: target, name: test) }
+}
+
+func addTest(target: String, name: String) {
+    package.targets.append(
+        .executableTarget(
+            name: "Tests/\(target)/\(name)",
+            dependencies: [.init(stringLiteral: target), "Test"],
+            path: "Tests/\(target)/\(name)",
+            swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
+            ]))
+}
 
 // MARK: - custom package source
 

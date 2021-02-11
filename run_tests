@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+swift build
+
+export DYLD_LIBRARY_PATH=/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/lib/swift/macosx
+
+.build/debug/Tests/ASN1/ASN1
+.build/debug/Tests/ASN1/Decode
+.build/debug/Tests/ASN1/Description
+.build/debug/Tests/ASN1/Encode
+.build/debug/Tests/ASN1/Length
+
+.build/debug/Tests/SHA1/SHA1
+
+.build/debug/Tests/UInt24/UInt24
+
+.build/debug/Tests/UUID/UUID
+
+.build/debug/Tests/X509/CertificateDecode
+.build/debug/Tests/X509/ExtensionDecode
+.build/debug/Tests/X509/OCSPDecode
