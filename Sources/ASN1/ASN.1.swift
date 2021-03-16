@@ -1,6 +1,6 @@
 import Stream
 
-public struct ASN1: Equatable {
+public struct ASN1: Equatable, ConcurrentValue {
     public var identifier: Identifier
     public var content: Content
 
@@ -9,38 +9,38 @@ public struct ASN1: Equatable {
         self.content = content
     }
 
-    public enum Integer: Equatable {
+    public enum Integer: Equatable, ConcurrentValue {
         case sane(Int)
         // FIXME [Concurrency] compiler crash
         // case insane([UInt8])
 
         // workaround:
         case insane(Storage)
-        public struct Storage: Equatable, ExpressibleByArrayLiteral {
+        public struct Storage: Equatable, ExpressibleByArrayLiteral, ConcurrentValue {
             let value: UInt2056
             let size: Int
 
-            struct UInt128: Equatable {
+            struct UInt128: Equatable, ConcurrentValue {
                 let high: UInt64 = .init()
                 let low: UInt64 = .init()
             }
-            struct UInt256: Equatable {
+            struct UInt256: Equatable, ConcurrentValue {
                 let high: UInt128 = .init()
                 let low: UInt128 = .init()
             }
-            struct UInt512: Equatable {
+            struct UInt512: Equatable, ConcurrentValue {
                 let high: UInt256 = .init()
                 let low: UInt256 = .init()
             }
-            struct UInt1024: Equatable {
+            struct UInt1024: Equatable, ConcurrentValue {
                 let high: UInt512 = .init()
                 let low: UInt512 = .init()
             }
-            struct UInt2048: Equatable {
+            struct UInt2048: Equatable, ConcurrentValue {
                 let high: UInt1024 = .init()
                 let low: UInt1024 = .init()
             }
-            public struct UInt2056: Equatable {
+            public struct UInt2056: Equatable, ConcurrentValue {
                 let bytes: UInt2048 = .init()
                 let byte: UInt8 = .init()
             }
@@ -70,7 +70,7 @@ public struct ASN1: Equatable {
         }
     }
 
-    public enum Content: Equatable {
+    public enum Content: Equatable, ConcurrentValue {
         case boolean(Bool)
         case integer(Integer)
         case string(String)
@@ -79,7 +79,7 @@ public struct ASN1: Equatable {
         case objectIdentifier(ObjectIdentifier)
     }
 
-    public struct Identifier: Equatable {
+    public struct Identifier: Equatable, ConcurrentValue {
         public var isConstructed: Bool
         public var `class`: Class
         public var tag: Tag
@@ -90,14 +90,14 @@ public struct ASN1: Equatable {
             self.tag = tag
         }
 
-        public enum Class: UInt8 {
+        public enum Class: UInt8, ConcurrentValue {
             case universal = 0b00
             case application = 0b01
             case contextSpecific = 0b10
             case `private` = 0b11
         }
 
-        public enum Tag: UInt8 {
+        public enum Tag: UInt8, ConcurrentValue {
             case endOfContent = 0x00
             case boolean = 0x01
             case integer = 0x02
