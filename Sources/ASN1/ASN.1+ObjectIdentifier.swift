@@ -2,7 +2,7 @@ import Stream
 
 extension ASN1 {
     // TODO: restructure?
-    public enum ObjectIdentifier: Equatable, Hashable, ConcurrentValue {
+    public enum ObjectIdentifier: Equatable, Hashable, Sendable {
         case sha256WithRSAEncryption
         case rsaEncryption
         // MARK: id-at-*
@@ -15,7 +15,7 @@ extension ASN1 {
         // MARK: unknown
         case other([UInt8])
 
-        public enum Attribute: Equatable, Hashable, ConcurrentValue {
+        public enum Attribute: Equatable, Hashable, Sendable {
             case name
             case surname
             case givenName
@@ -33,7 +33,7 @@ extension ASN1 {
             case pseudonym
         }
 
-        public enum CertificateExtension: Equatable, Hashable, ConcurrentValue {
+        public enum CertificateExtension: Equatable, Hashable, Sendable {
             case subjectKeyIdentifier
             case keyUsage
             case subjectAltName
@@ -43,40 +43,40 @@ extension ASN1 {
             case authorityKeyIdentifier
             case extKeyUsage
 
-            public enum CertificatePolicy: ConcurrentValue {
+            public enum CertificatePolicy: Sendable {
                 case any
             }
         }
 
-        public enum Pkix: Equatable, Hashable, ConcurrentValue {
+        public enum Pkix: Equatable, Hashable, Sendable {
             case `extension`(Extension)
             case policyQualifier(PolicyQualifier)
             case keyPurpose(KeyPurpose)
             case accessDescription(AccessDescription)
 
-            public enum Extension: Equatable, Hashable, ConcurrentValue {
+            public enum Extension: Equatable, Hashable, Sendable {
                 case authorityInfoAccessSyntax
             }
 
-            public enum PolicyQualifier: ConcurrentValue {
+            public enum PolicyQualifier: Sendable {
                 case cps
                 case unotice
             }
 
-            public enum KeyPurpose: Equatable, ConcurrentValue {
+            public enum KeyPurpose: Equatable, Sendable {
                 case serverAuth
                 case clientAuth
                 // TODO: delete?
                 indirect case other(ASN1.ObjectIdentifier)
             }
 
-            public enum AccessDescription: Equatable, Hashable, ConcurrentValue {
+            public enum AccessDescription: Equatable, Hashable, Sendable {
                 case oscp(OSCP)
                 case caIssuers
                 case timeStamping
                 case caRepository
 
-                public enum OSCP: Equatable, Hashable, ConcurrentValue {
+                public enum OSCP: Equatable, Hashable, Sendable {
                     case basicResponse
                     case nonce
                     case crlReference
@@ -85,10 +85,10 @@ extension ASN1 {
             }
         }
 
-        public enum Netscape: ConcurrentValue {
+        public enum Netscape: Sendable {
             case `certificateExtension`(CertificateExtension)
 
-            public enum CertificateExtension: ConcurrentValue {
+            public enum CertificateExtension: Sendable {
                 case certificateType
             }
         }

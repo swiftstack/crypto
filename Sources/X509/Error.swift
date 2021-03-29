@@ -11,7 +11,7 @@ public struct Error: Swift.Error {
         self.context = context
     }
 
-    public struct Source: ConcurrentValue {
+    public struct Source: Sendable {
         public let function: String
         public let file: String
         public let line: Int
@@ -23,7 +23,7 @@ public struct Error: Swift.Error {
         }
     }
 
-    public enum Reason: ConcurrentValue {
+    public enum Reason: Sendable {
         case invalidASN1
         case unimplemented
         case innerError(Swift.Error)
