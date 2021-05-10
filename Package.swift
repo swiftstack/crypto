@@ -33,6 +33,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Hex", package: "Radix")],
             swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ]),
         .target(
@@ -40,6 +41,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Hex", package: "Radix"), "SHA1"],
             swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ]),
         .target(
@@ -47,18 +49,21 @@ let package = Package(
             dependencies: [
                 "UInt24", "Stream", .product(name: "Hex", package: "Radix")],
             swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ]),
         .target(
             name: "X509",
             dependencies: ["ASN1", "Stream", "Time"],
             swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ]),
         .target(
             name: "Crypto",
             dependencies: ["SHA1", "UUID", "ASN1", "X509"],
             swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ]),
     ]
@@ -103,6 +108,7 @@ func addTest(target: String, name: String) {
             dependencies: [.init(stringLiteral: target), "Test"],
             path: "Tests/\(target)/\(name)",
             swiftSettings: [
+                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
                 .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
             ]))
 }
