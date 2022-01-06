@@ -31,41 +31,21 @@ let package = Package(
         .target(
             name: "SHA1",
             dependencies: [
-                .product(name: "Hex", package: "Radix")],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
+                .product(name: "Hex", package: "Radix")]),
         .target(
             name: "UUID",
             dependencies: [
-                .product(name: "Hex", package: "Radix"), "SHA1"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
+                .product(name: "Hex", package: "Radix"), "SHA1"]),
         .target(
             name: "ASN1",
             dependencies: [
-                "UInt24", "Stream", .product(name: "Hex", package: "Radix")],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
+                "UInt24", "Stream", .product(name: "Hex", package: "Radix")]),
         .target(
             name: "X509",
-            dependencies: ["ASN1", "Stream", "Time"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
+            dependencies: ["ASN1", "Stream", "Time"]),
         .target(
             name: "Crypto",
-            dependencies: ["SHA1", "UUID", "ASN1", "X509"],
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]),
+            dependencies: ["SHA1", "UUID", "ASN1", "X509"]),
     ]
 )
 
@@ -106,11 +86,7 @@ func addTest(target: String, name: String) {
         .executableTarget(
             name: "Tests/\(target)/\(name)",
             dependencies: [.init(stringLiteral: target), "Test"],
-            path: "Tests/\(target)/\(name)",
-            swiftSettings: [
-                .unsafeFlags(["-Xfrontend", "-disable-availability-checking"]),
-                .unsafeFlags(["-Xfrontend", "-enable-experimental-concurrency"])
-            ]))
+            path: "Tests/\(target)/\(name)"))
 }
 
 // MARK: - custom package source
