@@ -18,13 +18,13 @@ let package = Package(
             targets: ["ASN1"]),
         .library(
             name: "Crypto",
-            targets: ["Crypto"])
+            targets: ["Crypto"]),
     ],
     dependencies: [
         .package(name: "Stream"),
         .package(name: "Radix"),
         .package(name: "Time"),
-        .package(name: "Test")
+        .package(name: "Test"),
     ],
     targets: [
         .target(name: "UInt24"),
