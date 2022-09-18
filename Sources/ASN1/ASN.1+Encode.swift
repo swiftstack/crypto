@@ -102,16 +102,10 @@ extension ASN1 {
                     try await stream.write(UInt8(8))
                     try await stream.write(UInt64(value))
                 }
-            // FIXME [Concurrency] compiler crash
-            // case .insane(let bytes):
-            //     let length = Length(bytes.count)
-            //     try await length.encode(to: stream)
-            //     try await stream.write(bytes)
-            // workaround:
-            case .insane(let storage):
-                let length = Length(storage.size)
+            case .insane(let bytes):
+                let length = Length(bytes.count)
                 try await length.encode(to: stream)
-                try await stream.write(storage.bytes)
+                try await stream.write(bytes)
             }
         }
 

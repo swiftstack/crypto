@@ -24,7 +24,7 @@ test.case("Version") {
 
 test.case("SerialNumber") {
     await scope {
-        let serialNumberValue: ASN1.Integer.Storage = [
+        let serialNumberValue: [UInt8] = [
             0x62, 0xfa, 0x7d, 0x18, 0x39, 0x8c, 0x6e, 0x14,
             0xec, 0x17, 0xc6, 0xfa, 0x50, 0x77, 0x75, 0xdf
         ]
