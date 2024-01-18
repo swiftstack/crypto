@@ -35,21 +35,36 @@ let package = Package(
         .target(
             name: "SHA1",
             dependencies: [
-                .product(name: "Hex", package: "Radix")]),
+                .product(name: "Hex", package: "Radix")
+            ]),
         .target(
             name: "UUID",
             dependencies: [
-                .product(name: "Hex", package: "Radix"), "SHA1"]),
+                .product(name: "Hex", package: "Radix"), "SHA1"
+            ]),
         .target(
             name: "ASN1",
             dependencies: [
-                "UInt24", "Stream", .product(name: "Hex", package: "Radix")]),
+                .target(name: "UInt24"),
+                .product(name: "Stream", package: "stream"),
+                .product(name: "Hex", package: "Radix"),
+            ]),
         .target(
             name: "X509",
-            dependencies: ["ASN1", "Stream", "Time"]),
+            dependencies: [
+                .target(name: "UInt24"),
+                .target(name: "ASN1"),
+                .product(name: "Stream", package: "stream"),
+                .product(name: "Time", package: "time"),
+            ]),
         .target(
             name: "Crypto",
-            dependencies: ["SHA1", "UUID", "ASN1", "X509"]),
+            dependencies: [
+                .target(name: "SHA1"),
+                .target(name: "UUID"),
+                .target(name: "ASN1"),
+                .target(name: "X509"),
+            ]),
     ]
 )
 
@@ -89,7 +104,10 @@ func addTest(target: String, name: String) {
     package.targets.append(
         .executableTarget(
             name: "Tests/\(target)/\(name)",
-            dependencies: [.init(stringLiteral: target), "Test"],
+            dependencies: [
+                .target(name: target),
+                .product(name: "Test", package: "test"),
+            ],
             path: "Tests/\(target)/\(name)"))
 }
 
@@ -135,6 +153,6 @@ extension Package.Dependency {
     static func package(name: String, source: Source) -> Package.Dependency {
         return source == .local
             ? .package(name: name, path: source.url(for: name))
-            : .package(name: name, url: source.url(for: name), .branch("dev"))
+            : .package(url: source.url(for: name), branch: "dev")
     }
 }
