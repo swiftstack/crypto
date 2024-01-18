@@ -59,7 +59,7 @@ test("KeyUsageExtension") {
         ])))
     expect(keyUsageExtension.id == .certificateExtension(.keyUsage))
     expect(keyUsageExtension.isCritical == true)
-    guard case .keyUsage(_) = keyUsageExtension.value else {
+    guard case .keyUsage = keyUsageExtension.value else {
         fail()
         return
     }
@@ -139,33 +139,34 @@ test("ExtKeyUsage") {
 }
 
 test("AuthorityKeyIdentifierExtension") {
-    let authorityKeyIdentifierExtension = try await Extension.decode(from: .init(
-        identifier: .init(
-            isConstructed: true,
-            class: .universal,
-            tag: .sequence),
-        content: .sequence([
-            .init(
-                identifier: .init(
-                    isConstructed: false,
-                    class: .universal,
-                    tag: .objectIdentifier),
-                content: .objectIdentifier(
-                    .certificateExtension(.authorityKeyIdentifier))),
-            .init(
-                identifier: .init(
-                    isConstructed: false,
-                    class: .universal,
-                    tag: .octetString),
-                content: .data([
-                    0x30, 0x16, 0x80, 0x14, 0x37, 0x5c, 0xe3, 0x19,
-                    0xe0, 0xb2, 0x8e, 0xa1, 0xa8, 0x4e, 0xd2, 0xcf,
-                    0xab, 0xd0, 0xdc, 0xe3, 0x0b, 0x5c, 0x35, 0x4d
-                ]))
-        ])))
+    let authorityKeyIdentifierExtension = try await Extension.decode(
+        from: .init(
+            identifier: .init(
+                isConstructed: true,
+                class: .universal,
+                tag: .sequence),
+            content: .sequence([
+                .init(
+                    identifier: .init(
+                        isConstructed: false,
+                        class: .universal,
+                        tag: .objectIdentifier),
+                    content: .objectIdentifier(
+                        .certificateExtension(.authorityKeyIdentifier))),
+                .init(
+                    identifier: .init(
+                        isConstructed: false,
+                        class: .universal,
+                        tag: .octetString),
+                    content: .data([
+                        0x30, 0x16, 0x80, 0x14, 0x37, 0x5c, 0xe3, 0x19,
+                        0xe0, 0xb2, 0x8e, 0xa1, 0xa8, 0x4e, 0xd2, 0xcf,
+                        0xab, 0xd0, 0xdc, 0xe3, 0x0b, 0x5c, 0x35, 0x4d
+                    ]))
+            ])))
     switch authorityKeyIdentifierExtension.value {
-        case .authorityKeyIdentifier(_): expect(true)
-        default: fail("invalid authorityKeyIdentifierExtension")
+    case .authorityKeyIdentifier: expect(true)
+    default: fail("invalid authorityKeyIdentifierExtension")
     }
 }
 

@@ -22,12 +22,12 @@ extension DirectoryString {
             throw Error.invalidASN1(asn1)
         }
         switch asn1.tag {
-            case .teletexString: self = .teletexString(value)
-            case .printableString: self = .printableString(value)
-            case .universalString: self = .universalString(value)
-            case .utf8String: self = .utf8String(value)
-            case .bmpString: self = .bmpString(value)
-            default: throw Error.invalidASN1(asn1)
+        case .teletexString: self = .teletexString(value)
+        case .printableString: self = .printableString(value)
+        case .universalString: self = .universalString(value)
+        case .utf8String: self = .utf8String(value)
+        case .bmpString: self = .bmpString(value)
+        default: throw Error.invalidASN1(asn1)
         }
     }
 }

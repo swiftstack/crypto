@@ -39,10 +39,11 @@ extension Extension.CertificateType {
     //   smimeCA                 (6),
     //   objectSigningCA         (7)}
     public init(from asn1: ASN1) throws {
-        guard asn1.tag == .bitString,
+        guard
+            asn1.tag == .bitString,
             let data = asn1.dataValue,
-            data.count == 2 else
-        {
+            data.count == 2
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.padding = data[0]

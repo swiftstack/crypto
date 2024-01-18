@@ -46,10 +46,11 @@ extension Extensions: ExpressibleByArrayLiteral {
 extension Extensions {
     // Extensions  ::=  SEQUENCE SIZE (1..MAX) OF Extension
     public static func decode(from asn1: ASN1) async throws -> Self {
-        guard let contextSpecific = asn1.sequenceValue,
+        guard
+            let contextSpecific = asn1.sequenceValue,
             let container = contextSpecific.first,
-            let sequence = container.sequenceValue else
-        {
+            let sequence = container.sequenceValue
+        else {
             throw Error.invalidASN1(asn1)
         }
         var items: [Extension] = []
@@ -70,10 +71,11 @@ extension Extension {
     //               -- by extnID
     //   }
     public static func decode(from asn1: ASN1) async throws -> Self {
-        guard let values = asn1.sequenceValue,
+        guard
+            let values = asn1.sequenceValue,
             values.count >= 2 && values.count <= 3,
-            let id = values[0].objectIdentifierValue else
-        {
+            let id = values[0].objectIdentifierValue
+        else {
             throw Error.invalidASN1(asn1)
         }
 
@@ -81,7 +83,7 @@ extension Extension {
 
         if values.count == 2 {
             isCritical = false
-        } else  {
+        } else {
             guard let _isCritical = values[1].booleanValue else {
                 throw Error.invalidASN1(asn1)
             }

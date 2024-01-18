@@ -22,9 +22,10 @@ public typealias IssuerAltName = GeneralNames
 extension Array where Element == GeneralName {
     // GeneralNames ::= SEQUENCE SIZE (1..MAX) OF GeneralName
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count >= 1 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count >= 1
+        else {
             throw Error.invalidASN1(asn1)
         }
         self = try sequence.map(GeneralName.init)
@@ -54,9 +55,10 @@ extension GeneralName {
     //   iPAddress                       [7]     OCTET STRING,
     //   registeredID                    [8]     OBJECT IDENTIFIER }
     public init(from asn1: ASN1) throws {
-        guard asn1.class == .contextSpecific,
-            let tag = Tag(rawValue: asn1.tag.rawValue) else
-        {
+        guard
+            asn1.class == .contextSpecific,
+            let tag = Tag(rawValue: asn1.tag.rawValue)
+        else {
             throw Error.invalidASN1(asn1)
         }
         switch tag {

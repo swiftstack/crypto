@@ -4,7 +4,8 @@ import Stream
 @testable import ASN1
 
 test("ReadLength1Octet") {
-    let length = try await ASN1.Length.decode(from: InputByteStream([0x81, 0x01]))
+    let length = try await ASN1.Length.decode(
+        from: InputByteStream([0x81, 0x01]))
     expect(length.value == 1)
 }
 

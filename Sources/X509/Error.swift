@@ -33,8 +33,8 @@ public struct Error: Swift.Error {
         _ asn1: ASN1,
         _ function: String = #function,
         _ file: String = #file,
-        _ line: Int = #line) -> Error
-    {
+        _ line: Int = #line
+    ) -> Error {
         return .init(
             .invalidASN1,
             source: .init(function, file, line),
@@ -45,8 +45,8 @@ public struct Error: Swift.Error {
         _ asn1: ASN1,
         _ function: String = #function,
         _ file: String = #file,
-        _ line: Int = #line) -> Error
-    {
+        _ line: Int = #line
+    ) -> Error {
         return .init(
             .unimplemented,
             source: .init(function, file, line),

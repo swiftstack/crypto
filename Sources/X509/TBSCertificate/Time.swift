@@ -14,9 +14,10 @@ extension TimeVariant {
     //   utcTime        UTCTime,
     //   generalTime    GeneralizedTime }
     public init(from asn1: ASN1) throws {
-        guard let bytes = asn1.dataValue,
-            let time = Time(validity: bytes) else
-        {
+        guard
+            let bytes = asn1.dataValue,
+            let time = Time(validity: bytes)
+        else {
             throw Error.invalidASN1(asn1)
         }
         switch asn1.tag {

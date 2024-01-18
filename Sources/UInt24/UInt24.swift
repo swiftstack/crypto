@@ -5,7 +5,7 @@ public struct UInt24: Hashable {
 }
 
 extension UInt24: Equatable {
-    public static func ==(lhs: UInt24, rhs: UInt24) -> Bool {
+    public static func == (lhs: UInt24, rhs: UInt24) -> Bool {
         return lhs.low == rhs.low
             && lhs.middle == rhs.middle
             && lhs.hight == rhs.hight
@@ -158,46 +158,45 @@ extension UInt24: UnsignedInteger {
 }
 
 extension UInt24: FixedWidthInteger {
-    public func addingReportingOverflow(_ rhs: UInt24)
-        -> (partialValue: UInt24, overflow: Bool)
-    {
+    public func addingReportingOverflow(
+        _ rhs: UInt24
+    ) -> (partialValue: UInt24, overflow: Bool) {
         fatalError("unimplemented")
     }
 
-    public func subtractingReportingOverflow(_ rhs: UInt24)
-        -> (partialValue: UInt24, overflow: Bool)
-    {
+    public func subtractingReportingOverflow(
+        _ rhs: UInt24
+    ) -> (partialValue: UInt24, overflow: Bool) {
         fatalError("unimplemented")
     }
 
-    public func multipliedReportingOverflow(by rhs: UInt24)
-        -> (partialValue: UInt24, overflow: Bool)
-    {
+    public func multipliedReportingOverflow(
+        by rhs: UInt24
+    ) -> (partialValue: UInt24, overflow: Bool) {
         fatalError("unimplemented")
     }
 
-    public func dividedReportingOverflow(by rhs: UInt24)
-        -> (partialValue: UInt24, overflow: Bool)
-    {
+    public func dividedReportingOverflow(
+        by rhs: UInt24
+    ) -> (partialValue: UInt24, overflow: Bool) {
         fatalError("unimplemented")
     }
 
-    public func remainderReportingOverflow(dividingBy rhs: UInt24)
-        -> (partialValue: UInt24, overflow: Bool)
-    {
+    public func remainderReportingOverflow(
+        dividingBy rhs: UInt24
+    ) -> (partialValue: UInt24, overflow: Bool) {
         fatalError("unimplemented")
     }
 
-    public func multipliedFullWidth(by other: UInt24)
-        -> (high: UInt24, low: UInt24.Magnitude)
-    {
+    public func multipliedFullWidth(
+        by other: UInt24
+    ) -> (high: UInt24, low: UInt24.Magnitude) {
         fatalError("unimplemented")
     }
 
     public func dividingFullWidth(
-        _ dividend: (high: UInt24, low: UInt24.Magnitude))
-        -> (quotient: UInt24, remainder: UInt24)
-    {
+        _ dividend: (high: UInt24, low: UInt24.Magnitude)
+    ) -> (quotient: UInt24, remainder: UInt24) {
         fatalError("unimplemented")
     }
 

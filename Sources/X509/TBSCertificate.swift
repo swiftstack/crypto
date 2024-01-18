@@ -18,8 +18,8 @@ public struct TBSCertificate: Equatable {
         validity: Validity,
         subject: Name,
         publicKey: PublicKey,
-        extensions: Extensions)
-    {
+        extensions: Extensions
+    ) {
         self.version = version
         self.serialNumber = serialNumber
         self.signature = signature
@@ -35,9 +35,10 @@ public struct TBSCertificate: Equatable {
 
 extension TBSCertificate {
     public static func decode(from asn1: ASN1) async throws -> Self {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count >= 8 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count >= 8
+        else {
             throw Error.invalidASN1(asn1)
         }
 

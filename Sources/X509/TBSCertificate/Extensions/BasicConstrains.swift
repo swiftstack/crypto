@@ -7,8 +7,8 @@ extension Extension {
 
         public init(
             isCA: Bool = false,
-            pathLen: Int? = nil)
-        {
+            pathLen: Int? = nil
+        ) {
             self.isCA = isCA
             self.pathLen = pathLen
         }
@@ -19,10 +19,11 @@ extension Extension {
 
 extension Extension.BasicConstrains {
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
+        guard
+            let sequence = asn1.sequenceValue,
             // TODO: test
-            sequence.count <= 2 else
-        {
+            sequence.count <= 2
+        else {
             throw Error.invalidASN1(asn1)
         }
 

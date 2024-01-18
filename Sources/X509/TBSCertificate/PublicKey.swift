@@ -20,11 +20,12 @@ public enum PublicKey: Equatable {
 
 extension RSA.PublicKey {
     public init(from asn1: ASN1) throws {
-        guard let keySequence = asn1.sequenceValue,
+        guard
+            let keySequence = asn1.sequenceValue,
             keySequence.count == 2,
             let modulus = keySequence[0].insaneIntegerValue,
-            let exponent = keySequence[1].integerValue else
-        {
+            let exponent = keySequence[1].integerValue
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.modulus = modulus
@@ -34,9 +35,10 @@ extension RSA.PublicKey {
 
 extension PublicKey {
     public static func decode(from asn1: ASN1) async throws -> Self {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count == 2 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count == 2
+        else {
             throw Error.invalidASN1(asn1)
         }
         let algorithmIdentifier = try AlgorithmIdentifier(from: sequence[0])
