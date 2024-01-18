@@ -10,7 +10,7 @@ typealias KeyUsage = Extension.KeyUsage
 typealias AuthorityKeyIdentifier = Extension.AuthorityKeyIdentifier
 typealias KeyIdentifier = Extension.KeyIdentifier
 
-test.case("Reasons") {
+test("Reasons") {
     let reasons = try Reasons(from: .init(
         identifier: .init(
             isConstructed: false,
@@ -30,7 +30,7 @@ test.case("Reasons") {
     expect(reasons.contains(.aaCompromise))
 }
 
-test.case("KeyUsageExtension") {
+test("KeyUsageExtension") {
     let keyUsageExtension = try await Extension.decode(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -65,7 +65,7 @@ test.case("KeyUsageExtension") {
     }
 }
 
-test.case("KeyUsage") {
+test("KeyUsage") {
     await scope {
         let keyUsage = try KeyUsage(from: .init(
             identifier: .init(
@@ -103,7 +103,7 @@ test.case("KeyUsage") {
     }
 }
 
-test.case("ExtKeyUsage") {
+test("ExtKeyUsage") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -138,7 +138,7 @@ test.case("ExtKeyUsage") {
     expect(extKeyUsage == expected)
 }
 
-test.case("AuthorityKeyIdentifierExtension") {
+test("AuthorityKeyIdentifierExtension") {
     let authorityKeyIdentifierExtension = try await Extension.decode(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -164,12 +164,12 @@ test.case("AuthorityKeyIdentifierExtension") {
                 ]))
         ])))
     switch authorityKeyIdentifierExtension.value {
-        case .authorityKeyIdentifier(_): break
+        case .authorityKeyIdentifier(_): expect(true)
         default: fail("invalid authorityKeyIdentifierExtension")
     }
 }
 
-test.case("AuthorityKeyIdentifier") {
+test("AuthorityKeyIdentifier") {
     let authorityKeyIdentifier = try AuthorityKeyIdentifier(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -196,7 +196,7 @@ test.case("AuthorityKeyIdentifier") {
             0x0b, 0x5c, 0x35, 0x4d]))
 }
 
-test.case("CertificatePoliciesExtension") {
+test("CertificatePoliciesExtension") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -290,7 +290,7 @@ test.case("CertificatePoliciesExtension") {
                     ])])))
 }
 
-test.case("CertificateType") {
+test("CertificateType") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -336,7 +336,7 @@ test.case("CertificateType") {
     }
 }
 
-test.case("SubjectAltNames") {
+test("SubjectAltNames") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -451,4 +451,4 @@ test.case("SubjectAltNames") {
     expect(subjectAltNames == expected)
 }
 
-test.run()
+await run()

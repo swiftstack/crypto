@@ -2,7 +2,7 @@ import Test
 
 @testable import ASN1
 
-test.case("SimpleDescription") {
+test("SimpleDescription") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: false,
@@ -21,7 +21,7 @@ test.case("SimpleDescription") {
     expect(asn1.description == expected)
 }
 
-test.case("ComplexDescription") {
+test("ComplexDescription") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -79,4 +79,4 @@ test.case("ComplexDescription") {
     expect(asn1.description == expected)
 }
 
-test.run()
+await run()

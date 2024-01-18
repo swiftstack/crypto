@@ -2,21 +2,21 @@ import Test
 
 @testable import ASN1
 
-test.case("UniversalSequence") {
+test("UniversalSequence") {
     let identifier = try await ASN1.Identifier.decode(from: [0x30])
     expect(identifier.isConstructed == true)
     expect(identifier.class == .universal)
     expect(identifier.tag == .sequence)
 }
 
-test.case("ContextSpecificEndOfContent") {
+test("ContextSpecificEndOfContent") {
     let identifier = try await ASN1.Identifier.decode(from: [0xa0])
     expect(identifier.isConstructed == true)
     expect(identifier.class == .contextSpecific)
     expect(identifier.tag == .endOfContent)
 }
 
-test.case("ContentBoolean") {
+test("ContentBoolean") {
     let asn1f = try await ASN1.decode(from: [0x01, 0x01, 0x00])
     let asn1t = try await ASN1.decode(from: [0x01, 0x01, 0xFF])
     expect(asn1f.identifier == .init(
@@ -31,7 +31,7 @@ test.case("ContentBoolean") {
     expect(asn1t.content == .boolean(true))
 }
 
-test.case("ContentEnumerated") {
+test("ContentEnumerated") {
     let result = try await ASN1.decode(from: [0x0a, 0x01, 0x00])
     expect(result.identifier == .init(
         isConstructed: false,
@@ -40,7 +40,7 @@ test.case("ContentEnumerated") {
     expect(result.content == .integer(.sane(0)))
 }
 
-test.case("ContentData") {
+test("ContentData") {
     let result = try await ASN1.decode(from: [
             0x17, 0x0d,
             0x31, 0x36, 0x30, 0x35, 0x31, 0x33,
@@ -54,7 +54,7 @@ test.case("ContentData") {
         0x31, 0x32, 0x31, 0x39, 0x31, 0x35, 0x5a]))
 }
 
-test.case("ContentSequence") {
+test("ContentSequence") {
     let result = try await ASN1.decode(from: [
         0x30, 0x06,
         0x0a, 0x01, 0x00,
@@ -80,7 +80,7 @@ test.case("ContentSequence") {
     ]))
 }
 
-test.case("ContentPrintableString") {
+test("ContentPrintableString") {
     let result = try await ASN1.decode(from: [
         0x13, 0x02, 0x52, 0x55
     ])
@@ -91,7 +91,7 @@ test.case("ContentPrintableString") {
     expect(result.content == .string("RU"))
 }
 
-test.case("ContentUTF8String") {
+test("ContentUTF8String") {
     let result = try await ASN1.decode(from: [
         0x0c, 0x19,
         0x43, 0x65, 0x72, 0x74, 0x75, 0x6d, 0x20, 0x56,
@@ -106,7 +106,7 @@ test.case("ContentUTF8String") {
     expect(result.content == .string("Certum Validation Service"))
 }
 
-test.case("ContentObjectIdentifier") {
+test("ContentObjectIdentifier") {
     let result = try await ASN1.decode(from: [
             0x06, 0x09,
             0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b])
@@ -119,4 +119,4 @@ test.case("ContentObjectIdentifier") {
     expect(result.content == .objectIdentifier(.sha256WithRSAEncryption))
 }
 
-test.run()
+await run()

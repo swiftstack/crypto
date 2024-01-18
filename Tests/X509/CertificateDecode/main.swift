@@ -4,7 +4,7 @@ import ASN1
 
 @testable import X509
 
-test.case("Version") {
+test("Version") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -22,7 +22,7 @@ test.case("Version") {
     expect(version == .v3)
 }
 
-test.case("SerialNumber") {
+test("SerialNumber") {
     await scope {
         let serialNumberValue: [UInt8] = [
             0x62, 0xfa, 0x7d, 0x18, 0x39, 0x8c, 0x6e, 0x14,
@@ -53,7 +53,7 @@ test.case("SerialNumber") {
     }
 }
 
-test.case("Time") {
+test("Time") {
     await scope {
         let time = try TimeVariant(from: .init(
             identifier: .init(
@@ -81,7 +81,7 @@ test.case("Time") {
     }
 }
 
-test.case("Validity") {
+test("Validity") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -113,7 +113,7 @@ test.case("Validity") {
     expect(validity.notAfter == .utc(Time(1368879555.0)))
 }
 
-test.case("Name") {
+test("Name") {
     let name = try Name(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -163,7 +163,7 @@ test.case("Name") {
     ])))
 }
 
-test.case("AttributeTypeAndValue") {
+test("AttributeTypeAndValue") {
     let typeValue = try AttributeTypeAndValue(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -195,7 +195,7 @@ test.case("AttributeTypeAndValue") {
             content: .string("RU"))))
 }
 
-test.case("DirectoryString") {
+test("DirectoryString") {
     let directoryString = try DirectoryString(from: .init(
         identifier: .init(
             isConstructed: false,
@@ -205,7 +205,7 @@ test.case("DirectoryString") {
     expect(directoryString == .printableString("RU"))
 }
 
-test.case("OtherName") {
+test("OtherName") {
     let otherName = try OtherName(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -237,7 +237,7 @@ test.case("OtherName") {
             content: .string("Unique Name"))))
 }
 
-test.case("AlgorithmIdentifier") {
+test("AlgorithmIdentifier") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -263,7 +263,7 @@ test.case("AlgorithmIdentifier") {
         parameters: nil))
 }
 
-test.case("SubjectPublicKeyInfo") {
+test("SubjectPublicKeyInfo") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -369,4 +369,4 @@ test.case("SubjectPublicKeyInfo") {
             0xdb],
         exponent: 65537)))
 }
-test.run()
+await run()

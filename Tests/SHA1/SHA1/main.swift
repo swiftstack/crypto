@@ -2,7 +2,7 @@ import Test
 
 @testable import SHA1
 
-test.case("SHA1") {
+test("SHA1") {
     let bytes = [UInt8]("The quick brown fox jumps over the lazy dog".utf8)
     var sha1 = SHA1()
     sha1.update(bytes)
@@ -17,7 +17,7 @@ test.case("SHA1") {
     expect(result == expected)
 }
 
-test.case("SHA1Array") {
+test("SHA1Array") {
     let bytes = [UInt8]("The quick brown fox jumps over the lazy dog".utf8)
     var sha1 = SHA1()
     sha1.update(bytes)
@@ -31,7 +31,7 @@ test.case("SHA1Array") {
     expect(result == expected)
 }
 
-test.case("SHA1String") {
+test("SHA1String") {
     let bytes = [UInt8]("The quick brown fox jumps over the lazy dog".utf8)
     var sha1 = SHA1()
     sha1.update(bytes)
@@ -41,7 +41,7 @@ test.case("SHA1String") {
     expect(result == expected)
 }
 
-test.case("SHA1ArrayExtension") {
+test("SHA1ArrayExtension") {
     let bytes = [UInt8]("The quick brown fox jumps over the lazy dog".utf8)
     let result = bytes.sha1()
     let expected: [UInt8] = [0x2f, 0xd4, 0xe1, 0xc6,
@@ -52,4 +52,4 @@ test.case("SHA1ArrayExtension") {
     expect(result == expected)
 }
 
-test.run()
+await run()
