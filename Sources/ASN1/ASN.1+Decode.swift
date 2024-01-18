@@ -123,14 +123,11 @@ extension ASN1 {
             case 3: return .sane(Int(try await stream.read(UInt24.self)))
             case 4: return .sane(Int(try await stream.read(Int32.self)))
             case 8: return .sane(Int(try await stream.read(Int64.self)))
-            default:
-                // FIXME: [Concurrency]
-                // return .insane(try await stream.read(count: length.value))
-                return .insane(.init(try await stream.read(count: length.value)))
+            default: return .insane(try await stream.read(count: length.value))
             }
         }
 
-        func read(_ type: [UInt8].Type) async throws ->  [UInt8] {
+        func read(_ type: [UInt8].Type) async throws -> [UInt8] {
             let length = try await Length.decode(from: stream)
             return try await stream.read(count: length.value)
         }
