@@ -9,8 +9,8 @@ extension Extension {
         public init(
             keyIdentifier: KeyIdentifier? = nil,
             authorityCertIssuer: GeneralNames? = nil,
-            authorityCertSerialNumber: SerialNumber? = nil)
-        {
+            authorityCertSerialNumber: SerialNumber? = nil
+        ) {
             self.keyIdentifier = keyIdentifier
             self.authorityCertIssuer = authorityCertIssuer
             self.authorityCertSerialNumber = authorityCertSerialNumber
@@ -26,9 +26,10 @@ extension Extension.AuthorityKeyIdentifier {
     //   authorityCertIssuer       [1] GeneralNames            OPTIONAL,
     //   authorityCertSerialNumber [2] CertificateSerialNumber OPTIONAL  }
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count <= 3 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count <= 3
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.init()

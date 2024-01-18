@@ -18,9 +18,10 @@ extension Validity {
     //   notBefore      Time,
     //   notAfter       Time }
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count == 2 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count == 2
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.notBefore = try TimeVariant(from: sequence[0])

@@ -12,10 +12,11 @@ extension OtherName {
     //   type-id    OBJECT IDENTIFIER,
     //   value      [0] EXPLICIT ANY DEFINED BY type-id }
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
+        guard
+            let sequence = asn1.sequenceValue,
             sequence.count == 2,
-            let type = sequence[0].objectIdentifierValue else
-        {
+            let type = sequence[0].objectIdentifierValue
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.type = type

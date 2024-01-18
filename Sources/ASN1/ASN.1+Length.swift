@@ -49,8 +49,8 @@ extension ASN1 {
 extension StreamReader {
     func withSubStreamReader<T>(
         sizedBy type: ASN1.Length.Type,
-        body: (SubStreamReader) async throws -> T) async throws -> T
-    {
+        body: (SubStreamReader) async throws -> T
+    ) async throws -> T {
         let length = try await ASN1.Length.decode(from: self)
         return try await withSubStreamReader(
             limitedBy: length.value,
@@ -61,8 +61,8 @@ extension StreamReader {
 extension StreamWriter {
     func withSubStreamWriter(
         sizedBy type: ASN1.Length.Type,
-        body: (SubStreamWriter) async throws -> Void) async throws
-    {
+        body: (SubStreamWriter) async throws -> Void
+    ) async throws {
         let output = OutputByteStream()
         try await body(output)
         let length = ASN1.Length(output.bytes.count)

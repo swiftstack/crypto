@@ -71,11 +71,12 @@ struct BitString {
     let bytes: [UInt8]
 
     init?(from asn1: ASN1) {
-        guard asn1.tag == .bitString,
+        guard
+            asn1.tag == .bitString,
             let data = asn1.dataValue,
             // FIXME: probably invalid
-            data.count >= 2 else
-        {
+            data.count >= 2
+        else {
             return nil
         }
         self.padding = Int(data[0])

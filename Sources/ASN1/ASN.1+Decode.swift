@@ -48,8 +48,9 @@ extension ASN1 {
 
             switch identifier.isConstructed {
             case true:
-                content = try await stream.withSubStreamReader(sizedBy: Length.self)
-                { stream in
+                content = try await stream.withSubStreamReader(
+                    sizedBy: Length.self
+                ) { stream in
                     var children = [ASN1]()
                     while !stream.isEmpty {
                         children.append(try await ASN1.decode(from: stream))
@@ -65,7 +66,8 @@ extension ASN1 {
                 case .printableString, .utf8String:
                     content = .string(try await read(String.self))
                 case .objectIdentifier:
-                    content = .objectIdentifier(try await read(ObjectIdentifier.self))
+                    content = .objectIdentifier(
+                        try await read(ObjectIdentifier.self))
                 default:
                     content = .data(try await read([UInt8].self))
                 }
@@ -96,8 +98,9 @@ extension ASN1 {
             guard tag & 0x1F == 0x1F else {
                 return tag
             }
-            return try await stream.read(while: { $0 & 0x80 == 0x80 })
-            { buffer in
+            return try await stream.read(
+                while: { $0 & 0x80 == 0x80 }
+            ) { buffer in
                 var tag = 0
                 for byte in buffer {
                     tag <<= 8
@@ -107,7 +110,7 @@ extension ASN1 {
             }
         }
 
-        func read(_ type: Bool.Type) async throws ->  Bool {
+        func read(_ type: Bool.Type) async throws -> Bool {
             let length = try await Length.decode(from: stream)
             guard length.value == 1 else {
                 throw Error.invalidBoolean
@@ -137,7 +140,9 @@ extension ASN1 {
             return try await stream.read(count: length.value, as: String.self)
         }
 
-        func read(_ type: ObjectIdentifier.Type) async throws -> ObjectIdentifier {
+        func read(
+            _ type: ObjectIdentifier.Type
+        ) async throws -> ObjectIdentifier {
             let bytes = try await read([UInt8].self)
             return .init(rawValue: bytes)
         }

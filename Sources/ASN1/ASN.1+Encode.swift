@@ -70,7 +70,9 @@ extension ASN1 {
         }
 
         func write(_ values: [ASN1]) async throws {
-            try await stream.withSubStreamWriter(sizedBy: Length.self) { stream in
+            try await stream.withSubStreamWriter(
+                sizedBy: Length.self
+            ) { stream in
                 for value in values {
                     try await value.encode(to: stream)
                 }

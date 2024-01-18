@@ -14,9 +14,10 @@ extension RelativeDistinguishedName {
     // RelativeDistinguishedName ::=
     //   SET SIZE (1..MAX) OF AttributeTypeAndValue
     public init(from asn1: ASN1) throws {
-        guard let items = asn1.setValue,
-            items.count >= 1 else
-        {
+        guard
+            let items = asn1.setValue,
+            items.count >= 1
+        else {
             throw Error.invalidASN1(asn1)
         }
         var components = Set<AttributeTypeAndValue>()

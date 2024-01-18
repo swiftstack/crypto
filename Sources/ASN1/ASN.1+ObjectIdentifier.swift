@@ -232,17 +232,28 @@ extension ASN1.ObjectIdentifier: ObjectIdentifierProtocol {
 
     public var rawValue: [UInt8] {
         switch self {
-        case .sha256WithRSAEncryption: return Raw.sha256WithRSAEncryption
-        case .rsaEncryption: return Raw.rsaEncryption
-        case .attribute(.none): return Raw.Attribute.objectId
-        case .attribute(.some(let value)): return value.rawValue
-        case .certificateExtension(.none): return Raw.CertificateExtension.objectId
-        case .certificateExtension(.some(let value)): return value.rawValue
-        case .pkix(.none): return Raw.Pkix.objectId
-        case .pkix(.some(let value)): return value.rawValue
-        case .netscape(.none): return Raw.Netscape.objectId
-        case .netscape(.some(let value)): return value.rawValue
-        case .other(let value): return value
+        case .sha256WithRSAEncryption:
+            return Raw.sha256WithRSAEncryption
+        case .rsaEncryption:
+            return Raw.rsaEncryption
+        case .attribute(.none):
+            return Raw.Attribute.objectId
+        case .attribute(.some(let value)):
+             return value.rawValue
+        case .certificateExtension(.none):
+            return Raw.CertificateExtension.objectId
+        case .certificateExtension(.some(let value)):
+            return value.rawValue
+        case .pkix(.none):
+            return Raw.Pkix.objectId
+        case .pkix(.some(let value)):
+            return value.rawValue
+        case .netscape(.none):
+            return Raw.Netscape.objectId
+        case .netscape(.some(let value)):
+            return value.rawValue
+        case .other(let value):
+            return value
         }
     }
 

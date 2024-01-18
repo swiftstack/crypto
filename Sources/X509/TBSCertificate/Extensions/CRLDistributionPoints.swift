@@ -12,8 +12,8 @@ extension Extension {
             public init(
                 name: Name? = nil,
                 reasons: Reasons? = nil,
-                crlIssuer: GeneralNames? = nil)
-            {
+                crlIssuer: GeneralNames? = nil
+            ) {
                 self.name = name
                 self.reasons = reasons
                 self.crlIssuer = crlIssuer
@@ -30,20 +30,22 @@ extension Extension {
                 public init(rawValue: UInt16) {
                     self.rawValue = rawValue
                 }
-
-                // TODO: verify with a dump of real world usage
-                public static let unused = Reasons(rawValue: 1 << 15)
-                public static let keyCompromise = Reasons(rawValue: 1 << 14)
-                public static let caCompromise = Reasons(rawValue: 1 << 13)
-                public static let affiliationChanged = Reasons(rawValue: 1 << 12)
-                public static let superseded = Reasons(rawValue: 1 << 11)
-                public static let cessationOfOperation = Reasons(rawValue: 1 << 10)
-                public static let certificateHold = Reasons(rawValue: 1 << 9)
-                public static let privilegeWithdrawn = Reasons(rawValue: 1 << 8)
-                public static let aaCompromise = Reasons(rawValue: 1 << 7)
             }
         }
     }
+}
+
+extension Extension.CRLDistributionPoints.DistributionPoint.Reasons {
+    // TODO: verify with a dump of real world usage
+    public static let unused = Self(rawValue: 1 << 15)
+    public static let keyCompromise = Self(rawValue: 1 << 14)
+    public static let caCompromise = Self(rawValue: 1 << 13)
+    public static let affiliationChanged = Self(rawValue: 1 << 12)
+    public static let superseded = Self(rawValue: 1 << 11)
+    public static let cessationOfOperation = Self(rawValue: 1 << 10)
+    public static let certificateHold = Self(rawValue: 1 << 9)
+    public static let privilegeWithdrawn = Self(rawValue: 1 << 8)
+    public static let aaCompromise = Self(rawValue: 1 << 7)
 }
 
 // MARK: Coding - https://tools.ietf.org/html/rfc5280#section-4.2.1.13
@@ -51,9 +53,10 @@ extension Extension {
 extension Extension.CRLDistributionPoints {
     public init(from asn1: ASN1) throws {
         // CRLDistributionPoints ::= SEQUENCE SIZE (1..MAX) OF DistributionPoint
-        guard let sequence = asn1.sequenceValue,
-            sequence.count > 0 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count > 0
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.distributionPoints = try sequence.map(DistributionPoint.init)
@@ -66,9 +69,10 @@ extension Extension.CRLDistributionPoints.DistributionPoint {
     //     reasons                 [1]     ReasonFlags OPTIONAL,
     //     cRLIssuer               [2]     GeneralNames OPTIONAL }
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count <= 3 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count <= 3
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.init()
@@ -114,10 +118,11 @@ extension Extension.CRLDistributionPoints.DistributionPoint.Reasons {
     //     privilegeWithdrawn      (7),
     //     aACompromise            (8) }
     public init(from asn1: ASN1) throws {
-        guard asn1.tag == .bitString,
+        guard
+            asn1.tag == .bitString,
             let data = asn1.dataValue,
-            data.count == 2 else
-        {
+            data.count == 2
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.rawValue = UInt16(data[1]) << 8 | UInt16(data[0])

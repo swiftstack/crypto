@@ -15,9 +15,10 @@ extension Extension.ExtendedKeyUsage {
 
     //  KeyPurposeId ::= OBJECT IDENTIFIER
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count > 0 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count > 0
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.keyPurposes = try sequence.map {

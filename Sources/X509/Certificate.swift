@@ -6,8 +6,8 @@ public struct Certificate: Equatable {
 
     public init(
         tbsCertificate: TBSCertificate,
-        signature: Signature)
-    {
+        signature: Signature
+    ) {
         self.tbsCertificate = tbsCertificate
         self.signature = signature
     }

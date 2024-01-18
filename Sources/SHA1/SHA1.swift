@@ -1,6 +1,6 @@
 public struct SHA1 {
     public struct Hash: Equatable {
-        public var a,b,c,d,e: UInt32
+        public var a, b, c, d, e: UInt32
     }
 
     var intermediateHash: Hash
@@ -250,7 +250,7 @@ public struct SHA1 {
 
         var t: UInt32 = 0
 
-        var x = Block(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+        var x = Block(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
         for i in stride(from: 0, to: blocks.count, by: blockSize) {
             let block = UnsafeBufferPointer<UInt32>(

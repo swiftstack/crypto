@@ -9,8 +9,8 @@ extension Extension {
 
         public init(
             method: ASN1.ObjectIdentifier,
-            location: GeneralName)
-        {
+            location: GeneralName
+        ) {
             self.method = method
             self.location = location
         }
@@ -23,9 +23,10 @@ extension Array where Element == Extension.AccessDescription {
     public init(from asn1: ASN1) throws {
         // AuthorityInfoAccessSyntax  ::=
         //  SEQUENCE SIZE (1..MAX) OF AccessDescription
-        guard let sequence = asn1.sequenceValue,
-            sequence.count > 0 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count > 0
+        else {
             throw Error.invalidASN1(asn1)
         }
         self = try sequence.map(Extension.AccessDescription.init)
@@ -37,10 +38,11 @@ extension Extension.AccessDescription {
     //   accessMethod          OBJECT IDENTIFIER,
     //   accessLocation        GeneralName  }
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
+        guard
+            let sequence = asn1.sequenceValue,
             sequence.count == 2,
-            let method = sequence[0].objectIdentifierValue else
-        {
+            let method = sequence[0].objectIdentifierValue
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.method = method

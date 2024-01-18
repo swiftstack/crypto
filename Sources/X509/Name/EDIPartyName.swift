@@ -13,9 +13,10 @@ extension EDIPartyName {
     //   nameAssigner            [0]     DirectoryString OPTIONAL,
     //   partyName               [1]     DirectoryString }
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            (sequence.count == 1 || sequence.count == 2) else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            (sequence.count == 1 || sequence.count == 2)
+        else {
             throw Error.invalidASN1(asn1)
         }
 

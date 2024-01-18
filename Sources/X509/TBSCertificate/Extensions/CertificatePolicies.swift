@@ -1,4 +1,4 @@
- import ASN1
+import ASN1
 
 extension Extension {
     public typealias CertificatePolicies = [Policy.Information]
@@ -10,8 +10,8 @@ extension Extension {
 
             public init(
                 identifier: ASN1.ObjectIdentifier,
-                qualifiers: [QualifierInfo])
-            {
+                qualifiers: [QualifierInfo]
+            ) {
                 self.identifier = identifier
                 self.qualifiers = qualifiers
             }
@@ -46,9 +46,10 @@ extension Extension {
 extension Array where Element == Extension.Policy.Information {
     // certificatePolicies ::= SEQUENCE SIZE (1..MAX) OF PolicyInformation
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count > 0 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count > 0
+        else {
             throw Error.invalidASN1(asn1)
         }
         self = try sequence.map(Extension.Policy.Information.init)
@@ -61,10 +62,11 @@ extension Extension.Policy.Information {
     //   policyQualifiers   SEQUENCE SIZE (1..MAX) OF
     //                           PolicyQualifierInfo OPTIONAL }
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
+        guard
+            let sequence = asn1.sequenceValue,
             sequence.count == 1 || sequence.count == 2,
-            let identifier = sequence[0].objectIdentifierValue else
-        {
+            let identifier = sequence[0].objectIdentifierValue
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.identifier = identifier
@@ -80,9 +82,10 @@ extension Array where Element == Extension.Policy.QualifierInfo {
     // policyQualifiers   SEQUENCE SIZE (1..MAX) OF
     //                         PolicyQualifierInfo OPTIONAL }
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count > 0 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count > 0
+        else {
             throw Error.invalidASN1(asn1)
         }
         self = try sequence.map(Extension.Policy.QualifierInfo.init)
@@ -108,11 +111,12 @@ extension Extension.Policy.QualifierInfo {
     //
     // CPSuri ::= IA5String
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
+        guard
+            let sequence = asn1.sequenceValue,
             sequence.count == 2,
             let id = sequence[0].objectIdentifierValue,
-            case .pkix(.some(.policyQualifier(let qualifier))) = id else
-        {
+            case .pkix(.some(.policyQualifier(let qualifier))) = id
+        else {
             throw Error.invalidASN1(asn1)
         }
         func cpsUri(from asn1: ASN1) throws -> String {
@@ -158,9 +162,10 @@ extension Extension.Policy.UserNotice.Reference {
     //   organization     DisplayText,
     //   noticeNumbers    SEQUENCE OF INTEGER }
     public init(from asn1: ASN1) throws {
-        guard let sequence = asn1.sequenceValue,
-            sequence.count == 2 else
-        {
+        guard
+            let sequence = asn1.sequenceValue,
+            sequence.count == 2
+        else {
             throw Error.invalidASN1(asn1)
         }
         self.organization = try .init(from: sequence[0])
@@ -189,9 +194,10 @@ extension Extension.Policy.UserNotice.DisplayText {
     //   bmpString        BMPString      (SIZE (1..200)),
     //   utf8String       UTF8String     (SIZE (1..200)) }
     public init(from asn1: ASN1) throws {
-        guard let value = asn1.stringValue,
-            value.utf8.count >= 1 && value.utf8.count <= 200 else
-        {
+        guard
+            let value = asn1.stringValue,
+            value.utf8.count >= 1 && value.utf8.count <= 200
+        else {
             throw Error.invalidASN1(asn1)
         }
 
