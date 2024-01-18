@@ -31,24 +31,30 @@ let package = Package(
         .package(name: "Test"),
     ],
     targets: [
-        .target(name: "UInt24"),
+        .target(
+            name: "UInt24",
+            swiftSettings: swift6
+        ),
         .target(
             name: "SHA1",
             dependencies: [
                 .product(name: "Hex", package: "Radix")
-            ]),
+            ],
+            swiftSettings: swift6),
         .target(
             name: "UUID",
             dependencies: [
                 .product(name: "Hex", package: "Radix"), "SHA1"
-            ]),
+            ],
+            swiftSettings: swift6),
         .target(
             name: "ASN1",
             dependencies: [
                 .target(name: "UInt24"),
                 .product(name: "Stream", package: "stream"),
                 .product(name: "Hex", package: "Radix"),
-            ]),
+            ],
+            swiftSettings: swift6),
         .target(
             name: "X509",
             dependencies: [
@@ -56,7 +62,8 @@ let package = Package(
                 .target(name: "ASN1"),
                 .product(name: "Stream", package: "stream"),
                 .product(name: "Time", package: "time"),
-            ]),
+            ],
+            swiftSettings: swift6),
         .target(
             name: "Crypto",
             dependencies: [
@@ -64,9 +71,19 @@ let package = Package(
                 .target(name: "UUID"),
                 .target(name: "ASN1"),
                 .target(name: "X509"),
-            ]),
+            ],
+            swiftSettings: swift6),
     ]
 )
+
+let swift6: [SwiftSetting] = [
+    .enableUpcomingFeature("ConciseMagicFile"),
+    .enableUpcomingFeature("ForwardTrailingClosures"),
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("StrictConcurrency"),
+    .enableUpcomingFeature("ImplicitOpenExistentials"),
+    .enableUpcomingFeature("BareSlashRegexLiterals"),
+]
 
 // MARK: - tests
 
@@ -108,7 +125,8 @@ func addTest(target: String, name: String) {
                 .target(name: target),
                 .product(name: "Test", package: "test"),
             ],
-            path: "Tests/\(target)/\(name)"))
+            path: "Tests/\(target)/\(name)",
+            swiftSettings: swift6))
 }
 
 // MARK: - custom package source
