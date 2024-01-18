@@ -2,11 +2,11 @@ import Test
 
 @testable import UUID
 
-test.case("UUID") {
+test("UUID") {
     _ = UUID()
 }
 
-test.case("EncodeUUIDString") {
+test("EncodeUUIDString") {
     let uuid = UUID()
     let uuidString = uuid.uuidString
     expect(uuidString.count == 36)
@@ -18,22 +18,22 @@ test.case("EncodeUUIDString") {
     }
 }
 
-test.case("DecodeUUIDString") {
+test("DecodeUUIDString") {
     let uuid = UUID()
     let uuidString = uuid.uuidString
     expect(UUID(uuidString: uuidString) == uuid)
 }
 
-test.case("Namespace") {
+test("Namespace") {
     expect(UUID.dns.uuidString == "6ba7b810-9dad-11d1-80b4-00c04fd430c8")
     expect(UUID.url.uuidString == "6ba7b811-9dad-11d1-80b4-00c04fd430c8")
     expect(UUID.oid.uuidString == "6ba7b812-9dad-11d1-80b4-00c04fd430c8")
     expect(UUID.x500.uuidString == "6ba7b814-9dad-11d1-80b4-00c04fd430c8")
 }
 
-test.case("UUIDv5") {
+test("UUIDv5") {
     let uuid = UUID(namespace: .dns, name: "swiftstack.io")
     expect(uuid.uuidString == "47173f2b-f3b6-5d00-be40-70d315ed9a8a")
 }
 
-test.run()
+await run()

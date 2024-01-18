@@ -2,7 +2,7 @@ import Test
 
 @testable import ASN1
 
-test.case("UniversalSequence") {
+test("UniversalSequence") {
     let identifier = ASN1.Identifier(
         isConstructed: true,
         class: .universal,
@@ -11,7 +11,7 @@ test.case("UniversalSequence") {
     expect(bytes == [0x30])
 }
 
-test.case("ContextSpecificEndOfContent") {
+test("ContextSpecificEndOfContent") {
     let identifier = ASN1.Identifier(
         isConstructed: true,
         class: .contextSpecific,
@@ -20,7 +20,7 @@ test.case("ContextSpecificEndOfContent") {
     expect(bytes == [0xa0])
 }
 
-test.case("ContentBoolean") {
+test("ContentBoolean") {
     let asnFalse = ASN1(
         identifier: .init(
             isConstructed: false,
@@ -42,7 +42,7 @@ test.case("ContentBoolean") {
     expect(trueBytes == [0x01, 0x01, 0xff])
 }
 
-test.case("ContentEnumerated") {
+test("ContentEnumerated") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: false,
@@ -53,7 +53,7 @@ test.case("ContentEnumerated") {
     expect(bytes == [0x0a, 0x01, 0x00])
 }
 
-test.case("ContentData") {
+test("ContentData") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: false,
@@ -67,7 +67,7 @@ test.case("ContentData") {
     expect(bytes == expected)
 }
 
-test.case("ContentSequence") {
+test("ContentSequence") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -95,7 +95,7 @@ test.case("ContentSequence") {
     expect(bytes == expected)
 }
 
-test.case("ContentPrintableString") {
+test("ContentPrintableString") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: false,
@@ -106,7 +106,7 @@ test.case("ContentPrintableString") {
     expect(bytes == [0x13, 0x02, 0x52, 0x55])
 }
 
-test.case("ContentUTF8String") {
+test("ContentUTF8String") {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: false,
@@ -123,4 +123,4 @@ test.case("ContentUTF8String") {
     expect(bytes == expected)
 }
 
-test.run()
+await run()

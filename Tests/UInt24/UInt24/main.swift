@@ -2,7 +2,7 @@ import Test
 
 @testable import UInt24
 
-test.case("UInt24") {
+test("UInt24") {
     expect(MemoryLayout<UInt24>.size == 3)
 
     let hight = UInt24(UInt(0xFF) << 16 )
@@ -14,22 +14,22 @@ test.case("UInt24") {
     expect(UInt(low) == 0xFF)
 }
 
-test.case("UInt24Max") {
+test("UInt24Max") {
     let max = UInt24(UInt(0xFFFFFF))
     expect(UInt(max) == 0xFFFFFF)
 }
 
-test.case("UInt24Overflow") {
+test("UInt24Overflow") {
     // FIXME: how to test a trap?
     // assertThrowsError(UInt24(UInt(0xFFFFFF)+1))
 }
 
-test.case("BytesSwapped") {
+test("BytesSwapped") {
     expect(UInt24(0xFF0000).byteSwapped == 0x0000FF)
 }
 
-test.case("Description") {
+test("Description") {
     expect(UInt24(0xFF0000).description == UInt(0xFF0000).description)
 }
 
-test.run()
+await run()

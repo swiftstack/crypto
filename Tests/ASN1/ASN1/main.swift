@@ -3,7 +3,7 @@ import Stream
 
 @testable import ASN1
 
-test.case("EqualityBug") {
+test("EqualityBug") {
     let identifier1 = ASN1.Identifier(
         isConstructed: true,
         class: .contextSpecific,
@@ -17,4 +17,4 @@ test.case("EqualityBug") {
     expect(identifier1 != identifier2)
 }
 
-test.run()
+await run()
