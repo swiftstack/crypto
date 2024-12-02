@@ -1,10 +1,10 @@
-import Test
-import Time
+import Testing
 import ASN1
 
 @testable import X509
 
-test("Version") {
+@Test("Version")
+private func Version() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -19,11 +19,12 @@ test("Version") {
                     content: .integer(.sane(2)))
             ]))
     let version = try Version(from: asn1)
-    expect(version == .v3)
+    #expect(version == .v3)
 }
 
-test("SerialNumber") {
-    await scope {
+@Test("SerialNumber")
+private func SerialNumber() async throws {
+    #expect(throws: Never.self) {
         let serialNumberValue: [UInt8] = [
             0x62, 0xfa, 0x7d, 0x18, 0x39, 0x8c, 0x6e, 0x14,
             0xec, 0x17, 0xc6, 0xfa, 0x50, 0x77, 0x75, 0xdf
@@ -37,10 +38,10 @@ test("SerialNumber") {
             content: .integer(.insane(serialNumberValue)))
 
         let serialNumber = try SerialNumber(from: asn1)
-        expect(serialNumber.value == .insane(serialNumberValue))
+        #expect(serialNumber.value == .insane(serialNumberValue))
     }
 
-    await scope {
+    #expect(throws: Never.self) {
         let asn1 = ASN1(
             identifier: .init(
                 isConstructed: false,
@@ -49,12 +50,13 @@ test("SerialNumber") {
             content: .integer(.sane(65568)))
 
         let serialNumber = try SerialNumber(from: asn1)
-        expect(serialNumber.value == .sane(65568))
+        #expect(serialNumber.value == .sane(65568))
     }
 }
 
-test("Time") {
-    await scope {
+@Test("Time")
+private func Time() async throws {
+    #expect(throws: Never.self) {
         let time = try TimeVariant(from: .init(
             identifier: .init(
                 isConstructed: false,
@@ -64,10 +66,10 @@ test("Time") {
                 0x31, 0x36, 0x30, 0x35, 0x31, 0x33, 0x31, 0x32,
                 0x31, 0x39, 0x31, 0x35, 0x5a
             ])))
-        expect(time == .utc(Time(1368706755.0)))
+        #expect(time == .utc("160513121915Z")) // Time(1368706755.0)
     }
 
-    await scope {
+    #expect(throws: Never.self) {
         let time = try TimeVariant(from: .init(
             identifier: .init(
                 isConstructed: false,
@@ -77,11 +79,12 @@ test("Time") {
                 0x31, 0x36, 0x30, 0x35, 0x31, 0x33, 0x31, 0x32,
                 0x31, 0x39, 0x31, 0x35, 0x5a
             ])))
-        expect(time == .generalized(Time(1368706755.0)))
+        #expect(time == .generalized("160513121915Z")) // Time(1368706755.0)
     }
 }
 
-test("Validity") {
+@Test("Validity")
+private func Validity() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -109,11 +112,12 @@ test("Validity") {
             ]))
 
     let validity = try Validity(from: asn1)
-    expect(validity.notBefore == .utc(Time(1368706755.0)))
-    expect(validity.notAfter == .utc(Time(1368879555.0)))
+    #expect(validity.notBefore == .utc("160513121915Z")) // Time(1368706755.0)
+    #expect(validity.notAfter == .utc("180513121915Z")) // Time(1368879555.0)
 }
 
-test("Name") {
+@Test("Name")
+private func Name() async throws {
     let name = try Name(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -149,7 +153,7 @@ test("Name") {
                         ]))
                 ])),
         ])))
-    expect(name == .rdnSequence(RDNSequence([
+    #expect(name == .rdnSequence(RDNSequence([
         .init([
             .init(
                 type: .attribute(.commonName),
@@ -163,7 +167,8 @@ test("Name") {
     ])))
 }
 
-test("AttributeTypeAndValue") {
+@Test("AttributeTypeAndValue")
+private func AttributeTypeAndValue() async throws {
     let typeValue = try AttributeTypeAndValue(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -185,7 +190,7 @@ test("AttributeTypeAndValue") {
                 content: .string("RU")
             )
         ])))
-    expect(typeValue == .init(
+    #expect(typeValue == .init(
         type: .attribute(.countryName),
         value: .init(
             identifier: .init(
@@ -195,17 +200,19 @@ test("AttributeTypeAndValue") {
             content: .string("RU"))))
 }
 
-test("DirectoryString") {
+@Test("DirectoryString")
+private func DirectoryString() async throws {
     let directoryString = try DirectoryString(from: .init(
         identifier: .init(
             isConstructed: false,
             class: .universal,
             tag: .printableString),
         content: .string("RU")))
-    expect(directoryString == .printableString("RU"))
+    #expect(directoryString == .printableString("RU"))
 }
 
-test("OtherName") {
+@Test("OtherName")
+private func OtherName() async throws {
     let otherName = try OtherName(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -227,7 +234,7 @@ test("OtherName") {
                     tag: .utf8String),
                 content: .string("Unique Name"))
         ])))
-    expect(otherName == .init(
+    #expect(otherName == .init(
         type: .attribute(.commonName),
         value: .init(
             identifier: .init(
@@ -237,7 +244,8 @@ test("OtherName") {
             content: .string("Unique Name"))))
 }
 
-test("AlgorithmIdentifier") {
+@Test("AlgorithmIdentifier")
+private func AlgorithmIdentifier() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -258,12 +266,13 @@ test("AlgorithmIdentifier") {
                 content: .data([]))
         ]))
     let algorithmIdentifier = try AlgorithmIdentifier(from: asn1)
-    expect(algorithmIdentifier == .init(
+    #expect(algorithmIdentifier == .init(
         objectId: .rsaEncryption,
         parameters: nil))
 }
 
-test("SubjectPublicKeyInfo") {
+@Test("SubjectPublicKeyInfo")
+private func SubjectPublicKeyInfo() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -332,7 +341,7 @@ test("SubjectPublicKeyInfo") {
             ]))
 
     let publicKey = try await PublicKey.decode(from: asn1)
-    expect(publicKey == .rsa(.init(
+    #expect(publicKey == .rsa(.init(
         modulus: [
             0x00, 0xdf, 0x8b, 0x73, 0x06, 0x95, 0xff, 0x53,
             0x9a, 0xcb, 0x03, 0xab, 0xd2, 0xe0, 0xfd, 0x3e,
@@ -369,4 +378,3 @@ test("SubjectPublicKeyInfo") {
             0xdb],
         exponent: 65537)))
 }
-await run()

@@ -1,8 +1,9 @@
-import Test
+import Testing
 
 @testable import ASN1
 
-test("SimpleDescription") {
+@Test("SimpleDescription")
+private func SimpleDescription() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: false,
@@ -18,10 +19,11 @@ test("SimpleDescription") {
                 tag: .null),
             content: .data([]))
         """
-    expect(asn1.description == expected)
+    #expect(asn1.description == expected)
 }
 
-test("ComplexDescription") {
+@Test("ComplexDescription")
+private func ComplexDescription() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -76,7 +78,5 @@ test("ComplexDescription") {
                     content: .data([0x03, 0x02, 0x05, 0xa0]))
             ]))
         """
-    expect(asn1.description == expected)
+    #expect(asn1.description == expected)
 }
-
-await run()

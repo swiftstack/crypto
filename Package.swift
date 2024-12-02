@@ -27,8 +27,6 @@ let package = Package(
     dependencies: [
         .package(name: "Stream"),
         .package(name: "Radix"),
-        .package(name: "Time"),
-        .package(name: "Test"),
     ],
     targets: [
         .target(
@@ -61,7 +59,6 @@ let package = Package(
                 .target(name: "UInt24"),
                 .target(name: "ASN1"),
                 .product(name: "Stream", package: "stream"),
-                .product(name: "Time", package: "time"),
             ],
             swiftSettings: swift6),
         .target(
@@ -73,6 +70,15 @@ let package = Package(
                 .target(name: "X509"),
             ],
             swiftSettings: swift6),
+        .testTarget(
+            name: "Tests",
+            dependencies: [
+                .target(name: "ASN1"),
+                .target(name: "SHA1"),
+                .target(name: "UInt24"),
+                .target(name: "UUID"),
+                .target(name: "X509"),
+            ]),
     ]
 )
 
@@ -84,50 +90,6 @@ let swift6: [SwiftSetting] = [
     .enableUpcomingFeature("ImplicitOpenExistentials"),
     .enableUpcomingFeature("BareSlashRegexLiterals"),
 ]
-
-// MARK: - tests
-
-testTarget("ASN1") { test in
-    test("ASN1")
-    test("Decode")
-    test("Description")
-    test("Encode")
-    test("Length")
-}
-
-testTarget("SHA1") { test in
-    test("SHA1")
-}
-
-testTarget("UInt24") { test in
-    test("UInt24")
-}
-
-testTarget("UUID") { test in
-    test("UUID")
-}
-
-testTarget("X509") { test in
-    test("CertificateDecode")
-    test("ExtensionDecode")
-    test("OCSPDecode")
-}
-
-func testTarget(_ target: String, task: ((String) -> Void) -> Void) {
-    task { test in addTest(target: target, name: test) }
-}
-
-func addTest(target: String, name: String) {
-    package.targets.append(
-        .executableTarget(
-            name: "Tests/\(target)/\(name)",
-            dependencies: [
-                .target(name: target),
-                .product(name: "Test", package: "test"),
-            ],
-            path: "Tests/\(target)/\(name)",
-            swiftSettings: swift6))
-}
 
 // MARK: - custom package source
 

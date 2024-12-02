@@ -1,4 +1,4 @@
-import Test
+import Testing
 import ASN1
 
 @testable import X509
@@ -10,7 +10,8 @@ typealias KeyUsage = Extension.KeyUsage
 typealias AuthorityKeyIdentifier = Extension.AuthorityKeyIdentifier
 typealias KeyIdentifier = Extension.KeyIdentifier
 
-test("Reasons") {
+@Test("Reasons")
+private func Reasons() async throws {
     let reasons = try Reasons(from: .init(
         identifier: .init(
             isConstructed: false,
@@ -19,18 +20,19 @@ test("Reasons") {
         content: .data([
             0b1000_0000, 0b1111_1111
         ])))
-    expect(reasons.contains(.unused))
-    expect(reasons.contains(.keyCompromise))
-    expect(reasons.contains(.caCompromise))
-    expect(reasons.contains(.affiliationChanged))
-    expect(reasons.contains(.superseded))
-    expect(reasons.contains(.cessationOfOperation))
-    expect(reasons.contains(.certificateHold))
-    expect(reasons.contains(.privilegeWithdrawn))
-    expect(reasons.contains(.aaCompromise))
+    #expect(reasons.contains(.unused))
+    #expect(reasons.contains(.keyCompromise))
+    #expect(reasons.contains(.caCompromise))
+    #expect(reasons.contains(.affiliationChanged))
+    #expect(reasons.contains(.superseded))
+    #expect(reasons.contains(.cessationOfOperation))
+    #expect(reasons.contains(.certificateHold))
+    #expect(reasons.contains(.privilegeWithdrawn))
+    #expect(reasons.contains(.aaCompromise))
 }
 
-test("KeyUsageExtension") {
+@Test("KeyUsageExtension")
+private func KeyUsageExtension() async throws {
     let keyUsageExtension = try await Extension.decode(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -57,53 +59,55 @@ test("KeyUsageExtension") {
                     tag: .octetString),
                 content: .data([0x03, 0x02, 0x05, 0xa0]))
         ])))
-    expect(keyUsageExtension.id == .certificateExtension(.keyUsage))
-    expect(keyUsageExtension.isCritical == true)
+    #expect(keyUsageExtension.id == .certificateExtension(.keyUsage))
+    #expect(keyUsageExtension.isCritical == true)
     guard case .keyUsage = keyUsageExtension.value else {
         fail()
         return
     }
 }
 
-test("KeyUsage") {
-    await scope {
+@Test("KeyUsage")
+private func KeyUsage() async throws {
+    #expect(throws: Never.self) {
         let keyUsage = try KeyUsage(from: .init(
             identifier: .init(
                 isConstructed: false,
                 class: .universal,
                 tag: .bitString),
             content: .data([0x05, 0xa0])))
-        expect(keyUsage.contains(.digitalSignature))
-        expect(!keyUsage.contains(.nonRepudiation))
-        expect(keyUsage.contains(.keyEncipherment))
-        expect(!keyUsage.contains(.dataEncipherment))
-        expect(!keyUsage.contains(.keyAgreement))
-        expect(!keyUsage.contains(.keyCertSign))
-        expect(!keyUsage.contains(.crlSign))
-        expect(!keyUsage.contains(.encipherOnly))
-        expect(!keyUsage.contains(.decipherOnly))
+        #expect(keyUsage.contains(.digitalSignature))
+        #expect(!keyUsage.contains(.nonRepudiation))
+        #expect(keyUsage.contains(.keyEncipherment))
+        #expect(!keyUsage.contains(.dataEncipherment))
+        #expect(!keyUsage.contains(.keyAgreement))
+        #expect(!keyUsage.contains(.keyCertSign))
+        #expect(!keyUsage.contains(.crlSign))
+        #expect(!keyUsage.contains(.encipherOnly))
+        #expect(!keyUsage.contains(.decipherOnly))
     }
 
-    await scope {
+    #expect(throws: Never.self) {
         let keyUsage = try KeyUsage(from: .init(
             identifier: .init(
                 isConstructed: false,
                 class: .universal,
                 tag: .bitString),
             content: .data([0x01, 0x06])))
-        expect(!keyUsage.contains(.digitalSignature))
-        expect(!keyUsage.contains(.nonRepudiation))
-        expect(!keyUsage.contains(.keyEncipherment))
-        expect(!keyUsage.contains(.dataEncipherment))
-        expect(!keyUsage.contains(.keyAgreement))
-        expect(keyUsage.contains(.keyCertSign))
-        expect(keyUsage.contains(.crlSign))
-        expect(!keyUsage.contains(.encipherOnly))
-        expect(!keyUsage.contains(.decipherOnly))
+        #expect(!keyUsage.contains(.digitalSignature))
+        #expect(!keyUsage.contains(.nonRepudiation))
+        #expect(!keyUsage.contains(.keyEncipherment))
+        #expect(!keyUsage.contains(.dataEncipherment))
+        #expect(!keyUsage.contains(.keyAgreement))
+        #expect(keyUsage.contains(.keyCertSign))
+        #expect(keyUsage.contains(.crlSign))
+        #expect(!keyUsage.contains(.encipherOnly))
+        #expect(!keyUsage.contains(.decipherOnly))
     }
 }
 
-test("ExtKeyUsage") {
+@Test("ExtKeyUsage")
+private func ExtKeyUsage() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -135,10 +139,11 @@ test("ExtKeyUsage") {
             .serverAuth,
             .clientAuth])))
     let extKeyUsage: Extension = try await .decode(from: asn1)
-    expect(extKeyUsage == expected)
+    #expect(extKeyUsage == expected)
 }
 
-test("AuthorityKeyIdentifierExtension") {
+@Test("AuthorityKeyIdentifierExtension")
+private func AuthorityKeyIdentifierExtension() async throws {
     let authorityKeyIdentifierExtension = try await Extension.decode(
         from: .init(
             identifier: .init(
@@ -164,13 +169,16 @@ test("AuthorityKeyIdentifierExtension") {
                         0xab, 0xd0, 0xdc, 0xe3, 0x0b, 0x5c, 0x35, 0x4d
                     ]))
             ])))
-    switch authorityKeyIdentifierExtension.value {
-    case .authorityKeyIdentifier: expect(true)
-    default: fail("invalid authorityKeyIdentifierExtension")
+    guard
+        case .authorityKeyIdentifier = authorityKeyIdentifierExtension.value
+    else {
+        fail("invalid authorityKeyIdentifierExtension")
+        return
     }
 }
 
-test("AuthorityKeyIdentifier") {
+@Test("AuthorityKeyIdentifier")
+private func AuthorityKeyIdentifier() async throws {
     let authorityKeyIdentifier = try AuthorityKeyIdentifier(from: .init(
         identifier: .init(
             isConstructed: true,
@@ -187,8 +195,8 @@ test("AuthorityKeyIdentifier") {
                     0xa8, 0x4e, 0xd2, 0xcf, 0xab, 0xd0, 0xdc, 0xe3,
                     0x0b, 0x5c, 0x35, 0x4d]))
         ])))
-    expect(authorityKeyIdentifier.keyIdentifier != nil)
-    expect(
+    #expect(authorityKeyIdentifier.keyIdentifier != nil)
+    #expect(
         authorityKeyIdentifier.keyIdentifier
         ==
         KeyIdentifier(rawValue: [
@@ -197,7 +205,8 @@ test("AuthorityKeyIdentifier") {
             0x0b, 0x5c, 0x35, 0x4d]))
 }
 
-test("CertificatePoliciesExtension") {
+@Test("CertificatePoliciesExtension")
+private func CertificatePoliciesExtension() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -268,7 +277,7 @@ test("CertificatePoliciesExtension") {
                        "(CPS) incorporated by reference " +
                        "herein and in the repository at " +
                        "https://www.certum.pl/repository."
-    expect(
+    #expect(
         certificatePoliciesExtension
         ==
         .init(
@@ -291,7 +300,8 @@ test("CertificatePoliciesExtension") {
                     ])])))
 }
 
-test("CertificateType") {
+@Test("CertificateType")
+private func CertificateType() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -321,23 +331,24 @@ test("CertificateType") {
             padding: 0x06,
             rawValue: 0xc0))))
     let certificateType = try await Extension.decode(from: asn1)
-    expect(certificateType == expected)
+    #expect(certificateType == expected)
 
     switch certificateType.value {
     case .netscape(.certificateType(let value)):
-        expect(value.contains(.sslClient))
-        expect(value.contains(.sslServer))
-        expect(!value.contains(.smime))
-        expect(!value.contains(.objectSigning))
-        expect(!value.contains(.sslCA))
-        expect(!value.contains(.smimeCA))
-        expect(!value.contains(.objectSigningCA))
+        #expect(value.contains(.sslClient))
+        #expect(value.contains(.sslServer))
+        #expect(!value.contains(.smime))
+        #expect(!value.contains(.objectSigning))
+        #expect(!value.contains(.sslCA))
+        #expect(!value.contains(.smimeCA))
+        #expect(!value.contains(.objectSigningCA))
     default:
         fail("unreachable")
     }
 }
 
-test("SubjectAltNames") {
+@Test("SubjectAltNames")
+private func SubjectAltNames() async throws {
     let asn1 = ASN1(
         identifier: .init(
             isConstructed: true,
@@ -449,7 +460,5 @@ test("SubjectAltNames") {
             .dnsName("m.ya.ru"),
             .dnsName("www.yandex.ua")]))
     let subjectAltNames = try await Extension.decode(from: asn1)
-    expect(subjectAltNames == expected)
+    #expect(subjectAltNames == expected)
 }
-
-await run()

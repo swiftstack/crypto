@@ -1,9 +1,10 @@
-import Test
+import Testing
 import Stream
 
 @testable import ASN1
 
-test("EqualityBug") {
+@Test("EqualityBug")
+private func equalityBug() async throws {
     let identifier1 = ASN1.Identifier(
         isConstructed: true,
         class: .contextSpecific,
@@ -14,7 +15,5 @@ test("EqualityBug") {
         class: .universal,
         tag: .sequence)
 
-    expect(identifier1 != identifier2)
+    #expect(identifier1 != identifier2)
 }
-
-await run()

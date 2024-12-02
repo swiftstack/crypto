@@ -1,5 +1,4 @@
 import ASN1
-import Time
 
 public struct Validity: Equatable {
     public let notBefore: TimeVariant
