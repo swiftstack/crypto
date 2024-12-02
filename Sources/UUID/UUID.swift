@@ -12,7 +12,7 @@
 //    |                         node (2-5)                            |
 //    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-public struct UUID {
+public struct UUID: Sendable {
     public internal(set) var time: Time
     public internal(set) var clock: Clock
     public internal(set) var node: Node
@@ -27,7 +27,7 @@ public struct UUID {
         case unknown
     }
 
-    public struct Time {
+    public struct Time: Sendable {
         var low: UInt32
         var mid: UInt16
         var hi: UInt16
@@ -74,7 +74,7 @@ public struct UUID {
         }
     }
 
-    public struct Clock {
+    public struct Clock: Sendable {
         var _value: UInt16
 
         // most significant 2 bits are reserved
@@ -90,7 +90,7 @@ public struct UUID {
         }
     }
 
-    public struct Node {
+    public struct Node: Sendable {
         public let bytes: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)
 
         public init(_ bytes: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)) {

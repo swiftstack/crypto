@@ -1,7 +1,7 @@
 import ASN1
 
 extension Extension {
-    public struct CertificateType: OptionSet, Equatable {
+    public struct CertificateType: OptionSet, Equatable, Sendable {
         public let padding: UInt8
         public let rawValue: UInt8
 

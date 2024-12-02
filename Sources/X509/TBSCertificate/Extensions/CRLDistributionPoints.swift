@@ -24,7 +24,7 @@ extension Extension {
                 case relativeToCRLIssuer(RelativeDistinguishedName)
             }
 
-            public struct Reasons: OptionSet, Equatable {
+            public struct Reasons: OptionSet, Equatable, Sendable {
                 public let rawValue: UInt16
 
                 public init(rawValue: UInt16) {

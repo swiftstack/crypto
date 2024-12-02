@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 import PackageDescription
 
 let package = Package(
@@ -30,37 +30,33 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "UInt24",
-            swiftSettings: swift6
+            name: "UInt24"
         ),
         .target(
             name: "SHA1",
             dependencies: [
-                .product(name: "Hex", package: "Radix")
-            ],
-            swiftSettings: swift6),
+                .product(name: "Hex", package: "Radix"),
+            ]),
         .target(
             name: "UUID",
             dependencies: [
-                .product(name: "Hex", package: "Radix"), "SHA1"
-            ],
-            swiftSettings: swift6),
+                .target(name: "SHA1"),
+                .product(name: "Hex", package: "Radix"),
+            ]),
         .target(
             name: "ASN1",
             dependencies: [
                 .target(name: "UInt24"),
                 .product(name: "Stream", package: "stream"),
                 .product(name: "Hex", package: "Radix"),
-            ],
-            swiftSettings: swift6),
+            ]),
         .target(
             name: "X509",
             dependencies: [
                 .target(name: "UInt24"),
                 .target(name: "ASN1"),
                 .product(name: "Stream", package: "stream"),
-            ],
-            swiftSettings: swift6),
+            ]),
         .target(
             name: "Crypto",
             dependencies: [
@@ -68,8 +64,7 @@ let package = Package(
                 .target(name: "UUID"),
                 .target(name: "ASN1"),
                 .target(name: "X509"),
-            ],
-            swiftSettings: swift6),
+            ]),
         .testTarget(
             name: "Tests",
             dependencies: [
@@ -81,15 +76,6 @@ let package = Package(
             ]),
     ]
 )
-
-let swift6: [SwiftSetting] = [
-    .enableUpcomingFeature("ConciseMagicFile"),
-    .enableUpcomingFeature("ForwardTrailingClosures"),
-    .enableUpcomingFeature("ExistentialAny"),
-    .enableUpcomingFeature("StrictConcurrency"),
-    .enableUpcomingFeature("ImplicitOpenExistentials"),
-    .enableUpcomingFeature("BareSlashRegexLiterals"),
-]
 
 // MARK: - custom package source
 

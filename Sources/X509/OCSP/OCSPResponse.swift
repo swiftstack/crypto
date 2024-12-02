@@ -1,8 +1,8 @@
 import ASN1
 
 public struct OCSP {
-    public struct Response: Equatable {
-        public enum Status: UInt8 {
+    public struct Response: Equatable, Sendable {
+        public enum Status: UInt8, Equatable, Sendable {
             case success = 0x00 // Response has valid confirmations
             case malformedRequest = 0x01 // Illegal confirmation request
             case internalError = 0x02 // Internal error in issuer
@@ -15,7 +15,7 @@ public struct OCSP {
         // TODO: find out is there other types
         public let basic: Basic?
 
-        public struct Basic: Equatable {
+        public struct Basic: Equatable, Sendable {
             let value: ASN1
         }
     }

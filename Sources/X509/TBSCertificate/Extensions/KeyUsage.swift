@@ -1,7 +1,7 @@
 import ASN1
 
 extension Extension {
-    public struct KeyUsage: OptionSet, Equatable {
+    public struct KeyUsage: OptionSet, Equatable, Sendable {
         public let rawValue: UInt16
 
         public init(rawValue: UInt16) {
