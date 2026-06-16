@@ -39,12 +39,18 @@ let package = Package(
             name: "SHA1",
             dependencies: [
                 .product(name: "Hex", package: "Radix"),
+            ],
+            swiftSettings: [
+                .treatWarning("EmbeddedRestrictions", as: .error)
             ]),
         .target(
             name: "UUID",
             dependencies: [
                 .target(name: "SHA1"),
                 .product(name: "Hex", package: "Radix"),
+            ],
+            swiftSettings: [
+                .treatWarning("EmbeddedRestrictions", as: .error)
             ]),
         .target(
             name: "ASN1",
@@ -52,6 +58,9 @@ let package = Package(
                 .target(name: "UInt24"),
                 .product(name: "Stream", package: "stream"),
                 .product(name: "Hex", package: "Radix"),
+            ],
+            swiftSettings: [
+                .treatWarning("EmbeddedRestrictions", as: .error)
             ]),
         .target(
             name: "X509",
@@ -59,6 +68,9 @@ let package = Package(
                 .target(name: "UInt24"),
                 .target(name: "ASN1"),
                 .product(name: "Stream", package: "stream"),
+            ],
+            swiftSettings: [
+                .treatWarning("EmbeddedRestrictions", as: .error)
             ]),
         .target(
             name: "Crypto",
@@ -67,6 +79,9 @@ let package = Package(
                 .target(name: "UUID"),
                 .target(name: "ASN1"),
                 .target(name: "X509"),
+            ],
+            swiftSettings: [
+                .treatWarning("EmbeddedRestrictions", as: .error)
             ]),
         .testTarget(
             name: "Tests",
