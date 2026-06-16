@@ -94,14 +94,14 @@ extension ASN1 {
                 }
             case .insane(let bytes):
                 let length = Length(bytes.count)
-                try await length.encode(to: stream)
+                try await length.write(to: stream)
                 try await stream.write(bytes)
             }
         }
 
         func write(_ bytes: [UInt8]) async throws {
             let length = Length(bytes.count)
-            try await length.encode(to: stream)
+            try await length.write(to: stream)
             try await stream.write(bytes)
         }
 

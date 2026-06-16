@@ -33,7 +33,7 @@ private func Reasons() async throws {
 
 @Test("KeyUsageExtension")
 private func KeyUsageExtension() async throws {
-    let keyUsageExtension = try await Extension.decode(from: .init(
+    let keyUsageExtension = try await Extension(from: .init(
         identifier: .init(
             isConstructed: true,
             class: .universal,
@@ -138,13 +138,13 @@ private func ExtKeyUsage() async throws {
         value: .extKeyUsage(.init(keyPurposes: [
             .serverAuth,
             .clientAuth])))
-    let extKeyUsage: Extension = try await .decode(from: asn1)
+    let extKeyUsage: Extension = try await .init(from: asn1)
     #expect(extKeyUsage == expected)
 }
 
 @Test("AuthorityKeyIdentifierExtension")
 private func AuthorityKeyIdentifierExtension() async throws {
-    let authorityKeyIdentifierExtension = try await Extension.decode(
+    let authorityKeyIdentifierExtension = try await Extension(
         from: .init(
             identifier: .init(
                 isConstructed: true,
@@ -269,7 +269,7 @@ private func CertificatePoliciesExtension() async throws {
                     0x69, 0x74, 0x6f, 0x72, 0x79, 0x2e
                 ]))
         ]))
-    let certificatePoliciesExtension = try await Extension.decode(from: asn1)
+    let certificatePoliciesExtension = try await Extension(from: asn1)
     // fix compile time (16000ms+)
     let explicitText = "Usage of this certificate is " +
                        "strictly subjected to the CERTUM " +
@@ -330,7 +330,7 @@ private func CertificateType() async throws {
         value: .netscape(.certificateType(.init(
             padding: 0x06,
             rawValue: 0xc0))))
-    let certificateType = try await Extension.decode(from: asn1)
+    let certificateType = try await Extension(from: asn1)
     #expect(certificateType == expected)
 
     switch certificateType.value {
@@ -459,6 +459,6 @@ private func SubjectAltNames() async throws {
             .dnsName("www.yandex.kz"),
             .dnsName("m.ya.ru"),
             .dnsName("www.yandex.ua")]))
-    let subjectAltNames = try await Extension.decode(from: asn1)
+    let subjectAltNames = try await Extension(from: asn1)
     #expect(subjectAltNames == expected)
 }

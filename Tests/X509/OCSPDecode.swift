@@ -205,7 +205,7 @@ let ocspBasicResponseBytes: [UInt8] = [0x30, 0x82,
 private func BasicResponse() async throws {
     let ocspResponseBytes = ocspResponseHeaderBytes + ocspBasicResponseBytes
     let asn1 = try await ASN1(decoding: ocspResponseBytes)
-    let response = try await OCSP.Response.decode(from: asn1)
+    let response = try await OCSP.Response(from: asn1)
     // TODO: not implemented yet, should be equal
     #expect(response.encode() != asn1)
 }

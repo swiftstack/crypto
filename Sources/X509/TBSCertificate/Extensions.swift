@@ -45,7 +45,7 @@ extension Extensions: ExpressibleByArrayLiteral {
 
 extension Extensions {
     // Extensions  ::=  SEQUENCE SIZE (1..MAX) OF Extension
-    public static func decode(from asn1: ASN1) async throws -> Self {
+    public init(from asn1: ASN1) async throws {
         guard
             let contextSpecific = asn1.sequenceValue,
             let container = contextSpecific.first,
@@ -55,9 +55,9 @@ extension Extensions {
         }
         var items: [Extension] = []
         for item in sequence {
-            try await items.append(Extension.decode(from: item))
+            try await items.append(Extension(from: item))
         }
-        return .init(items)
+        self = .init(items)
     }
 }
 
@@ -70,7 +70,7 @@ extension Extension {
     //               -- corresponding to the extension type identified
     //               -- by extnID
     //   }
-    public static func decode(from asn1: ASN1) async throws -> Self {
+    public init(from asn1: ASN1) async throws {
         guard
             let values = asn1.sequenceValue,
             values.count >= 2 && values.count <= 3,
@@ -123,6 +123,6 @@ extension Extension {
             throw Error.unimplemented(asn1)
         }
 
-        return .init(id: id, isCritical: isCritical, value: variant)
+        self = .init(id: id, isCritical: isCritical, value: variant)
     }
 }

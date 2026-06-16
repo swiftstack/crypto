@@ -340,7 +340,7 @@ private func SubjectPublicKeyInfo() async throws {
                         0xb7, 0xdb, 0x02, 0x03, 0x01, 0x00, 0x01]))
             ]))
 
-    let publicKey = try await PublicKey.decode(from: asn1)
+    let publicKey = try await PublicKey(from: asn1)
     #expect(publicKey == .rsa(.init(
         modulus: [
             0x00, 0xdf, 0x8b, 0x73, 0x06, 0x95, 0xff, 0x53,

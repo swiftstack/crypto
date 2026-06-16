@@ -24,7 +24,7 @@ public struct OCSP {
 // MARK: Coding - https://tools.ietf.org/html/rfc6960#section-4.2.1
 
 extension OCSP.Response {
-    public static func decode(from asn1: ASN1) async throws -> Self {
+    public init(from asn1: ASN1) async throws {
         guard asn1.identifier.isConstructed,
             asn1.identifier.class == .universal,
             asn1.identifier.tag == .sequence,
@@ -35,7 +35,8 @@ extension OCSP.Response {
         }
         let status = try Status(from: sequence[0])
         guard status == .success else {
-            return .init(status: status, basic: nil)
+            self = .init(status: status, basic: nil)
+            return
         }
 
         let eoc = sequence[1]
@@ -81,7 +82,7 @@ extension OCSP.Response {
         // TODO: Decode from initial stream
         let basicOCSPASN1 = try await ASN1(decoding: bytes)
         let basic = try Basic(from: basicOCSPASN1)
-        return .init(status: status, basic: basic)
+        self = .init(status: status, basic: basic)
     }
 
     public func encode() -> ASN1 {

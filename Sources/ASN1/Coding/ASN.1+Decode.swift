@@ -99,7 +99,7 @@ extension ASN1 {
         }
 
         func read(_ type: Bool.Type) async throws -> Bool {
-            let length = try await Length.decode(from: stream)
+            let length = try await Length(from: stream)
             guard length.value == 1 else {
                 throw Error.invalidBoolean
             }
@@ -107,7 +107,7 @@ extension ASN1 {
         }
 
         func read(_ type: Integer.Type) async throws -> Integer {
-            let length = try await Length.decode(from: stream)
+            let length = try await Length(from: stream)
             switch length.value {
             case 1: return .sane(Int(try await stream.read(Int8.self)))
             case 2: return .sane(Int(try await stream.read(Int16.self)))
@@ -119,12 +119,12 @@ extension ASN1 {
         }
 
         func read(_ type: [UInt8].Type) async throws -> [UInt8] {
-            let length = try await Length.decode(from: stream)
+            let length = try await Length(from: stream)
             return try await stream.read(count: length.value)
         }
 
         func read(_ type: String.Type) async throws -> String {
-            let length = try await Length.decode(from: stream)
+            let length = try await Length(from: stream)
             return try await stream.read(count: length.value, as: String.self)
         }
 
