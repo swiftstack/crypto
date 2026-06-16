@@ -1,4 +1,5 @@
 import ASN1
+import Stream
 
 public struct RSA {
     public struct PublicKey: Equatable {
@@ -45,7 +46,8 @@ extension PublicKey {
         guard let bitString = BitString(from: sequence[1]) else {
             throw Error.invalidASN1(asn1)
         }
-        let key = try await ASN1.decode(from: bitString.bytes)
+        // TODO: Decode from initial stream
+        let key = try await ASN1(decoding: bitString.bytes)
         switch algorithmIdentifier.objectId {
         case .rsaEncryption: return .rsa(try .init(from: key))
         default: throw Error.unimplemented(asn1)

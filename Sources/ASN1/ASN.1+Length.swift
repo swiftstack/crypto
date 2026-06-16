@@ -12,7 +12,7 @@ extension ASN1 {
             case invalidLength
         }
 
-        static func decode(from stream: StreamReader) async throws -> Self {
+        static func decode<T: StreamReader>(from stream: T) async throws -> Self {
             let length = try await stream.read(UInt8.self)
             switch length & 0x80 {
             case 0: return .init(Int(length))
@@ -26,7 +26,7 @@ extension ASN1 {
             }
         }
 
-        func encode(to stream: StreamWriter) async throws {
+        func encode<T: StreamWriter>(to stream: T) async throws {
             switch value {
             case 0...0x7F:
                 try await stream.write(UInt8(value))
@@ -46,27 +46,18 @@ extension ASN1 {
     }
 }
 
-extension StreamReader {
-    func withSubStreamReader<T>(
-        sizedBy type: ASN1.Length.Type,
-        body: (SubStreamReader) async throws -> T
-    ) async throws -> T {
-        let length = try await ASN1.Length.decode(from: self)
-        return try await withSubStreamReader(
-            limitedBy: length.value,
-            body: body)
+extension ASN1.Length: LengthHeader {
+    init(length: Int) {
+        self.init(length)
     }
-}
 
-extension StreamWriter {
-    func withSubStreamWriter(
-        sizedBy type: ASN1.Length.Type,
-        body: (SubStreamWriter) async throws -> Void
-    ) async throws {
-        let output = OutputByteStream()
-        try await body(output)
-        let length = ASN1.Length(output.bytes.count)
-        try await length.encode(to: self)
-        try await write(output.bytes)
+    var length: Int { value }
+
+    init<T: StreamReader>(from stream: T) async throws {
+        self = try await ASN1.Length.decode(from: stream)
+    }
+
+    func write<T: StreamWriter>(to stream: T) async throws {
+        try await encode(to: stream)
     }
 }

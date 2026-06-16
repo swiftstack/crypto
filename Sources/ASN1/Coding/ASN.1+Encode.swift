@@ -1,27 +1,15 @@
 import UInt24
 import Stream
 
-public protocol StreamEncodable {
-    func encode(to stream: StreamWriter) async throws
-}
-
-extension StreamEncodable {
-    public func encode() async throws -> [UInt8] {
-        let stream = OutputByteStream()
-        try await encode(to: stream)
-        return stream.bytes
-    }
-}
-
-extension ASN1: StreamEncodable {
-    public func encode(to stream: StreamWriter) async throws {
+extension ASN1: StreamWritable {
+    public func write<T: StreamWriter>(to stream: T) async throws {
         let writer = Writer(to: stream)
         try await writer.write(self)
     }
 }
 
-extension ASN1.Identifier: StreamEncodable {
-    public func encode(to stream: StreamWriter) async throws {
+extension ASN1.Identifier: StreamWritable {
+    public func write<T: StreamWriter>(to stream: T) async throws {
         var rawTag = tag.rawValue | (`class`.rawValue << 6)
         if isConstructed {
             rawTag |= 0x20
@@ -31,10 +19,10 @@ extension ASN1.Identifier: StreamEncodable {
 }
 
 extension ASN1 {
-    public class Writer {
-        let stream: StreamWriter
+    public class Writer<T: StreamWriter> {
+        let stream: T
 
-        public init(to stream: StreamWriter) {
+        public init(to stream: T) {
             self.stream = stream
         }
 
@@ -44,7 +32,7 @@ extension ASN1 {
         }
 
         func write(_ asn1: ASN1) async throws {
-            try await asn1.identifier.encode(to: stream)
+            try await asn1.identifier.write(to: stream)
 
             switch asn1.content {
             case .boolean(let value) where
@@ -74,7 +62,7 @@ extension ASN1 {
                 sizedBy: Length.self
             ) { stream in
                 for value in values {
-                    try await value.encode(to: stream)
+                    try await value.write(to: stream)
                 }
             }
         }

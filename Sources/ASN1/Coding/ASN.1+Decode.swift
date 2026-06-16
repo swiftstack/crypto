@@ -1,37 +1,25 @@
 import UInt24
 import Stream
 
-public protocol StreamDecodable {
-    // FIXME: [Concurrency]
-    // init(from stream: StreamReader) throws
-    static func decode(from stream: StreamReader) async throws -> Self
-}
-
-extension StreamDecodable {
-    public static func decode(from bytes: [UInt8]) async throws -> Self {
-        return try await self.decode(from: InputByteStream(bytes))
-    }
-}
-
-extension ASN1: StreamDecodable {
-    public static func decode(from stream: StreamReader) async throws -> Self {
+extension ASN1: StreamReadable {
+    public init<T: StreamReader>(from stream: T) async throws {
         let reader = Reader(from: stream)
-        return try await reader.read(ASN1.self)
+        self = try await reader.read(ASN1.self)
     }
 }
 
-extension ASN1.Identifier: StreamDecodable {
-    public static func decode(from stream: StreamReader) async throws -> Self {
+extension ASN1.Identifier: StreamReadable {
+    public init<T: StreamReader>(from stream: T) async throws {
         let reader = ASN1.Reader(from: stream)
-        return try await reader.read(ASN1.Identifier.self)
+        self = try await reader.read(ASN1.Identifier.self)
     }
 }
 
 extension ASN1 {
-    public class Reader {
-        let stream: StreamReader
+    public class Reader<T: StreamReader> {
+        let stream: T
 
-        public init(from stream: StreamReader) {
+        public init(from stream: T) {
             self.stream = stream
         }
 
@@ -52,8 +40,8 @@ extension ASN1 {
                     sizedBy: Length.self
                 ) { stream in
                     var children = [ASN1]()
-                    while !stream.isEmpty {
-                        children.append(try await ASN1.decode(from: stream))
+                    while try await stream.cache(count: 1) {
+                        try await children.append(ASN1(from: stream))
                     }
                     return .sequence(children)
                 }

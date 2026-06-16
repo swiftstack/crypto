@@ -93,7 +93,8 @@ extension Extension {
         guard let bytes = values.last?.dataValue else {
             throw Error.invalidASN1(asn1)
         }
-        let value = try await ASN1.decode(from: bytes)
+        // TODO: Decode from initial stream
+        let value = try await ASN1(decoding: bytes)
 
         let variant: Variant
 

@@ -78,7 +78,8 @@ extension OCSP.Response {
         else {
             throw Error.invalidASN1(asn1)
         }
-        let basicOCSPASN1 = try await ASN1.decode(from: bytes)
+        // TODO: Decode from initial stream
+        let basicOCSPASN1 = try await ASN1(decoding: bytes)
         let basic = try Basic(from: basicOCSPASN1)
         return .init(status: status, basic: basic)
     }

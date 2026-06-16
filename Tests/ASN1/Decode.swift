@@ -4,7 +4,7 @@ import Testing
 
 @Test("UniversalSequence")
 private func UniversalSequence() async throws {
-    let identifier = try await ASN1.Identifier.decode(from: [0x30])
+    let identifier = try await ASN1.Identifier(decoding: [0x30])
     #expect(identifier.isConstructed == true)
     #expect(identifier.class == .universal)
     #expect(identifier.tag == .sequence)
@@ -12,7 +12,7 @@ private func UniversalSequence() async throws {
 
 @Test("ContextSpecificEndOfContent")
 private func ContextSpecificEndOfContent() async throws {
-    let identifier = try await ASN1.Identifier.decode(from: [0xa0])
+    let identifier = try await ASN1.Identifier(decoding: [0xa0])
     #expect(identifier.isConstructed == true)
     #expect(identifier.class == .contextSpecific)
     #expect(identifier.tag == .endOfContent)
@@ -20,8 +20,8 @@ private func ContextSpecificEndOfContent() async throws {
 
 @Test("ContentBoolean")
 private func ContentBoolean() async throws {
-    let asn1f = try await ASN1.decode(from: [0x01, 0x01, 0x00])
-    let asn1t = try await ASN1.decode(from: [0x01, 0x01, 0xFF])
+    let asn1f = try await ASN1(decoding: [0x01, 0x01, 0x00])
+    let asn1t = try await ASN1(decoding: [0x01, 0x01, 0xFF])
     #expect(asn1f.identifier == .init(
         isConstructed: false,
         class: .universal,
@@ -36,7 +36,7 @@ private func ContentBoolean() async throws {
 
 @Test("ContentEnumerated")
 private func ContentEnumerated() async throws {
-    let result = try await ASN1.decode(from: [0x0a, 0x01, 0x00])
+    let result = try await ASN1(decoding: [0x0a, 0x01, 0x00])
     #expect(result.identifier == .init(
         isConstructed: false,
         class: .universal,
@@ -46,7 +46,7 @@ private func ContentEnumerated() async throws {
 
 @Test("ContentData")
 private func ContentData() async throws {
-    let result = try await ASN1.decode(from: [
+    let result = try await ASN1(decoding: [
             0x17, 0x0d,
             0x31, 0x36, 0x30, 0x35, 0x31, 0x33,
             0x31, 0x32, 0x31, 0x39, 0x31, 0x35, 0x5a])
@@ -61,7 +61,7 @@ private func ContentData() async throws {
 
 @Test("ContentSequence")
 private func ContentSequence() async throws {
-    let result = try await ASN1.decode(from: [
+    let result = try await ASN1(decoding: [
         0x30, 0x06,
         0x0a, 0x01, 0x00,
         0x0a, 0x01, 0x00
@@ -88,7 +88,7 @@ private func ContentSequence() async throws {
 
 @Test("ContentPrintableString")
 private func ContentPrintableString() async throws {
-    let result = try await ASN1.decode(from: [
+    let result = try await ASN1(decoding: [
         0x13, 0x02, 0x52, 0x55
     ])
     #expect(result.identifier == .init(
@@ -100,7 +100,7 @@ private func ContentPrintableString() async throws {
 
 @Test("ContentUTF8String")
 private func ContentUTF8String() async throws {
-    let result = try await ASN1.decode(from: [
+    let result = try await ASN1(decoding: [
         0x0c, 0x19,
         0x43, 0x65, 0x72, 0x74, 0x75, 0x6d, 0x20, 0x56,
         0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f,
@@ -116,7 +116,7 @@ private func ContentUTF8String() async throws {
 
 @Test("ContentObjectIdentifier")
 private func ContentObjectIdentifier() async throws {
-    let result = try await ASN1.decode(from: [
+    let result = try await ASN1(decoding: [
             0x06, 0x09,
             0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b])
 
